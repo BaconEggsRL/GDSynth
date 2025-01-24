@@ -23,8 +23,8 @@ var white_keys = [KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T, KEY_Y, KEY_U, KEY_I, KEY_O,
 var black_keys = [KEY_2, KEY_3, KEY_5, KEY_6, KEY_7, KEY_9, KEY_0, KEY_S, KEY_D, KEY_F, KEY_H, KEY_J]
 var note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
-@onready var piano_frequencies:Dictionary = generate_piano_frequencies()
-@onready var piano_qwerty:Dictionary = generate_piano_qwerty()
+@onready var piano_frequencies:Dictionary = generate_piano_frequencies()  # keys are note names like A4, values are freqs like 440.0
+@onready var piano_qwerty:Dictionary = generate_piano_qwerty()  # keys are note names like A4, values are InputEventKey such as KEY_Y
 @onready var keys_to_map:Array = piano_qwerty.values()
 
 @onready var keys:Array = piano_frequencies.keys()
@@ -40,14 +40,28 @@ func _ready() -> void:
 	
 	
 	for note in keys:
+		
 		var piano_btn:PianoButton = PianoButton.new()
 		# set vars
 		piano_btn.note = note
-		piano_btn.freq = piano_frequencies[note]
-		# connect pressed
-		piano_btn.pressed.connect(_on_piano_key_pressed.bind(piano_btn))
-		# add child
-		piano_container.add_child(piano_btn)
+		
+		if piano_frequencies.has(note):
+			piano_btn.freq = piano_frequencies[note]
+		
+		if piano_qwerty.has(note):
+			var qwerty_int:int = piano_qwerty[note]
+			var qwerty_key:InputEventKey = InputEventKey.new()
+			qwerty_key.keycode = qwerty_int
+			
+			piano_btn.qwerty_key = qwerty_key.as_text()
+		
+		if piano_btn.freq < 261.62 or piano_btn.freq > 1319:
+			pass
+		else:
+			# connect pressed
+			piano_btn.pressed.connect(_on_piano_key_pressed.bind(piano_btn))
+			# add child
+			piano_container.add_child(piano_btn)
 
 
 func _input(event) -> void:
@@ -132,6 +146,7 @@ func generate_piano_frequencies() -> Dictionary:
 	var key_number = 1  # Start with A0
 	for octave in range(0, 8):
 		for note in note_names:
+			
 			if octave == 7 and note == "C":
 				frequencies["C8"] = 4186.01
 				break
