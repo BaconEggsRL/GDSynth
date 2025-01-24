@@ -1,12 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=4 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 
 [sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_ig7tw"]
-polyphony = 128
-
-[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_ig7tw"]
-mix_rate = 11025.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0xm2m"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -20,7 +16,7 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("down", "current", "up", "piano_black", "piano_white", "note_label", "audio_player")]
 script = ExtResource("1_ig7tw")
 down = NodePath("Control/VBoxContainer/quick/down")
 current = NodePath("Control/VBoxContainer/quick/current")
@@ -28,14 +24,10 @@ up = NodePath("Control/VBoxContainer/quick/up")
 piano_black = NodePath("Control/VBoxContainer/VBoxContainer/piano_black")
 piano_white = NodePath("Control/VBoxContainer/VBoxContainer/piano_white")
 note_label = NodePath("Control/StatsPanel/MarginContainer/HBoxContainer/NoteLabel")
-polyphonic_player = NodePath("PolyphonicPlayer")
 audio_player = NodePath("AudioStreamPlayer")
 
-[node name="PolyphonicPlayer" type="AudioStreamPlayer" parent="."]
-stream = SubResource("AudioStreamPolyphonic_ig7tw")
-
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = SubResource("AudioStreamGenerator_ig7tw")
+stream = SubResource("AudioStreamPolyphonic_ig7tw")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3

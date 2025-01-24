@@ -9,3 +9,9 @@ Need to UNTOGGLE button on mouse release.
 
 Update physical keyboard keys to behave the same way (release kills it.)
 currently it's a bit buggy, it keeps re-triggering the event for some reason.
+
+17 white notes
+12 black notes
+
+= 17 + 12 = 29 polyphony (32 will work)
+send note to polyphonic player?

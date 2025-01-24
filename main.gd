@@ -14,6 +14,7 @@ extends Node
 
 
 
+@export var polyphonic_player:AudioStreamPlayer
 @export var audio_player:AudioStreamPlayer
 
 var playback # Will hold the AudioStreamGeneratorPlayback.
@@ -102,8 +103,7 @@ func _input(event) -> void:
 		get_tree().reload_current_scene()
 		
 	if event is InputEventKey:
-		if white_keys.has(event.keycode):
-			print("event")
+		if white_keys.has(event.keycode) or black_keys.has(event.keycode):
 			# print(event.as_text())
 			var note = piano_qwerty.find_key(event.keycode)
 			# print(note)
@@ -115,39 +115,15 @@ func _input(event) -> void:
 				# note_label.text = note
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
-					if btn.name == note:
+					if btn.name == note and btn.button_pressed == false:
 						btn.button_pressed = true
 						btn.toggled.emit(true)
 			else:
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
-					if btn.name == note:
+					if btn.name == note and btn.button_pressed == true:
 						btn.button_pressed = false
 						btn.toggled.emit(false)
-					
-			
-		elif black_keys.has(event.keycode):
-			print(event.as_text())
-			var note = piano_qwerty.find_key(event.keycode)
-			print(note)
-			var freq = piano_frequencies[note]
-			print(freq)
-			
-			if event.pressed and pulse_hz != freq:
-				# play_freq(freq)
-				# note_label.text = note
-				# update piano button toggled
-				for btn:PianoButton in piano_buttons:
-					if btn.name == note:
-						btn.button_pressed = true
-						btn.toggled.emit(true)
-			else:
-				# update piano button toggled
-				for btn:PianoButton in piano_buttons:
-					if btn.name == note:
-						btn.button_pressed = false
-						btn.toggled.emit(false)
-		
 
 
 
