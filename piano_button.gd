@@ -12,7 +12,8 @@ extends Button
 @export var min_y:float = 200.0
 
 
-@export var mix_rate:float = 11025.0
+var mix_rate:float = 11025.0
+var fade_samples = mix_rate
 @export var buffer_length:float = 0.5
 
 var volume_tweener:Tween
@@ -50,7 +51,7 @@ func _ready() -> void:
 	self.focus_mode = Control.FOCUS_NONE
 	
 	# button group
-	self.toggle_mode = true
+	# self.toggle_mode = true
 	# self.button_group = PIANO_BUTTON_GROUP
 	
 	# black keys
@@ -61,36 +62,58 @@ func _ready() -> void:
 	# signals
 	self.mouse_entered.connect(_on_mouse_entered)
 	self.mouse_exited.connect(_on_mouse_exited)
-	self.toggled.connect(_on_piano_button_toggled)
+	
+	
+	self.button_down.connect(_on_piano_button_down)
+	self.button_up.connect(_on_piano_button_up)
+	# self.toggled.connect(_on_piano_button_toggled)
 	
 	
 func _process(_delta:float) -> void:
 	if audio_player.playing:
 		fill_buffer()
 	
-	if is_hovering:
-		if Input.is_action_pressed("click"):
-			if self.button_pressed == false:
-				print("gui press: %s" % self.note)
-				self.button_pressed = true
-				self.toggled.emit(true)
+	#if is_hovering:
+		#if Input.is_action_pressed("click"):
+			#if self.button_pressed == false:
+				#print("gui press: %s" % self.note)
+				#self.button_pressed = true
+				#self.toggled.emit(true)
+	#
+	# if Input.is_action_just_released("click"):
+		# if self.button_pressed and audio_player.playing:
+			# print("gui release: %s" % self.note)
+			# self.button_pressed = false
+			# self.toggled.emit(false, get_stack()[0]["function"])
+			# pass
+
+
+func _on_piano_button_down() -> void:
+	self.button_pressed = true
+	play_freq()
+
+func _on_piano_button_up() -> void:
+	self.button_pressed = false
+	stop_freq()
 	
-	if Input.is_action_just_released("click"):
-		if self.button_pressed or audio_player.playing:
-			print("gui release: %s" % self.note)
-			self.button_pressed = false
-			self.toggled.emit(false)
 
-
-func _on_piano_button_toggled(toggled_on:bool) -> void:
-	print("toggled: %s" % self.name)
-	# update button pressed
-	# self.button_pressed = toggled_on
-	# update sound
-	if toggled_on:
-		play_freq()
-	else:
-		stop_freq()
+#func _on_piano_button_toggled(toggled_on:bool, caller:String="none") -> void:
+	## update message
+	#var on_off:String
+	#if toggled_on:
+		#on_off = "on"
+	#else:
+		#on_off = "off"
+	#print("caller is: %s, toggled_%s: %s" % [caller, on_off, self.name])
+	#
+	## update button pressed
+	#self.button_pressed = toggled_on
+	#
+	## update sound
+	#if toggled_on:
+		#play_freq()
+	#else:
+		#stop_freq()
 	
 	
 	
@@ -100,20 +123,19 @@ func _on_mouse_entered() -> void:
 
 func _on_mouse_exited() -> void:
 	is_hovering = false
-	if self.button_pressed or audio_player.playing:
-		print("hover release: %s" % self.note)
-		self.button_pressed = false
-		self.toggled.emit(false)
+	#if self.button_pressed or audio_player.playing:
+		#print("hover release: %s" % self.note)
+		#self.button_pressed = false
+		#self.toggled.emit(false)
 
 
 func play_freq() -> void:
 	
-	#var fade_samples = 100
-	#var fade_time = fade_samples / mix_rate
-	if volume_tweener:
-		volume_tweener.kill()
-		# volume_tweener = create_tween()
-		# volume_tweener.tween_property(audio_player, "volume_db", 0.0, fade_time)
+	#var fade_time = 100 / mix_rate
+	#if volume_tweener:
+		#volume_tweener.kill()
+		#volume_tweener = create_tween()
+		#volume_tweener.tween_property(audio_player, "volume_db", 0.0, fade_time)
 		
 	# play the frequency
 	audio_player.volume_db = 0.0
@@ -126,7 +148,6 @@ func stop_freq(smooth:bool = true) -> void:
 	if not audio_player.playing:
 		return
 
-	var fade_samples = mix_rate
 	var fade_time = fade_samples / mix_rate
 	var original_volume = audio_player.volume_db
 	

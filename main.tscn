@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=6 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://d2wpo6x8vsgu4" path="res://piano_button.gd" id="2_0xm2m"]
 
 [sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_ig7tw"]
 polyphony = 128
@@ -86,6 +87,12 @@ theme_override_constants/separation = -200
 
 [node name="piano_white" type="HBoxContainer" parent="Control/VBoxContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="PianoButton" type="Button" parent="Control/VBoxContainer/VBoxContainer/piano_white"]
+layout_mode = 2
+action_mode = 0
+script = ExtResource("2_0xm2m")
+metadata/_custom_type_script = ExtResource("2_0xm2m")
 
 [node name="piano_black" type="HBoxContainer" parent="Control/VBoxContainer/VBoxContainer"]
 layout_mode = 2

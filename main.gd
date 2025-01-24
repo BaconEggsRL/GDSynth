@@ -1,5 +1,7 @@
 extends Node
 
+const mix_rate:float = 11025.0
+@export_range (100, mix_rate, 1) var fade_samples = mix_rate
 
 
 @export var down:Button
@@ -50,6 +52,9 @@ func _ready() -> void:
 		var piano_btn:PianoButton = PianoButton.new()
 		# set vars
 		piano_btn.note = note
+		piano_btn.mix_rate = self.mix_rate
+		piano_btn.fade_samples = self.fade_samples
+		
 		
 		if piano_frequencies.has(note):
 			piano_btn.freq = piano_frequencies[note]
@@ -96,34 +101,34 @@ func _ready() -> void:
 	print(piano_buttons)
 
 
-func _input(event) -> void:
+func _input(_event) -> void:
 	if Input.is_action_just_pressed("quit"):
 		get_tree().quit()
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 		
-	if event is InputEventKey:
-		if white_keys.has(event.keycode) or black_keys.has(event.keycode):
-			# print(event.as_text())
-			var note = piano_qwerty.find_key(event.keycode)
-			# print(note)
-			var freq = piano_frequencies[note]
-			# print(freq)
-			
-			if event.pressed and pulse_hz != freq:
-				# play_freq(freq)
-				# note_label.text = note
-				# update piano button toggled
-				for btn:PianoButton in piano_buttons:
-					if btn.name == note and btn.button_pressed == false:
-						btn.button_pressed = true
-						btn.toggled.emit(true)
-			else:
-				# update piano button toggled
-				for btn:PianoButton in piano_buttons:
-					if btn.name == note and btn.button_pressed == true:
-						btn.button_pressed = false
-						btn.toggled.emit(false)
+	#if event is InputEventKey:
+		#if white_keys.has(event.keycode) or black_keys.has(event.keycode):
+			## print(event.as_text())
+			#var note = piano_qwerty.find_key(event.keycode)
+			## print(note)
+			#var freq = piano_frequencies[note]
+			## print(freq)
+			#
+			#if event.pressed and pulse_hz != freq:
+				## play_freq(freq)
+				## note_label.text = note
+				## update piano button toggled
+				#for btn:PianoButton in piano_buttons:
+					#if btn.name == note and btn.button_pressed == false:
+						#btn.button_pressed = true
+						#btn.toggled.emit(true)
+			#else:
+				## update piano button toggled
+				#for btn:PianoButton in piano_buttons:
+					#if btn.name == note and btn.button_pressed == true:
+						#btn.button_pressed = false
+						#btn.toggled.emit(false)
 
 
 
