@@ -24,13 +24,13 @@ corner_radius_bottom_left = 4
 
 [node name="main" type="Node" node_paths=PackedStringArray("record", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
 script = ExtResource("1_ig7tw")
-record = NodePath("Control/VBoxContainer/record")
+record = NodePath("Control/VBoxContainer/MarginContainer/VBoxContainer/record/record")
 release_knob = NodePath("Control/release_knob")
-down = NodePath("Control/VBoxContainer/quick/down")
-current = NodePath("Control/VBoxContainer/quick/current")
-up = NodePath("Control/VBoxContainer/quick/up")
-piano_black = NodePath("Control/VBoxContainer/VBoxContainer/piano_black")
-piano_white = NodePath("Control/VBoxContainer/VBoxContainer/piano_white")
+down = NodePath("Control/VBoxContainer/MarginContainer/VBoxContainer/quick/down")
+current = NodePath("Control/VBoxContainer/MarginContainer/VBoxContainer/quick/current")
+up = NodePath("Control/VBoxContainer/MarginContainer/VBoxContainer/quick/up")
+piano_black = NodePath("Control/VBoxContainer/piano/piano_black")
+piano_white = NodePath("Control/VBoxContainer/piano/piano_white")
 note_label = NodePath("Control/StatsPanel/MarginContainer/VBoxContainer/HBoxContainer/NoteLabel")
 polyphonic_player = NodePath("PolyphonicPlayer")
 audio_player = NodePath("AudioStreamPlayer")
@@ -56,75 +56,82 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -170.0
-offset_top = -20.0
-offset_right = 170.0
-offset_bottom = 20.0
+offset_left = -180.0
+offset_top = -48.0
+offset_right = 180.0
+offset_bottom = 48.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 24
 
-[node name="record" type="Button" parent="Control/VBoxContainer"]
-custom_minimum_size = Vector2(338, 0)
+[node name="MarginContainer" type="MarginContainer" parent="Control/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="record" type="HBoxContainer" parent="Control/VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="record" type="Button" parent="Control/VBoxContainer/MarginContainer/VBoxContainer/record"]
+layout_mode = 2
+size_flags_horizontal = 3
 focus_mode = 0
 toggle_mode = true
 action_mode = 0
-text = "Start Recording"
+text = "Record"
 script = ExtResource("2_h2yge")
 
-[node name="quick" type="HBoxContainer" parent="Control/VBoxContainer"]
+[node name="play" type="Button" parent="Control/VBoxContainer/MarginContainer/VBoxContainer/record"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Play"
+
+[node name="quick" type="HBoxContainer" parent="Control/VBoxContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 20
 
-[node name="down" type="Button" parent="Control/VBoxContainer/quick"]
+[node name="down" type="Button" parent="Control/VBoxContainer/MarginContainer/VBoxContainer/quick"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 focus_mode = 0
 action_mode = 0
 text = "go down"
 
-[node name="current" type="Button" parent="Control/VBoxContainer/quick"]
+[node name="current" type="Button" parent="Control/VBoxContainer/MarginContainer/VBoxContainer/quick"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 focus_mode = 0
 action_mode = 0
 text = "current"
 
-[node name="up" type="Button" parent="Control/VBoxContainer/quick"]
+[node name="up" type="Button" parent="Control/VBoxContainer/MarginContainer/VBoxContainer/quick"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 focus_mode = 0
 action_mode = 0
 text = "go up"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/VBoxContainer"]
+[node name="piano" type="VBoxContainer" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = -200
 
-[node name="piano_white" type="HBoxContainer" parent="Control/VBoxContainer/VBoxContainer"]
+[node name="piano_white" type="HBoxContainer" parent="Control/VBoxContainer/piano"]
 layout_mode = 2
 
-[node name="piano_black" type="HBoxContainer" parent="Control/VBoxContainer/VBoxContainer"]
+[node name="piano_black" type="HBoxContainer" parent="Control/VBoxContainer/piano"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="Control"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -23.0
-offset_right = 20.0
-grow_horizontal = 2
-grow_vertical = 0
-text = "` to restart
-ESC to Quit"
-horizontal_alignment = 1
 
 [node name="StatsPanel" type="Panel" parent="Control"]
 layout_mode = 1
@@ -167,20 +174,35 @@ Q"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="HintLabel" type="Label" parent="Control"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -43.5
+offset_top = -49.0
+offset_right = 43.5
+grow_horizontal = 2
+grow_vertical = 0
+text = "` to restart
+ESC to Quit"
+horizontal_alignment = 1
+
 [node name="release_knob" parent="Control" instance=ExtResource("2_0xm2m")]
 position = Vector2(215, 116)
 
-[node name="Label2" type="Label" parent="Control"]
-layout_mode = 0
-offset_left = 174.0
-offset_top = 150.0
-offset_right = 258.0
-offset_bottom = 173.0
+[node name="ReleaseLabel" type="Label" parent="Control/release_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
 text = "Release"
 horizontal_alignment = 1
 
-[connection signal="pressed" from="Control/VBoxContainer/record" to="Control/VBoxContainer/record" method="_on_pressed"]
-[connection signal="toggled" from="Control/VBoxContainer/record" to="Control/VBoxContainer/record" method="_on_toggled"]
-[connection signal="pressed" from="Control/VBoxContainer/quick/down" to="." method="_on_down_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/quick/current" to="." method="_on_current_pressed"]
-[connection signal="pressed" from="Control/VBoxContainer/quick/up" to="." method="_on_up_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/MarginContainer/VBoxContainer/record/record" to="Control/VBoxContainer/MarginContainer/VBoxContainer/record/record" method="_on_pressed"]
+[connection signal="toggled" from="Control/VBoxContainer/MarginContainer/VBoxContainer/record/record" to="Control/VBoxContainer/MarginContainer/VBoxContainer/record/record" method="_on_toggled"]
+[connection signal="pressed" from="Control/VBoxContainer/MarginContainer/VBoxContainer/quick/down" to="." method="_on_down_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/MarginContainer/VBoxContainer/quick/current" to="." method="_on_current_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/MarginContainer/VBoxContainer/quick/up" to="." method="_on_up_pressed"]
