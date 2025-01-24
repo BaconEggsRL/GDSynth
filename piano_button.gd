@@ -71,7 +71,8 @@ func _ready() -> void:
 	
 func _process(_delta:float) -> void:
 	if audio_player.playing:
-		fill_buffer()
+		if playback:
+			fill_buffer()
 	
 	#if is_hovering:
 		#if Input.is_action_pressed("click"):
@@ -89,10 +90,12 @@ func _process(_delta:float) -> void:
 
 
 func _on_piano_button_down() -> void:
+	print("caller is: %s, toggled_%s: %s" % ["down", "on", self.name])
 	self.button_pressed = true
 	play_freq()
 
 func _on_piano_button_up() -> void:
+	print("caller is: %s, toggled_%s: %s" % ["up", "off", self.name])
 	self.button_pressed = false
 	stop_freq()
 	
@@ -138,6 +141,8 @@ func play_freq() -> void:
 		#volume_tweener.tween_property(audio_player, "volume_db", 0.0, fade_time)
 		
 	# play the frequency
+	if volume_tweener:
+		volume_tweener.kill()
 	audio_player.volume_db = 0.0
 	audio_player.play()
 	playback = audio_player.get_stream_playback()
@@ -149,7 +154,6 @@ func stop_freq(smooth:bool = true) -> void:
 		return
 
 	var fade_time = fade_samples / mix_rate
-	var original_volume = audio_player.volume_db
 	
 	if smooth:
 		if volume_tweener:
@@ -157,12 +161,10 @@ func stop_freq(smooth:bool = true) -> void:
 		volume_tweener = create_tween()
 		volume_tweener.finished.connect(func():
 			audio_player.stop()
-			audio_player.volume_db = original_volume
 		)
 		volume_tweener.tween_property(audio_player, "volume_db", -80.0, fade_time)
 	else:
 		audio_player.stop()
-		audio_player.volume_db = original_volume
 	
 	
 
