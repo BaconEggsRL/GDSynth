@@ -63,6 +63,22 @@ func _ready() -> void:
 			
 			# add child
 			if piano_btn.note.contains("#"):
+				if piano_btn.note == "C#3":
+					var spacer = Label.new()
+					spacer.custom_minimum_size.x = 64.0 / 2.0
+					piano_black.add_child(spacer)
+				elif piano_btn.note.contains("F"):
+					# piano_btn.note == "F#3":
+					var spacer = Label.new()
+					spacer.custom_minimum_size.x = 64.0
+					piano_black.add_child(spacer)
+				elif piano_btn.note.contains("C"):
+					# piano_btn.note == "C#4":
+					var spacer = Label.new()
+					spacer.custom_minimum_size.x = 64.0
+					piano_black.add_child(spacer)
+					
+				
 				piano_btn.is_black = true
 				piano_black.add_child(piano_btn)
 			else:
