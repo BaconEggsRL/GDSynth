@@ -1,7 +1,11 @@
 extends Node
 
 const mix_rate:float = 11025.0
-@export_range (100, mix_rate*2, 1) var fade_samples = mix_rate
+const min_fade_samples:float = 100
+const max_fade_samples:float = mix_rate * 4
+@export_range (min_fade_samples, max_fade_samples, 1) var fade_samples = (min_fade_samples + max_fade_samples) / 2
+
+@export var release_knob:Knob
 
 
 @export var down:Button
@@ -45,8 +49,41 @@ func _on_piano_button_pressed(btn:PianoButton) -> void:
 	note_label.text = btn.text
 	
 	
-	
+func _on_knob_turned(deg:float, type:String="") -> void:
+	match type:
+		"A":
+			pass
+		"S":
+			pass
+		"D":
+			pass
+		"R":
+			# min_fade_samples
+			# max_fade_samples
+			# fade_samples
+			# release_knob.rotation_degrees = deg
+			var clamped_deg = clamp(deg, 18.1690, 81.8309)
+			var value = remap(clamped_deg, 18.1690, 81.8309, min_fade_samples, max_fade_samples)
+			print(value)
+			self.fade_samples = value
+			for btn:PianoButton in piano_buttons:
+				btn.fade_samples = self.fade_samples
+			
+			pass
+		_:
+			push_warning("'%s' type not matched" % type)
+	pass
+
+
+
 func _ready() -> void:
+	release_knob.turned.connect(_on_knob_turned.bind("R"))
+	var knob_init = remap(fade_samples, min_fade_samples, max_fade_samples, 18.1690, 81.8309)
+	var fang :float= lerp_angle( release_knob.knob.rotation, knob_init, 0.3  )
+	release_knob.knob.rotation = clamp(fang, -2, 2)
+	release_knob.turned.emit(knob_init)
+	
+	
 	note_label.text = ""
 	
 	print(piano_frequencies)

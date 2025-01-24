@@ -15,3 +15,9 @@ currently it's a bit buggy, it keeps re-triggering the event for some reason.
 
 = 17 + 12 = 29 polyphony (32 will work)
 send note to polyphonic player?
+
+
+50.
+18.
+81.
+

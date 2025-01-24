@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://bapp2hd88h2ob"]
+
+[ext_resource type="Texture2D" uid="uid://c673io5i63pw2" path="res://icon.svg" id="1_ixyjt"]
+[ext_resource type="Script" uid="uid://cx7woyft1dbd3" path="res://knob.gd" id="1_vc37u"]
+
+[node name="knob" type="Node2D" node_paths=PackedStringArray("knob", "knobPoint", "middlePoint")]
+script = ExtResource("1_vc37u")
+knob = NodePath("knob")
+knobPoint = NodePath("knob/knobPoint")
+middlePoint = NodePath("middlePoint")
+
+[node name="back" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.423529)
+texture = ExtResource("1_ixyjt")
+
+[node name="knob" type="Marker2D" parent="."]
+
+[node name="knob" type="Sprite2D" parent="knob"]
+position = Vector2(0, -22)
+scale = Vector2(0.1, 0.5)
+texture = ExtResource("1_ixyjt")
+
+[node name="knobPoint" type="Marker2D" parent="knob"]
+position = Vector2(0, -54)
+
+[node name="middlePoint" type="Marker2D" parent="."]
+position = Vector2(0, -64)

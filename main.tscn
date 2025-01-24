@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=6 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
 
 [sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_ig7tw"]
 polyphony = 128
@@ -20,9 +21,9 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
 script = ExtResource("1_ig7tw")
-fade_samples = 22050.0
+release_knob = NodePath("release_knob")
 down = NodePath("Control/VBoxContainer/quick/down")
 current = NodePath("Control/VBoxContainer/quick/current")
 up = NodePath("Control/VBoxContainer/quick/up")
@@ -154,6 +155,9 @@ layout_mode = 2
 [node name="Label" type="Label" parent="Control/StatsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "ASDR"
+
+[node name="release_knob" parent="." instance=ExtResource("2_0xm2m")]
+position = Vector2(215, 116)
 
 [connection signal="pressed" from="Control/VBoxContainer/quick/down" to="." method="_on_down_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/quick/current" to="." method="_on_current_pressed"]
