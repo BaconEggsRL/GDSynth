@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=7 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
+[ext_resource type="Script" uid="uid://dydvs842s5wda" path="res://record.gd" id="2_h2yge"]
 
 [sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_ig7tw"]
 polyphony = 128
@@ -21,9 +22,10 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("record", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
 script = ExtResource("1_ig7tw")
-release_knob = NodePath("release_knob")
+record = NodePath("Control/VBoxContainer/record")
+release_knob = NodePath("Control/release_knob")
 down = NodePath("Control/VBoxContainer/quick/down")
 current = NodePath("Control/VBoxContainer/quick/current")
 up = NodePath("Control/VBoxContainer/quick/up")
@@ -62,6 +64,16 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 24
 
+[node name="record" type="Button" parent="Control/VBoxContainer"]
+custom_minimum_size = Vector2(338, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Start Recording"
+script = ExtResource("2_h2yge")
+
 [node name="quick" type="HBoxContainer" parent="Control/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -70,16 +82,22 @@ theme_override_constants/separation = 20
 [node name="down" type="Button" parent="Control/VBoxContainer/quick"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+focus_mode = 0
+action_mode = 0
 text = "go down"
 
 [node name="current" type="Button" parent="Control/VBoxContainer/quick"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+focus_mode = 0
+action_mode = 0
 text = "current"
 
 [node name="up" type="Button" parent="Control/VBoxContainer/quick"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+focus_mode = 0
+action_mode = 0
 text = "go up"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/VBoxContainer"]
@@ -149,16 +167,20 @@ Q"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HSlider" type="HSlider" parent="Control/StatsPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Control/StatsPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "ASDR"
-
-[node name="release_knob" parent="." instance=ExtResource("2_0xm2m")]
+[node name="release_knob" parent="Control" instance=ExtResource("2_0xm2m")]
 position = Vector2(215, 116)
 
+[node name="Label2" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 174.0
+offset_top = 150.0
+offset_right = 258.0
+offset_bottom = 173.0
+text = "Release"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Control/VBoxContainer/record" to="Control/VBoxContainer/record" method="_on_pressed"]
+[connection signal="toggled" from="Control/VBoxContainer/record" to="Control/VBoxContainer/record" method="_on_toggled"]
 [connection signal="pressed" from="Control/VBoxContainer/quick/down" to="." method="_on_down_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/quick/current" to="." method="_on_current_pressed"]
 [connection signal="pressed" from="Control/VBoxContainer/quick/up" to="." method="_on_up_pressed"]

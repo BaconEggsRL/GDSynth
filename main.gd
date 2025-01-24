@@ -5,6 +5,8 @@ const min_fade_samples:float = 100
 const max_fade_samples:float = mix_rate * 4
 @export_range (min_fade_samples, max_fade_samples, 1) var fade_samples = (min_fade_samples + max_fade_samples) / 2
 
+@export var record:Button
+
 @export var release_knob:Knob
 
 
