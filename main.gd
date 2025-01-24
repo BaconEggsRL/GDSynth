@@ -6,7 +6,8 @@ extends Node
 @export var current:Button
 @export var up:Button
 
-@export var piano_container:HBoxContainer
+@export var piano_black:HBoxContainer
+@export var piano_white:HBoxContainer
 
 @export var note_label:Label
 
@@ -49,10 +50,9 @@ func _ready() -> void:
 			piano_btn.freq = piano_frequencies[note]
 		
 		if piano_qwerty.has(note):
-			var qwerty_int:int = piano_qwerty[note]
+			var qwerty_int:Key = piano_qwerty[note] as Key
 			var qwerty_key:InputEventKey = InputEventKey.new()
 			qwerty_key.keycode = qwerty_int
-			
 			piano_btn.qwerty_key = qwerty_key.as_text()
 		
 		if piano_btn.freq < 261.62 or piano_btn.freq > 1319:
@@ -60,8 +60,13 @@ func _ready() -> void:
 		else:
 			# connect pressed
 			piano_btn.pressed.connect(_on_piano_key_pressed.bind(piano_btn))
+			
 			# add child
-			piano_container.add_child(piano_btn)
+			if piano_btn.note.contains("#"):
+				piano_btn.is_black = true
+				piano_black.add_child(piano_btn)
+			else:
+				piano_white.add_child(piano_btn)
 
 
 func _input(event) -> void:
