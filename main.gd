@@ -8,6 +8,8 @@ extends Node
 
 @export var piano_container:HBoxContainer
 
+@export var note_label:Label
+
 
 
 
@@ -30,6 +32,8 @@ var note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#
 
 
 func _ready() -> void:
+	note_label.text = ""
+	
 	print(piano_frequencies)
 	print()
 	print(piano_qwerty)
@@ -60,6 +64,7 @@ func _input(event) -> void:
 			var freq = piano_frequencies[note]
 			print(freq)
 			play_freq(freq)
+			note_label.text = note
 			
 		elif black_keys.has(event.keycode):
 			print(event.as_text())
@@ -68,6 +73,7 @@ func _input(event) -> void:
 			var freq = piano_frequencies[note]
 			print(freq)
 			play_freq(freq)
+			note_label.text = note
 		
 
 
