@@ -140,12 +140,14 @@ func _on_piano_key_toggled(toggled_on:bool, btn:PianoButton) -> void:
 		if pulse_hz != freq:
 			print("NEW FREQ")
 			play_freq(freq)
+			note_label.text = btn.note
 		# play_freq(freq)
 	else:
 		var freq = btn.freq
 		if pulse_hz == freq:
 			print("STOP FREQ")
 			stop_freq()
+			note_label.text = btn.note
 
 
 

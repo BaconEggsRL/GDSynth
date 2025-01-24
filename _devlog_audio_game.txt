@@ -6,3 +6,5 @@ Todo:
 Pressing keyboard keys works great (can press same key multiple times.)
 But if I use mouse, I can't press the same key I just pressed.
 Need to UNTOGGLE button on mouse release.
+
+Update physical keyboard keys to behave the same way (release kills it.)
