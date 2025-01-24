@@ -51,7 +51,8 @@ func _ready() -> void:
 	self.focus_mode = Control.FOCUS_NONE
 	
 	# button group
-	# self.toggle_mode = true
+	self.toggle_mode = true
+	
 	# self.button_group = PIANO_BUTTON_GROUP
 	
 	# black keys
@@ -64,7 +65,7 @@ func _ready() -> void:
 	self.mouse_exited.connect(_on_mouse_exited)
 	
 	
-	self.button_down.connect(_on_piano_button_down)
+	self.pressed.connect(_on_piano_button_pressed)
 	self.button_up.connect(_on_piano_button_up)
 	# self.toggled.connect(_on_piano_button_toggled)
 	
@@ -74,72 +75,63 @@ func _process(_delta:float) -> void:
 		if playback:
 			fill_buffer()
 	
+	# play if hovering and clicked
 	#if is_hovering:
 		#if Input.is_action_pressed("click"):
 			#if self.button_pressed == false:
 				#print("gui press: %s" % self.note)
-				#self.button_pressed = true
-				#self.toggled.emit(true)
+				#pressed.emit()
+				## self.button_pressed = true
+				## self.toggled.emit(true)
 	#
-	# if Input.is_action_just_released("click"):
-		# if self.button_pressed and audio_player.playing:
+	# stop playing if click released
+	if Input.is_action_just_released("click"):
+		if self.button_pressed: # or audio_player.playing:
 			# print("gui release: %s" % self.note)
+			button_up.emit()
 			# self.button_pressed = false
 			# self.toggled.emit(false, get_stack()[0]["function"])
 			# pass
 
 
-func _on_piano_button_down() -> void:
-	print("caller is: %s, toggled_%s: %s" % ["down", "on", self.name])
+func _on_piano_button_pressed() -> void:
+	print("down, %s" % self.name)
 	self.button_pressed = true
+	# _press(self)
 	play_freq()
 
 func _on_piano_button_up() -> void:
-	print("caller is: %s, toggled_%s: %s" % ["up", "off", self.name])
+	print("up, %s" % self.name)
 	self.button_pressed = false
 	stop_freq()
-	
-
-#func _on_piano_button_toggled(toggled_on:bool, caller:String="none") -> void:
-	## update message
-	#var on_off:String
-	#if toggled_on:
-		#on_off = "on"
-	#else:
-		#on_off = "off"
-	#print("caller is: %s, toggled_%s: %s" % [caller, on_off, self.name])
-	#
-	## update button pressed
-	#self.button_pressed = toggled_on
-	#
-	## update sound
-	#if toggled_on:
-		#play_freq()
-	#else:
-		#stop_freq()
-	
 	
 	
 func _on_mouse_entered() -> void:
 	is_hovering = true
-	
-
+	if Input.is_action_pressed("click"):
+		pressed.emit()
+		
 func _on_mouse_exited() -> void:
 	is_hovering = false
+	if self.button_pressed:
+		button_up.emit()
 	#if self.button_pressed or audio_player.playing:
 		#print("hover release: %s" % self.note)
 		#self.button_pressed = false
 		#self.toggled.emit(false)
 
 
-func play_freq() -> void:
-	
-	#var fade_time = 100 / mix_rate
-	#if volume_tweener:
-		#volume_tweener.kill()
-		#volume_tweener = create_tween()
-		#volume_tweener.tween_property(audio_player, "volume_db", 0.0, fade_time)
+func _press(btn:BaseButton, focus:bool=false) -> void:
+	if btn.is_inside_tree():
+		btn.emit_signal("pressed")
+		btn.button_pressed = true
+		if focus:
+			btn.grab_focus()
+	else:
+		push_warning("%s is not inside tree" % btn)
 		
+		
+func play_freq() -> void:
 	# play the frequency
 	if volume_tweener:
 		volume_tweener.kill()
@@ -161,10 +153,12 @@ func stop_freq(smooth:bool = true) -> void:
 		volume_tweener = create_tween()
 		volume_tweener.finished.connect(func():
 			audio_player.stop()
+			pass
 		)
 		volume_tweener.tween_property(audio_player, "volume_db", -80.0, fade_time)
 	else:
 		audio_player.stop()
+		pass
 	
 	
 
