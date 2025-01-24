@@ -1,0 +1,8 @@
+Todo:
+
+# Add mouse drag / hover events for on-screen buttons
+# (Play slide on click+drag)
+
+Pressing keyboard keys works great (can press same key multiple times.)
+But if I use mouse, I can't press the same key I just pressed.
+Need to UNTOGGLE button on mouse release.

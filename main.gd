@@ -18,7 +18,7 @@ extends Node
 
 var playback # Will hold the AudioStreamGeneratorPlayback.
 @onready var sample_hz = audio_player.stream.mix_rate
-var pulse_hz = 440.0 # The frequency of the sound wave.
+var pulse_hz = -1.0 # The frequency of the sound wave.
 
 var white_keys = [KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T, KEY_Y, KEY_U, KEY_I, KEY_O, KEY_P, KEY_Z, KEY_X, KEY_C, KEY_V, KEY_B, KEY_N, KEY_M]
 var black_keys = [KEY_2, KEY_3, KEY_5, KEY_6, KEY_7, KEY_9, KEY_0, KEY_S, KEY_D, KEY_F, KEY_H, KEY_J]
@@ -30,6 +30,9 @@ var note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#
 
 @onready var keys:Array = piano_frequencies.keys()
 @onready var index:int = 30
+
+var piano_button_group:ButtonGroup = PianoButton.PIANO_BUTTON_GROUP
+var piano_buttons:Array
 
 
 func _ready() -> void:
@@ -58,8 +61,8 @@ func _ready() -> void:
 		if piano_btn.freq < 261.62 or piano_btn.freq > 1319:
 			pass
 		else:
-			# connect pressed
-			piano_btn.pressed.connect(_on_piano_key_pressed.bind(piano_btn))
+			# connect toggled
+			piano_btn.toggled.connect(_on_piano_key_toggled.bind(piano_btn))
 			
 			# add child
 			if piano_btn.note.contains("#"):
@@ -83,6 +86,12 @@ func _ready() -> void:
 				piano_black.add_child(piano_btn)
 			else:
 				piano_white.add_child(piano_btn)
+				
+	
+	# test
+	piano_buttons = piano_button_group.get_buttons()
+	print("piano_buttons")
+	print(piano_buttons)
 
 
 func _input(event) -> void:
@@ -100,6 +109,12 @@ func _input(event) -> void:
 			print(freq)
 			play_freq(freq)
 			note_label.text = note
+			# update piano button toggled
+			for btn:PianoButton in piano_buttons:
+				if btn.name == note:
+					btn.button_pressed = true
+					btn.toggled.emit(true)
+					
 			
 		elif black_keys.has(event.keycode):
 			print(event.as_text())
@@ -109,13 +124,28 @@ func _input(event) -> void:
 			print(freq)
 			play_freq(freq)
 			note_label.text = note
+			# update piano button toggled
+			for btn:PianoButton in piano_buttons:
+				if btn.name == note:
+					btn.button_pressed = true
+					btn.toggled.emit(true)
 		
 
 
 
-func _on_piano_key_pressed(btn:PianoButton) -> void:
-	var freq = btn.freq
-	play_freq(freq)
+func _on_piano_key_toggled(toggled_on:bool, btn:PianoButton) -> void:
+	
+	if toggled_on:
+		var freq = btn.freq
+		if pulse_hz != freq:
+			print("NEW FREQ")
+			play_freq(freq)
+		# play_freq(freq)
+	else:
+		var freq = btn.freq
+		if pulse_hz == freq:
+			print("STOP FREQ")
+			stop_freq()
 
 
 
@@ -145,7 +175,12 @@ func play_freq(freq:float = 440.0) -> void:
 	audio_player.play()
 	playback = audio_player.get_stream_playback()
 	fill_buffer()
-	
+
+
+func stop_freq() -> void:
+	audio_player.stop()
+	pulse_hz = -1.0  # reset freq
+
 
 
 func fill_buffer():
