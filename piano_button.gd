@@ -108,16 +108,15 @@ func _on_mouse_exited() -> void:
 
 func play_freq() -> void:
 	
-	var fade_samples = 100
-	var fade_time = fade_samples / mix_rate
-	# var original_volume = audio_player.volume_db
-	
+	#var fade_samples = 100
+	#var fade_time = fade_samples / mix_rate
 	if volume_tweener:
 		volume_tweener.kill()
-		volume_tweener = create_tween()
-		volume_tweener.tween_property(audio_player, "volume_db", 0.0, fade_time)
+		# volume_tweener = create_tween()
+		# volume_tweener.tween_property(audio_player, "volume_db", 0.0, fade_time)
 		
 	# play the frequency
+	audio_player.volume_db = 0.0
 	audio_player.play()
 	playback = audio_player.get_stream_playback()
 	fill_buffer()
@@ -127,7 +126,7 @@ func stop_freq(smooth:bool = true) -> void:
 	if not audio_player.playing:
 		return
 
-	var fade_samples = 100
+	var fade_samples = mix_rate
 	var fade_time = fade_samples / mix_rate
 	var original_volume = audio_player.volume_db
 	
