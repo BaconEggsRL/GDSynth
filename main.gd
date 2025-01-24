@@ -31,7 +31,8 @@ var note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#
 @onready var keys:Array = piano_frequencies.keys()
 @onready var index:int = 30
 
-var piano_button_group:ButtonGroup = PianoButton.PIANO_BUTTON_GROUP
+# var piano_button_group:ButtonGroup = PianoButton.PIANO_BUTTON_GROUP
+const PIANO_BUTTON_GROUP = "piano_button"
 var piano_buttons:Array
 
 
@@ -62,7 +63,7 @@ func _ready() -> void:
 			pass
 		else:
 			# connect toggled
-			piano_btn.toggled.connect(_on_piano_key_toggled.bind(piano_btn))
+			# piano_btn.toggled.connect(_on_piano_key_toggled.bind(piano_btn))
 			
 			# add child
 			if piano_btn.note.contains("#"):
@@ -89,7 +90,7 @@ func _ready() -> void:
 				
 	
 	# test
-	piano_buttons = piano_button_group.get_buttons()
+	piano_buttons = get_tree().get_nodes_in_group(PIANO_BUTTON_GROUP)
 	print("piano_buttons")
 	print(piano_buttons)
 
@@ -110,18 +111,18 @@ func _input(event) -> void:
 			# print(freq)
 			
 			if event.pressed and pulse_hz != freq:
-				play_freq(freq)
-				note_label.text = note
+				# play_freq(freq)
+				# note_label.text = note
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
 					if btn.name == note:
-						# btn.button_pressed = true
+						btn.button_pressed = true
 						btn.toggled.emit(true)
 			else:
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
 					if btn.name == note:
-						# btn.button_pressed = true
+						btn.button_pressed = false
 						btn.toggled.emit(false)
 					
 			
@@ -133,40 +134,41 @@ func _input(event) -> void:
 			print(freq)
 			
 			if event.pressed and pulse_hz != freq:
-				play_freq(freq)
-				note_label.text = note
+				# play_freq(freq)
+				# note_label.text = note
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
 					if btn.name == note:
-						# btn.button_pressed = true
+						btn.button_pressed = true
 						btn.toggled.emit(true)
 			else:
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
 					if btn.name == note:
-						# btn.button_pressed = true
+						btn.button_pressed = false
 						btn.toggled.emit(false)
 		
 
 
 
-func _on_piano_key_toggled(toggled_on:bool, btn:PianoButton) -> void:
+# func _on_piano_key_toggled(_toggled_on:bool, _btn:PianoButton) -> void:
+	# pass
 	# update button pressed
-	btn.button_pressed = toggled_on
+	# btn.button_pressed = toggled_on
 	
-	if toggled_on:
-		var freq = btn.freq
-		if pulse_hz != freq:
-			print("NEW FREQ")
-			play_freq(freq)
-			note_label.text = btn.note
-		# play_freq(freq)
-	else:
-		var freq = btn.freq
-		if pulse_hz == freq:
-			print("STOP FREQ")
-			stop_freq()
-			note_label.text = btn.note
+	#if toggled_on:
+		#var freq = btn.freq
+		#if pulse_hz != freq:
+			#print("NEW FREQ")
+			#play_freq(freq)
+			#note_label.text = btn.note
+		## play_freq(freq)
+	#else:
+		#var freq = btn.freq
+		#if pulse_hz == freq:
+			#print("STOP FREQ")
+			#stop_freq()
+			#note_label.text = btn.note
 
 
 

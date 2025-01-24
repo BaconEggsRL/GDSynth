@@ -2,17 +2,45 @@ class_name PianoButton
 extends Button
 
 @export var qwerty_key:String = "Y"
+
 @export var note:String = "A4"
-@export var freq:float = 440.0
+@export var freq:float = -1.0
+
 @export var is_black:bool = false
 
 @export var min_x:float = 64.0
 @export var min_y:float = 200.0
 
+
+@export var mix_rate:float = 11025.0
+@export var buffer_length:float = 0.5
+
+@onready var audio_player:AudioStreamPlayer = self.create_audio_player()
+
+var playback # Will hold the AudioStreamGeneratorPlayback.
+@onready var sample_hz = audio_player.stream.mix_rate
+
+
+
+
 var is_hovering:bool = false
-const PIANO_BUTTON_GROUP = preload("res://piano_button_group.tres")
+# const PIANO_BUTTON_GROUP = preload("res://piano_button_group.tres")
+const PIANO_BUTTON_GROUP = "piano_button"
+
+
+func create_audio_player() -> AudioStreamPlayer:
+	var player := AudioStreamPlayer.new()
+	var stream := AudioStreamGenerator.new()
+	stream.mix_rate = mix_rate
+	stream.buffer_length = buffer_length
+	player.stream = stream
+	self.add_child(player)
+	return player
+
 
 func _ready() -> void:
+	self.add_to_group(PIANO_BUTTON_GROUP)
+	
 	self.name = note
 	self.text = "%s\n%s" % [note, qwerty_key]
 	
@@ -21,7 +49,7 @@ func _ready() -> void:
 	
 	# button group
 	self.toggle_mode = true
-	self.button_group = PIANO_BUTTON_GROUP
+	# self.button_group = PIANO_BUTTON_GROUP
 	
 	# black keys
 	if is_black:
@@ -31,24 +59,66 @@ func _ready() -> void:
 	# signals
 	self.mouse_entered.connect(_on_mouse_entered)
 	self.mouse_exited.connect(_on_mouse_exited)
+	self.toggled.connect(_on_piano_button_toggled)
 	
 	
 func _process(_delta:float) -> void:
+	pass
 	if is_hovering:
 		if Input.is_action_pressed("click"):
-			print("gui press: %s" % self.note)
-			self.button_pressed = true
-			self.toggled.emit(true)
+			if self.button_pressed == false:
+				print("gui press: %s" % self.note)
+				self.button_pressed = true
+				self.toggled.emit(true)
 	
 	if Input.is_action_just_released("click"):
-		print("gui release: %s" % self.note)
-		self.button_pressed = false
-		self.toggled.emit(false)
+		if self.button_pressed or audio_player.playing:
+			print("gui release: %s" % self.note)
+			self.button_pressed = false
+			self.toggled.emit(false)
 	
 
+
+func _on_piano_button_toggled(toggled_on:bool) -> void:
+	print("toggled: %s" % self.name)
+	# update button pressed
+	# self.button_pressed = toggled_on
+	# update sound
+	if toggled_on:
+		play_freq()
+	else:
+		stop_freq()
+	
+	
+	
 func _on_mouse_entered() -> void:
 	is_hovering = true
 	
 
 func _on_mouse_exited() -> void:
 	is_hovering = false
+	if self.button_pressed or audio_player.playing:
+		print("hover release: %s" % self.note)
+		self.button_pressed = false
+		self.toggled.emit(false)
+
+
+func play_freq() -> void:
+	# play the frequency
+	audio_player.play()
+	playback = audio_player.get_stream_playback()
+	fill_buffer()
+
+
+func stop_freq() -> void:
+	audio_player.stop()
+
+
+func fill_buffer():
+	var phase = 0.0
+	var increment = freq / mix_rate
+	var frames_available = playback.get_frames_available()
+
+	for i in range(frames_available):
+		playback.push_frame(Vector2.ONE * sin(phase * TAU))
+		phase = fmod(phase + increment, 1.0)
