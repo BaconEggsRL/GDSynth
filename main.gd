@@ -100,20 +100,29 @@ func _input(event) -> void:
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 		
-	if event is InputEventKey and event.pressed:
+	if event is InputEventKey:
 		if white_keys.has(event.keycode):
-			print(event.as_text())
+			print("event")
+			# print(event.as_text())
 			var note = piano_qwerty.find_key(event.keycode)
-			print(note)
+			# print(note)
 			var freq = piano_frequencies[note]
-			print(freq)
-			play_freq(freq)
-			note_label.text = note
-			# update piano button toggled
-			for btn:PianoButton in piano_buttons:
-				if btn.name == note:
-					btn.button_pressed = true
-					btn.toggled.emit(true)
+			# print(freq)
+			
+			if event.pressed and pulse_hz != freq:
+				play_freq(freq)
+				note_label.text = note
+				# update piano button toggled
+				for btn:PianoButton in piano_buttons:
+					if btn.name == note:
+						# btn.button_pressed = true
+						btn.toggled.emit(true)
+			else:
+				# update piano button toggled
+				for btn:PianoButton in piano_buttons:
+					if btn.name == note:
+						# btn.button_pressed = true
+						btn.toggled.emit(false)
 					
 			
 		elif black_keys.has(event.keycode):
@@ -122,18 +131,28 @@ func _input(event) -> void:
 			print(note)
 			var freq = piano_frequencies[note]
 			print(freq)
-			play_freq(freq)
-			note_label.text = note
-			# update piano button toggled
-			for btn:PianoButton in piano_buttons:
-				if btn.name == note:
-					btn.button_pressed = true
-					btn.toggled.emit(true)
+			
+			if event.pressed and pulse_hz != freq:
+				play_freq(freq)
+				note_label.text = note
+				# update piano button toggled
+				for btn:PianoButton in piano_buttons:
+					if btn.name == note:
+						# btn.button_pressed = true
+						btn.toggled.emit(true)
+			else:
+				# update piano button toggled
+				for btn:PianoButton in piano_buttons:
+					if btn.name == note:
+						# btn.button_pressed = true
+						btn.toggled.emit(false)
 		
 
 
 
 func _on_piano_key_toggled(toggled_on:bool, btn:PianoButton) -> void:
+	# update button pressed
+	btn.button_pressed = toggled_on
 	
 	if toggled_on:
 		var freq = btn.freq
