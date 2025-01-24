@@ -15,10 +15,13 @@ extends Button
 @export var mix_rate:float = 11025.0
 @export var buffer_length:float = 0.5
 
+var volume_tweener:Tween
 @onready var audio_player:AudioStreamPlayer = self.create_audio_player()
 
 var playback # Will hold the AudioStreamGeneratorPlayback.
 @onready var sample_hz = audio_player.stream.mix_rate
+
+var phase: float = 0.0
 
 
 
@@ -63,7 +66,9 @@ func _ready() -> void:
 	
 	
 func _process(_delta:float) -> void:
-	pass
+	if audio_player.playing:
+		fill_buffer()
+	
 	if is_hovering:
 		if Input.is_action_pressed("click"):
 			if self.button_pressed == false:
@@ -76,7 +81,6 @@ func _process(_delta:float) -> void:
 			print("gui release: %s" % self.note)
 			self.button_pressed = false
 			self.toggled.emit(false)
-	
 
 
 func _on_piano_button_toggled(toggled_on:bool) -> void:
@@ -104,18 +108,47 @@ func _on_mouse_exited() -> void:
 
 
 func play_freq() -> void:
+	
+	var fade_samples = 100
+	var fade_time = fade_samples / mix_rate
+	# var original_volume = audio_player.volume_db
+	
+	if volume_tweener:
+		volume_tweener.kill()
+		volume_tweener = create_tween()
+		volume_tweener.tween_property(audio_player, "volume_db", 0.0, fade_time)
+		
 	# play the frequency
 	audio_player.play()
 	playback = audio_player.get_stream_playback()
 	fill_buffer()
 
 
-func stop_freq() -> void:
-	audio_player.stop()
+func stop_freq(smooth:bool = true) -> void:
+	if not audio_player.playing:
+		return
 
+	var fade_samples = 100
+	var fade_time = fade_samples / mix_rate
+	var original_volume = audio_player.volume_db
+	
+	if smooth:
+		if volume_tweener:
+			volume_tweener.kill()
+		volume_tweener = create_tween()
+		volume_tweener.finished.connect(func():
+			audio_player.stop()
+			audio_player.volume_db = original_volume
+		)
+		volume_tweener.tween_property(audio_player, "volume_db", -80.0, fade_time)
+	else:
+		audio_player.stop()
+		audio_player.volume_db = original_volume
+	
+	
 
 func fill_buffer():
-	var phase = 0.0
+	# var phase = 0.0
 	var increment = freq / mix_rate
 	var frames_available = playback.get_frames_available()
 
