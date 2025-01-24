@@ -27,6 +27,8 @@ var phase: float = 0.0
 var is_hovering:bool = false
 const PIANO_BUTTON_GROUP = "piano_button"
 
+signal piano_button_pressed
+
 
 func create_audio_player() -> AudioStreamPlayer:
 	var player := AudioStreamPlayer.new()
@@ -84,6 +86,7 @@ func _on_piano_button_pressed() -> void:
 	print("down, %s" % self.name)
 	self.button_pressed = true
 	play_freq()
+	piano_button_pressed.emit(self)
 
 func _on_piano_button_up() -> void:
 	print("up, %s" % self.name)

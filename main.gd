@@ -1,7 +1,7 @@
 extends Node
 
 const mix_rate:float = 11025.0
-@export_range (100, mix_rate, 1) var fade_samples = mix_rate
+@export_range (100, mix_rate*2, 1) var fade_samples = mix_rate
 
 
 @export var down:Button
@@ -39,6 +39,13 @@ const PIANO_BUTTON_GROUP = "piano_button"
 var piano_buttons:Array
 
 
+
+func _on_piano_button_pressed(btn:PianoButton) -> void:
+	print("hello")
+	note_label.text = btn.text
+	
+	
+	
 func _ready() -> void:
 	note_label.text = ""
 	
@@ -55,7 +62,6 @@ func _ready() -> void:
 		piano_btn.mix_rate = self.mix_rate
 		piano_btn.fade_samples = self.fade_samples
 		
-		
 		if piano_frequencies.has(note):
 			piano_btn.freq = piano_frequencies[note]
 		
@@ -68,8 +74,8 @@ func _ready() -> void:
 		if piano_btn.freq < 261.62 or piano_btn.freq > 1319:
 			pass
 		else:
-			# connect toggled
-			# piano_btn.toggled.connect(_on_piano_key_toggled.bind(piano_btn))
+			# connect signals
+			piano_btn.piano_button_pressed.connect(_on_piano_button_pressed)
 			
 			# add child
 			if piano_btn.note.contains("#"):
@@ -102,34 +108,43 @@ func _ready() -> void:
 
 
 func _input(_event) -> void:
+	# process quit / restart
 	if Input.is_action_just_pressed("quit"):
 		get_tree().quit()
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
-		
-	#if event is InputEventKey:
-		#if white_keys.has(event.keycode) or black_keys.has(event.keycode):
-			## print(event.as_text())
-			#var note = piano_qwerty.find_key(event.keycode)
-			## print(note)
-			#var freq = piano_frequencies[note]
-			## print(freq)
-			#
-			#if event.pressed and pulse_hz != freq:
-				## play_freq(freq)
-				## note_label.text = note
-				## update piano button toggled
-				#for btn:PianoButton in piano_buttons:
-					#if btn.name == note and btn.button_pressed == false:
-						#btn.button_pressed = true
-						#btn.toggled.emit(true)
-			#else:
-				## update piano button toggled
-				#for btn:PianoButton in piano_buttons:
-					#if btn.name == note and btn.button_pressed == true:
-						#btn.button_pressed = false
-						#btn.toggled.emit(false)
+	
+	# process key events
+	process_event(_event)
 
+
+# process piano key events
+func process_event(event) -> void:
+	if event is InputEventKey:
+		if white_keys.has(event.keycode) or black_keys.has(event.keycode):
+			# print(event.as_text())
+			var note = piano_qwerty.find_key(event.keycode)
+			# print(note)
+			var freq = piano_frequencies[note]
+			# print(freq)
+			
+			if event.pressed and pulse_hz != freq:
+				# play_freq(freq)
+				# note_label.text = note
+				# update piano button toggled
+				for btn:PianoButton in piano_buttons:
+					if btn.name == note and btn.button_pressed == false:
+						# btn.button_pressed = true
+						# btn.toggled.emit(true)
+						btn.pressed.emit()
+			else:
+				# update piano button toggled
+				for btn:PianoButton in piano_buttons:
+					if btn.name == note and btn.button_pressed == true:
+						# btn.button_pressed = false
+						# btn.toggled.emit(false)
+						btn.button_up.emit()
+	
 
 
 # func _on_piano_key_toggled(_toggled_on:bool, _btn:PianoButton) -> void:
