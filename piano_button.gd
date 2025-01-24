@@ -58,6 +58,7 @@ func _ready() -> void:
 	# black keys
 	if is_black:
 		min_y /= 2.0
+		# min_x /= 2.0
 	self.custom_minimum_size = Vector2(min_x, min_y)
 	
 	# signals

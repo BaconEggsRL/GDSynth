@@ -73,6 +73,7 @@ func _ready() -> void:
 	self.play_btn.toggled.connect(_on_play_toggled)
 	if not recording:
 		play_btn.disabled = true
+		save_btn.disabled = true
 	self.save_btn.pressed.connect(_on_save_pressed)
 		
 	
@@ -119,20 +120,24 @@ func _ready() -> void:
 				if piano_btn.note == "C#3":
 					var spacer = Label.new()
 					spacer.custom_minimum_size.x = 64.0 / 2.0
+					spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 					piano_black.add_child(spacer)
 				elif piano_btn.note.contains("F"):
 					# piano_btn.note == "F#3":
 					var spacer = Label.new()
 					spacer.custom_minimum_size.x = 64.0
+					spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 					piano_black.add_child(spacer)
 				elif piano_btn.note.contains("C"):
 					# piano_btn.note == "C#4":
 					var spacer = Label.new()
 					spacer.custom_minimum_size.x = 64.0
+					spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 					piano_black.add_child(spacer)
 					
 				
 				piano_btn.is_black = true
+				# piano_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				piano_black.add_child(piano_btn)
 			else:
 				piano_white.add_child(piano_btn)
@@ -186,9 +191,14 @@ func process_event(event) -> void:
 
 
 func _on_save_pressed():
-	var save_path = save_dir + "test.wav"
-	recording.save_to_wav(save_path)
-	status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
+	if recording:
+		save_btn.disabled = true
+		var save_path = save_dir + "test.wav"
+		recording.save_to_wav(save_path)
+		status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
+		await get_tree().create_timer(1.0).timeout
+		print("WAIWDOIAJSDASDASDASD")
+		save_btn.disabled = false
 	
 	
 	
@@ -218,7 +228,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 		effect.set_recording_active(false)
 		
 		play_btn.disabled = false
-		# $SaveButton.disabled = false
+		save_btn.disabled = false
 		
 		# $RecordButton.text = "Record"
 		# $Status.text = ""
@@ -227,7 +237,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 		effect.set_recording_active(true)
 		
 		play_btn.disabled = true
-		# $SaveButton.disabled = true
+		save_btn.disabled = true
 		
 		# $RecordButton.text = "Stop"
 		# $Status.text = "Recording..."
