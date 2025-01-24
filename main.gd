@@ -1,0 +1,176 @@
+extends Node
+
+
+
+@export var down:Button
+@export var current:Button
+@export var up:Button
+
+@export var piano_container:HBoxContainer
+
+
+
+
+@export var audio_player:AudioStreamPlayer
+
+var playback # Will hold the AudioStreamGeneratorPlayback.
+@onready var sample_hz = audio_player.stream.mix_rate
+var pulse_hz = 440.0 # The frequency of the sound wave.
+
+var white_keys = [KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T, KEY_Y, KEY_U, KEY_I, KEY_O, KEY_P, KEY_Z, KEY_X, KEY_C, KEY_V, KEY_B, KEY_N, KEY_M]
+var black_keys = [KEY_2, KEY_3, KEY_5, KEY_6, KEY_7, KEY_9, KEY_0, KEY_S, KEY_D, KEY_F, KEY_H, KEY_J]
+var note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+
+@onready var piano_frequencies:Dictionary = generate_piano_frequencies()
+@onready var piano_qwerty:Dictionary = generate_piano_qwerty()
+@onready var keys_to_map:Array = piano_qwerty.values()
+
+@onready var keys:Array = piano_frequencies.keys()
+@onready var index:int = 30
+
+
+func _ready() -> void:
+	print(piano_frequencies)
+	print()
+	print(piano_qwerty)
+	
+	
+	for note in keys:
+		var piano_btn:PianoButton = PianoButton.new()
+		# set vars
+		piano_btn.note = note
+		piano_btn.freq = piano_frequencies[note]
+		# connect pressed
+		piano_btn.pressed.connect(_on_piano_key_pressed.bind(piano_btn))
+		# add child
+		piano_container.add_child(piano_btn)
+
+
+func _input(event) -> void:
+	if Input.is_action_just_pressed("quit"):
+		get_tree().quit()
+	if Input.is_action_just_pressed("restart"):
+		get_tree().reload_current_scene()
+		
+	if event is InputEventKey and event.pressed:
+		if white_keys.has(event.keycode):
+			print(event.as_text())
+			var note = piano_qwerty.find_key(event.keycode)
+			print(note)
+			var freq = piano_frequencies[note]
+			print(freq)
+			play_freq(freq)
+			
+		elif black_keys.has(event.keycode):
+			print(event.as_text())
+			var note = piano_qwerty.find_key(event.keycode)
+			print(note)
+			var freq = piano_frequencies[note]
+			print(freq)
+			play_freq(freq)
+		
+
+
+
+func _on_piano_key_pressed(btn:PianoButton) -> void:
+	var freq = btn.freq
+	play_freq(freq)
+
+
+
+# play note and reset index to new note
+func play_note(new_index:int = 0, save:bool = true) -> void:
+	# update index and clamp to keys array size
+	var temp = clamp(new_index, 0, keys.size()-1)
+	# update index
+	if save:
+		index = temp
+	
+	# get note name to play
+	var note = keys[temp]
+	print(note)
+	
+	# get freq to play
+	var freq = piano_frequencies[note]
+	# play frequency
+	play_freq(freq)
+
+
+func play_freq(freq:float = 440.0) -> void:
+	# get frequency to play
+	pulse_hz = freq
+	
+	# play the frequency
+	audio_player.play()
+	playback = audio_player.get_stream_playback()
+	fill_buffer()
+	
+
+
+func fill_buffer():
+	var phase = 0.0
+	var increment = pulse_hz / sample_hz
+	var frames_available = playback.get_frames_available()
+
+	for i in range(frames_available):
+		playback.push_frame(Vector2.ONE * sin(phase * TAU))
+		phase = fmod(phase + increment, 1.0)
+
+
+
+
+func generate_piano_frequencies() -> Dictionary:
+	var frequencies = {}
+	var base_note = 27.5  # Frequency of A0
+
+	var key_number = 1  # Start with A0
+	for octave in range(0, 8):
+		for note in note_names:
+			if octave == 7 and note == "C":
+				frequencies["C8"] = 4186.01
+				break
+
+			frequencies["%s%d" % [note, octave]] = base_note * pow(2, (key_number - 1) / 12.0)
+			key_number += 1
+
+	return frequencies
+
+
+func generate_piano_qwerty() -> Dictionary:
+	var result = {}
+
+	var white_key_index = 0
+	var black_key_index = 0
+
+	for octave in range(0, 8):
+		for note in note_names:
+			var key_name = "%s%d" % [note, octave]
+			
+			if octave < 3:  # Skip notes before C3
+				continue
+			elif octave == 3:
+				if ["A", "A#", "B"].has(note):
+					continue
+			
+			if note.contains("#"):
+				if black_key_index < black_keys.size():
+					result[key_name] = black_keys[black_key_index]
+					black_key_index += 1
+			else:
+				if white_key_index < white_keys.size():
+					result[key_name] = white_keys[white_key_index]
+					white_key_index += 1
+
+	return result
+	
+	
+func _on_down_pressed() -> void:
+	play_note(index - 1, true)
+
+
+func _on_current_pressed() -> void:
+	play_note(index, true)
+
+
+func _on_up_pressed() -> void:
+	play_note(index + 1, true)
