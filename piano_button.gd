@@ -17,9 +17,8 @@ extends Button
 
 var volume_tweener:Tween
 @onready var audio_player:AudioStreamPlayer = self.create_audio_player()
-
-var playback # Will hold the AudioStreamGeneratorPlayback.
-@onready var sample_hz = audio_player.stream.mix_rate
+@onready var playback:AudioStreamPlayback
+@onready var sample_hz:float = audio_player.stream.mix_rate
 
 var phase: float = 0.0
 
