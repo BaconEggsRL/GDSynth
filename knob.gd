@@ -27,9 +27,10 @@ func _process(_delta: float) -> void:
 		var ang := get_global_mouse_position().angle_to_point( knob.global_position ) - PI/2
 		var d :Vector2= (knobPoint.position.rotated( knob.rotation ))
 		var a = middlePoint.position.angle_to(d)
-		var final_ang :float= remap( a, -PI, PI, 0, 100 )
+		var final_ang:float= remap(a, -PI, PI, 0, 100)
 		print(final_ang)
-		var fang :float= lerp_angle( knob.rotation, ang, 0.3  )
+		var fang:float= lerp_angle(knob.rotation, ang, 0.3)
+		print(fang)
 		knob.rotation = clamp(fang, -2, 2)
 		turned.emit(final_ang)
 		

@@ -1,9 +1,14 @@
 extends Node
 
 const mix_rate:float = 11025.0
-const min_fade_samples:float = 100
-const max_fade_samples:float = mix_rate * 4
-@export_range (min_fade_samples, max_fade_samples, 1) var fade_samples = (min_fade_samples + max_fade_samples) / 2
+
+const min_attack_samples:float = 0
+const max_attack_samples:float = mix_rate * 2
+@export_range (min_attack_samples, max_attack_samples, 1) var attack_samples = 0
+
+const min_release_samples:float = 100
+const max_release_samples:float = mix_rate * 4
+@export_range (min_release_samples, max_release_samples, 1) var release_samples = 100
 
 @export var looping_btn:CheckButton
 @export var record_btn:Button
@@ -19,7 +24,7 @@ var effect:AudioEffectRecord
 var recording:AudioStreamWAV
 
 
-
+@export var attack_knob:Knob
 @export var release_knob:Knob
 
 
@@ -81,14 +86,7 @@ func _ready() -> void:
 		play_btn.disabled = true
 		save_btn.disabled = true
 	self.save_btn.pressed.connect(_on_save_pressed)
-		
-	
-	# release knob
-	release_knob.turned.connect(_on_knob_turned.bind("R"))
-	var knob_init = remap(fade_samples, min_fade_samples, max_fade_samples, 18.1690, 81.8309)
-	var fang :float= lerp_angle( release_knob.knob.rotation, knob_init, 0.3  )
-	release_knob.knob.rotation = clamp(fang, -2, 2)
-	release_knob.turned.emit(knob_init)
+
 	
 	
 	note_label.text = ""
@@ -104,7 +102,10 @@ func _ready() -> void:
 		# set vars
 		piano_btn.note = note
 		piano_btn.mix_rate = self.mix_rate
-		piano_btn.fade_samples = self.fade_samples
+		
+		piano_btn.attack_samples = self.attack_samples
+		piano_btn.release_samples = self.release_samples
+		
 		
 		if piano_frequencies.has(note):
 			piano_btn.freq = piano_frequencies[note]
@@ -153,6 +154,33 @@ func _ready() -> void:
 	piano_buttons = get_tree().get_nodes_in_group(PIANO_BUTTON_GROUP)
 	print("piano_buttons")
 	print(piano_buttons)
+	
+	# turn knobs
+	# attack knob
+	# set initial rotation of knob
+	var attack_init = remap(attack_samples, min_attack_samples, max_attack_samples, 18.1690, 81.8309)
+	print("attack_init = %s" % attack_init)
+	var attack_fang:float = lerp_angle(attack_knob.knob.rotation, attack_init, 0.3)
+	print("attack_fang = %s" % attack_fang)
+	attack_knob.knob.rotation = remap(attack_samples, min_attack_samples, max_attack_samples, -2, 2)
+	print("attack_rot = %s" % attack_knob.knob.rotation)
+	# signal to update btns
+	attack_knob.turned.connect(_on_knob_turned.bind("A"))
+	attack_knob.turned.emit(attack_init)
+	
+	
+	# release knob
+	# set initial rotation of knob
+	var release_init = remap(release_samples, min_release_samples, max_release_samples, 18.1690, 81.8309)
+	print("release_init = %s" % release_init)
+	var release_fang:float = lerp_angle(release_knob.knob.rotation, release_init, 0.3)
+	print("release_fang = %s" % release_fang)
+	release_knob.knob.rotation = remap(release_samples, min_release_samples, max_release_samples, -2, 2)
+	print("release_rot = %s" % release_knob.knob.rotation)
+	# signal to update btns
+	release_knob.turned.connect(_on_knob_turned.bind("R"))
+	release_knob.turned.emit(release_init)
+	
 
 
 func _input(_event) -> void:
@@ -203,9 +231,7 @@ func _on_looping_toggled(_toggled_on: bool) -> void:
 	else:
 		self.loop_mode = AudioStreamWAV.LOOP_DISABLED
 		print("set loop disabled")
-		if audio_player.finished.is_connected(_on_loop):
-			audio_player.finished.disconnect(_on_loop)
-		audio_player.finished.connect(_on_finished, CONNECT_ONE_SHOT)
+	_apply_loop_mode()
 
 
 
@@ -240,31 +266,52 @@ func _on_play_toggled(_toggled_on: bool) -> void:
 		# disable playback until complete
 		play_btn.disabled = true
 		
-		# no looping
-		if self.loop_mode == AudioStreamWAV.LOOP_DISABLED:
-			if audio_player.finished.is_connected(_on_loop):
-				audio_player.finished.disconnect(_on_loop)
-			audio_player.finished.connect(_on_finished, CONNECT_ONE_SHOT)
-		
-		# looping
-		if self.loop_mode == AudioStreamWAV.LOOP_FORWARD:
-			audio_player.finished.connect(_on_loop, CONNECT_PERSIST)
+		# apply loop mode
+		_apply_loop_mode()
 		
 		# play
 		audio_player.play()
 
 	
 
+func _apply_loop_mode() -> void:
+	# no looping
+	if self.loop_mode == AudioStreamWAV.LOOP_DISABLED:
+		if audio_player.finished.is_connected(_on_loop):
+			audio_player.finished.disconnect(_on_loop)
+		audio_player.finished.connect(_on_finished, CONNECT_ONE_SHOT)
+	
+	# looping
+	if self.loop_mode == AudioStreamWAV.LOOP_FORWARD:
+		if audio_player.finished.is_connected(_on_loop):
+			audio_player.finished.disconnect(_on_loop)
+		audio_player.finished.connect(_on_loop, CONNECT_PERSIST)
+			
+			
 func _on_finished() -> void:
 	print("done") 
 	play_btn.disabled = false
 	
 func _on_loop() -> void:
 	print("loop")
+	#audio_player.volume_db = -20  # Fade out to reduce pop noise
+	#audio_player.seek(0.0)  # Reset to the start without stopping
+	#await get_tree().create_timer(0.05).timeout  # Small delay
+	#audio_player.volume_db = 0  # Restore volume
 	# await get_tree().process_frame
 	audio_player.play()
+	var test = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix()
+	print("test = %s" % test)
 	
-	
+
+#func _process(_delta: float) -> void:
+	#if audio_player.playing and self.loop_mode == AudioStreamWAV.LOOP_FORWARD:
+		#var len = audio_player.stream.get_length()
+		#var play_pos = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix()
+		#print("play_pos = %s" % play_pos)
+		#print("len = %s" % len)
+
+
 	
 func _on_record_toggled(_toggled_on: bool) -> void:
 	if effect.is_recording_active():
@@ -299,22 +346,24 @@ func _on_piano_button_pressed(btn:PianoButton) -> void:
 func _on_knob_turned(deg:float, type:String="") -> void:
 	match type:
 		"A":
-			pass
+			var clamped_deg = clamp(deg, 18.1690, 81.8309)
+			var value = remap(clamped_deg, 18.1690, 81.8309, min_attack_samples, max_attack_samples)
+			print("A knob: %s" % value)
+			self.attack_samples = value
+			for btn:PianoButton in piano_buttons:
+				btn.attack_samples = self.attack_samples
+				
 		"S":
 			pass
 		"D":
 			pass
 		"R":
-			# min_fade_samples
-			# max_fade_samples
-			# fade_samples
-			# release_knob.rotation_degrees = deg
 			var clamped_deg = clamp(deg, 18.1690, 81.8309)
-			var value = remap(clamped_deg, 18.1690, 81.8309, min_fade_samples, max_fade_samples)
-			print(value)
-			self.fade_samples = value
+			var value = remap(clamped_deg, 18.1690, 81.8309, min_release_samples, max_release_samples)
+			print("R knob: %s" % value)
+			self.release_samples = value
 			for btn:PianoButton in piano_buttons:
-				btn.fade_samples = self.fade_samples
+				btn.release_samples = self.release_samples
 			
 			pass
 		_:

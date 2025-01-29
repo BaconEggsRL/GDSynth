@@ -13,7 +13,8 @@ extends Button
 
 
 var mix_rate:float = 11025.0
-var fade_samples = mix_rate
+var release_samples = mix_rate
+var attack_samples = mix_rate
 @export var buffer_length:float = 0.5
 
 var volume_tweener:Tween
@@ -110,8 +111,22 @@ func play_freq() -> void:
 	# play the frequency
 	if volume_tweener:
 		volume_tweener.kill()
-	audio_player.volume_db = 0.0
+	
+	# attack
+	audio_player.volume_db = -80.0
+	var attack_time = attack_samples / mix_rate
+	print("attack_time = %s" % attack_time)
+	
+	volume_tweener = create_tween()
+	volume_tweener.finished.connect(func():
+		pass
+	)
+	volume_tweener.tween_property(audio_player, "volume_db", 0.0, attack_time)
+	
+	# audio_player.volume_db = 0.0
 	audio_player.play()
+	
+	
 	playback = audio_player.get_stream_playback()
 	fill_buffer()
 
@@ -120,7 +135,7 @@ func stop_freq(smooth:bool = true) -> void:
 	if not audio_player.playing:
 		return
 
-	var fade_time = fade_samples / mix_rate
+	var release_time = release_samples / mix_rate
 	
 	if smooth:
 		if volume_tweener:
@@ -130,7 +145,7 @@ func stop_freq(smooth:bool = true) -> void:
 			audio_player.stop()
 			pass
 		)
-		volume_tweener.tween_property(audio_player, "volume_db", -80.0, fade_time)
+		volume_tweener.tween_property(audio_player, "volume_db", -80.0, release_time)
 	else:
 		audio_player.stop()
 		pass

@@ -22,13 +22,14 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "save_btn", "status", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "save_btn", "status", "attack_knob", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
 script = ExtResource("1_ig7tw")
 looping_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/looping")
 record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/record")
 play_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/play")
 save_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/save")
 status = NodePath("Control/VBoxContainer/Status")
+attack_knob = NodePath("Control/attack_knob")
 release_knob = NodePath("Control/release_knob")
 down = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/down")
 current = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/current")
@@ -217,6 +218,17 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "` to restart
 ESC to Quit"
+horizontal_alignment = 1
+
+[node name="attack_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+position = Vector2(76, 117)
+
+[node name="AttackLabel" type="Label" parent="Control/attack_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Attack"
 horizontal_alignment = 1
 
 [node name="release_knob" parent="Control" instance=ExtResource("2_0xm2m")]
