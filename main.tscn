@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=7 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
+[ext_resource type="AudioStream" uid="uid://c7roa7rvhw3uk" path="res://test.wav" id="2_h2yge"]
 
 [sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_ig7tw"]
 polyphony = 128
@@ -21,8 +22,9 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("record_btn", "play_btn", "save_btn", "status", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "save_btn", "status", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
 script = ExtResource("1_ig7tw")
+looping_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/looping")
 record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/record")
 play_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/play")
 save_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/save")
@@ -37,11 +39,15 @@ note_label = NodePath("Control/VBoxContainer/StatsPanel/MarginContainer/VBoxCont
 polyphonic_player = NodePath("PolyphonicPlayer")
 audio_player = NodePath("AudioStreamPlayer")
 
+[node name="Test" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_h2yge")
+
 [node name="PolyphonicPlayer" type="AudioStreamPlayer" parent="."]
 stream = SubResource("AudioStreamPolyphonic_ig7tw")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = SubResource("AudioStreamGenerator_ig7tw")
+max_polyphony = 128
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -132,6 +138,11 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
+
+[node name="looping" type="CheckButton" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
+layout_mode = 2
+focus_mode = 0
+text = "Looping?"
 
 [node name="record" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
 layout_mode = 2

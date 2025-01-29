@@ -1,3 +1,10 @@
+Add a loop button to loop recorded tracks.
+Add multiple record track slots.
+Add A/S/D/R functions.
+Add A/S/D/R presets.
+Fix weird buzzing on multiple frequencies (phase issue?)
+
+
 Todo:
 
 # Add mouse drag / hover events for on-screen buttons
@@ -21,3 +28,13 @@ send note to polyphonic player?
 18.
 81.
 
+
+
+Hey there -- I was thoroughly amused by this video, and used it as inspiration for a game that I made:
+
+The game is called "Cyfraith Cath: Medieval Purrsuits".
+The goal: Become the richest cat merchant in Medieval Wales.
+https://baconeggsrl.itch.io/cyfraith-cath-medieval-purrsuits
+
+(I used some of the arts in this video, hopefully tis OK since the description says they are public domain.)
+I had a lot of fun making it, please enjoy. Thanks!

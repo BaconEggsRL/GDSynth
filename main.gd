@@ -5,6 +5,7 @@ const min_fade_samples:float = 100
 const max_fade_samples:float = mix_rate * 4
 @export_range (min_fade_samples, max_fade_samples, 1) var fade_samples = (min_fade_samples + max_fade_samples) / 2
 
+@export var looping_btn:CheckButton
 @export var record_btn:Button
 @export var play_btn:Button
 
@@ -37,6 +38,7 @@ var recording:AudioStreamWAV
 @export var polyphonic_player:AudioStreamPlayer
 @export var audio_player:AudioStreamPlayer
 
+var loop_mode:AudioStreamWAV.LoopMode = AudioStreamWAV.LOOP_DISABLED
 var playback # Will hold the AudioStreamGeneratorPlayback.
 @onready var sample_hz = audio_player.stream.mix_rate
 var pulse_hz = -1.0 # The frequency of the sound wave.
@@ -68,9 +70,13 @@ func _ready() -> void:
 	# And use it to retrieve its first effect, which has been defined
 	# as an "AudioEffectRecord" resource.
 	effect = AudioServer.get_bus_effect(idx, 0)
+	
+	# connect signals
+	self.looping_btn.toggled.connect(_on_looping_toggled)
 	record_btn.text = record_test
 	self.record_btn.toggled.connect(_on_record_toggled)
 	self.play_btn.toggled.connect(_on_play_toggled)
+	# enable / disable
 	if not recording:
 		play_btn.disabled = true
 		save_btn.disabled = true
@@ -190,7 +196,20 @@ func process_event(event) -> void:
 
 
 
-func _on_save_pressed():
+func _on_looping_toggled(_toggled_on: bool) -> void:
+	if _toggled_on:
+		self.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		print("set loop enabled")
+	else:
+		self.loop_mode = AudioStreamWAV.LOOP_DISABLED
+		print("set loop disabled")
+		if audio_player.finished.is_connected(_on_loop):
+			audio_player.finished.disconnect(_on_loop)
+		audio_player.finished.connect(_on_finished, CONNECT_ONE_SHOT)
+
+
+
+func _on_save_pressed() -> void:
 	if recording:
 		save_btn.disabled = true
 		var save_path = save_dir + "test.wav"
@@ -204,25 +223,53 @@ func _on_save_pressed():
 	
 func _on_play_toggled(_toggled_on: bool) -> void:
 	if recording:
-		play_btn.disabled = true
 		
-		print(recording)
-		print(recording.format)
-		print(recording.mix_rate)
-		print(recording.stereo)
-		var data = recording.get_data()
-		print(data.size())
+
+		print("recording: %s" % recording)
+		print("recording.format: %s" % recording.format)
+		print("recording.mix_rate: %s" % recording.mix_rate)
+		print("recording.stereo: %s" % recording.stereo)
+		var _data = recording.get_data()
+		print("data.size(): %s" % _data.size())
+		
+		# set stream
 		audio_player.stream = recording
 		
-		audio_player.finished.connect((func(): play_btn.disabled = false), CONNECT_ONE_SHOT)
-		audio_player.play()
+		# enable/disable btn
+		# if recording.loop_mode == AudioStreamWAV.LOOP_DISABLED:
+		# disable playback until complete
+		play_btn.disabled = true
 		
-		pass
+		# no looping
+		if self.loop_mode == AudioStreamWAV.LOOP_DISABLED:
+			if audio_player.finished.is_connected(_on_loop):
+				audio_player.finished.disconnect(_on_loop)
+			audio_player.finished.connect(_on_finished, CONNECT_ONE_SHOT)
+		
+		# looping
+		if self.loop_mode == AudioStreamWAV.LOOP_FORWARD:
+			audio_player.finished.connect(_on_loop, CONNECT_PERSIST)
+		
+		# play
+		audio_player.play()
+
+	
+
+func _on_finished() -> void:
+	print("done") 
+	play_btn.disabled = false
+	
+func _on_loop() -> void:
+	print("loop")
+	# await get_tree().process_frame
+	audio_player.play()
 	
 	
 	
 func _on_record_toggled(_toggled_on: bool) -> void:
 	if effect.is_recording_active():
+		# stop recording
+		
 		record_btn.text = record_test
 		recording = effect.get_recording()
 		effect.set_recording_active(false)
@@ -233,6 +280,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 		# $RecordButton.text = "Record"
 		# $Status.text = ""
 	else:
+		# start recording
 		record_btn.text = stop_text
 		effect.set_recording_active(true)
 		
