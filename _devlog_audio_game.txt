@@ -7,6 +7,10 @@ Fix weird buzzing on multiple frequencies (phase issue?)
 
 Looping still kind of weird
 0 decay sounds really cool with sus -10
+add text to show current value of knobs
+and text edit fields to enter your own values
+make it time based instead of samples
+save knob presets
 
 
 Todo:
