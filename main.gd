@@ -18,9 +18,9 @@ const min_peak_db:float = -80.0
 const max_peak_db:float = 0.0
 @export_range (min_peak_db, max_peak_db, 1) var peak_db = 0.0
 
-const min_sus_db:float = -80.0
+const min_sus_db:float = -40.0
 const max_sus_db:float = 0.0
-@export_range (min_sus_db, max_sus_db, 1) var sus_db = -10.0
+@export_range (min_sus_db, max_sus_db, 1) var sus_db = peak_db
 
 
 
@@ -39,6 +39,7 @@ var recording:AudioStreamWAV
 
 
 # KNOBS!
+@export var peak_knob:Knob
 @export var attack_knob:Knob
 @export var decay_knob:Knob
 @export var sus_knob:Knob
@@ -177,6 +178,19 @@ func _ready() -> void:
 	
 	# turn knobs
 	
+	# peak db knob
+	# set initial rotation of knob
+	var peak_init = remap(peak_db, min_peak_db, max_peak_db, 18.1690, 81.8309)
+	print("peak_init = %s" % peak_init)
+	var peak_fang:float = lerp_angle(peak_knob.knob.rotation, peak_init, 0.3)
+	print("peak_fang = %s" % peak_fang)
+	peak_knob.knob.rotation = remap(peak_db, min_peak_db, max_peak_db, -2, 2)
+	print("peak_rot = %s" % peak_knob.knob.rotation)
+	# signal to update btns
+	peak_knob.turned.connect(_on_knob_turned.bind("P"))
+	peak_knob.turned.emit(peak_init)
+	
+	
 	# attack knob
 	# set initial rotation of knob
 	var attack_init = remap(attack_samples, min_attack_samples, max_attack_samples, 18.1690, 81.8309)
@@ -203,15 +217,15 @@ func _ready() -> void:
 	
 	# sus knob
 	# set initial rotation of knob
-	#var attack_init = remap(attack_samples, min_attack_samples, max_attack_samples, 18.1690, 81.8309)
-	#print("attack_init = %s" % attack_init)
-	#var attack_fang:float = lerp_angle(attack_knob.knob.rotation, attack_init, 0.3)
-	#print("attack_fang = %s" % attack_fang)
-	#attack_knob.knob.rotation = remap(attack_samples, min_attack_samples, max_attack_samples, -2, 2)
-	#print("attack_rot = %s" % attack_knob.knob.rotation)
-	## signal to update btns
-	#attack_knob.turned.connect(_on_knob_turned.bind("A"))
-	#attack_knob.turned.emit(attack_init)
+	var sus_init = remap(sus_db, min_sus_db, max_sus_db, 18.1690, 81.8309)
+	print("sus_init = %s" % sus_init)
+	var sus_fang:float = lerp_angle(sus_knob.knob.rotation, sus_init, 0.3)
+	print("sus_fang = %s" % sus_fang)
+	sus_knob.knob.rotation = remap(sus_db, min_sus_db, max_sus_db, -2, 2)
+	print("sus_rot = %s" % sus_knob.knob.rotation)
+	# signal to update btns
+	sus_knob.turned.connect(_on_knob_turned.bind("S"))
+	sus_knob.turned.emit(sus_init)
 	
 	# release knob
 	# set initial rotation of knob
@@ -389,6 +403,14 @@ func _on_piano_button_pressed(btn:PianoButton) -> void:
 	
 func _on_knob_turned(deg:float, type:String="") -> void:
 	match type:
+		"P":
+			var clamped_deg = clamp(deg, 18.1690, 81.8309)
+			var value = remap(clamped_deg, 18.1690, 81.8309, min_peak_db, max_peak_db)
+			print("P knob: %s" % value)
+			self.peak_db = value
+			for btn:PianoButton in piano_buttons:
+				btn.peak_db = self.peak_db
+			
 		"A":
 			var clamped_deg = clamp(deg, 18.1690, 81.8309)
 			var value = remap(clamped_deg, 18.1690, 81.8309, min_attack_samples, max_attack_samples)
@@ -407,7 +429,13 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 				btn.decay_samples = self.decay_samples
 		
 		"S":
-			pass
+			var clamped_deg = clamp(deg, 18.1690, 81.8309)
+			var value = remap(clamped_deg, 18.1690, 81.8309, min_sus_db, max_sus_db)
+			print("S knob: %s" % value)
+			self.sus_db = value
+			for btn:PianoButton in piano_buttons:
+				btn.sus_db = self.sus_db
+				
 				
 		"R":
 			var clamped_deg = clamp(deg, 18.1690, 81.8309)
