@@ -10,6 +10,20 @@ const min_release_samples:float = 100
 const max_release_samples:float = mix_rate * 4
 @export_range (min_release_samples, max_release_samples, 1) var release_samples = 100
 
+const min_decay_samples:float = 0
+const max_decay_samples:float = mix_rate * 2
+@export_range (min_decay_samples, max_decay_samples, 1) var decay_samples = 0
+
+const min_peak_db:float = -80.0
+const max_peak_db:float = 0.0
+@export_range (min_peak_db, max_peak_db, 1) var peak_db = 0.0
+
+const min_sus_db:float = -80.0
+const max_sus_db:float = 0.0
+@export_range (min_sus_db, max_sus_db, 1) var sus_db = -10.0
+
+
+
 @export var looping_btn:CheckButton
 @export var record_btn:Button
 @export var play_btn:Button
@@ -105,6 +119,9 @@ func _ready() -> void:
 		
 		piano_btn.attack_samples = self.attack_samples
 		piano_btn.release_samples = self.release_samples
+		piano_btn.peak_db = self.peak_db
+		piano_btn.sus_db = self.sus_db
+		piano_btn.decay_samples = self.decay_samples
 		
 		
 		if piano_frequencies.has(note):

@@ -1,6 +1,14 @@
 class_name PianoButton
 extends Button
 
+# attack max amplitude
+var peak_db = 0.0
+# decay time
+var decay_samples:float = 0.0
+# sustain amplitude
+var sus_db = -10.0
+
+
 @export var qwerty_key:String = "Y"
 
 @export var note:String = "A4"
@@ -107,8 +115,9 @@ func _on_mouse_exited() -> void:
 		button_up.emit()
 
 
+# play the frequency
 func play_freq() -> void:
-	# play the frequency
+	# reset tweener
 	if volume_tweener:
 		volume_tweener.kill()
 	
@@ -119,9 +128,9 @@ func play_freq() -> void:
 	
 	volume_tweener = create_tween()
 	volume_tweener.finished.connect(func():
-		pass
+		decay_sustain()
 	)
-	volume_tweener.tween_property(audio_player, "volume_db", 0.0, attack_time)
+	volume_tweener.tween_property(audio_player, "volume_db", peak_db, attack_time)
 	
 	# audio_player.volume_db = 0.0
 	audio_player.play()
@@ -131,10 +140,23 @@ func play_freq() -> void:
 	fill_buffer()
 
 
+func decay_sustain() -> void:
+	print("decay")
+	var decay_time = decay_samples / mix_rate
+	if volume_tweener:
+		volume_tweener.kill()
+	volume_tweener = create_tween()
+	volume_tweener.finished.connect(func():
+		print("sustain")
+	)
+	volume_tweener.tween_property(audio_player, "volume_db", sus_db, decay_time)
+
+
 func stop_freq(smooth:bool = true) -> void:
 	if not audio_player.playing:
 		return
 
+	# release
 	var release_time = release_samples / mix_rate
 	
 	if smooth:

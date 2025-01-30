@@ -5,6 +5,10 @@ Add A/S/D/R presets.
 Fix weird buzzing on multiple frequencies (phase issue?)
 
 
+Looping still kind of weird
+0 decay sounds really cool with sus -10
+
+
 Todo:
 
 # Add mouse drag / hover events for on-screen buttons
