@@ -11,7 +11,7 @@ const max_release_samples:float = mix_rate * 4
 @export_range (min_release_samples, max_release_samples, 1) var release_samples = 100
 
 const min_decay_samples:float = 0
-const max_decay_samples:float = mix_rate * 2
+const max_decay_samples:float = mix_rate * 4
 @export_range (min_decay_samples, max_decay_samples, 1) var decay_samples = 0
 
 const min_peak_db:float = -80.0
@@ -38,7 +38,10 @@ var effect:AudioEffectRecord
 var recording:AudioStreamWAV
 
 
+# KNOBS!
 @export var attack_knob:Knob
+@export var decay_knob:Knob
+@export var sus_knob:Knob
 @export var release_knob:Knob
 
 
@@ -173,6 +176,7 @@ func _ready() -> void:
 	print(piano_buttons)
 	
 	# turn knobs
+	
 	# attack knob
 	# set initial rotation of knob
 	var attack_init = remap(attack_samples, min_attack_samples, max_attack_samples, 18.1690, 81.8309)
@@ -185,6 +189,29 @@ func _ready() -> void:
 	attack_knob.turned.connect(_on_knob_turned.bind("A"))
 	attack_knob.turned.emit(attack_init)
 	
+	# decay knob
+	# set initial rotation of knob
+	var decay_init = remap(decay_samples, min_decay_samples, max_decay_samples, 18.1690, 81.8309)
+	print("decay_init = %s" % decay_init)
+	var decay_fang:float = lerp_angle(decay_knob.knob.rotation, decay_init, 0.3)
+	print("decay_fang = %s" % decay_fang)
+	decay_knob.knob.rotation = remap(decay_samples, min_decay_samples, max_decay_samples, -2, 2)
+	print("decay_rot = %s" % decay_knob.knob.rotation)
+	# signal to update btns
+	decay_knob.turned.connect(_on_knob_turned.bind("D"))
+	decay_knob.turned.emit(decay_init)
+	
+	# sus knob
+	# set initial rotation of knob
+	#var attack_init = remap(attack_samples, min_attack_samples, max_attack_samples, 18.1690, 81.8309)
+	#print("attack_init = %s" % attack_init)
+	#var attack_fang:float = lerp_angle(attack_knob.knob.rotation, attack_init, 0.3)
+	#print("attack_fang = %s" % attack_fang)
+	#attack_knob.knob.rotation = remap(attack_samples, min_attack_samples, max_attack_samples, -2, 2)
+	#print("attack_rot = %s" % attack_knob.knob.rotation)
+	## signal to update btns
+	#attack_knob.turned.connect(_on_knob_turned.bind("A"))
+	#attack_knob.turned.emit(attack_init)
 	
 	# release knob
 	# set initial rotation of knob
@@ -370,10 +397,18 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 			for btn:PianoButton in piano_buttons:
 				btn.attack_samples = self.attack_samples
 				
+		
+		"D":
+			var clamped_deg = clamp(deg, 18.1690, 81.8309)
+			var value = remap(clamped_deg, 18.1690, 81.8309, min_decay_samples, max_decay_samples)
+			print("D knob: %s" % value)
+			self.decay_samples = value
+			for btn:PianoButton in piano_buttons:
+				btn.decay_samples = self.decay_samples
+		
 		"S":
 			pass
-		"D":
-			pass
+				
 		"R":
 			var clamped_deg = clamp(deg, 18.1690, 81.8309)
 			var value = remap(clamped_deg, 18.1690, 81.8309, min_release_samples, max_release_samples)

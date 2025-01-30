@@ -22,14 +22,17 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "save_btn", "status", "attack_knob", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "save_btn", "status", "attack_knob", "decay_knob", "sus_knob", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
 script = ExtResource("1_ig7tw")
+sus_db = -20.0
 looping_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/looping")
 record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/record")
 play_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/play")
 save_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/save")
 status = NodePath("Control/VBoxContainer/Status")
 attack_knob = NodePath("Control/attack_knob")
+decay_knob = NodePath("Control/decay_knob")
+sus_knob = NodePath("Control/sustain_knob")
 release_knob = NodePath("Control/release_knob")
 down = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/down")
 current = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/current")
@@ -57,6 +60,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_lock_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control"]
 layout_mode = 1
@@ -230,6 +234,30 @@ offset_right = 43.0
 offset_bottom = 57.0
 text = "Attack"
 horizontal_alignment = 1
+
+[node name="decay_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+position = Vector2(76, 260)
+
+[node name="DecayLabel" type="Label" parent="Control/decay_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Decay"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="sustain_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+position = Vector2(217, 263)
+
+[node name="SustainLabel" type="Label" parent="Control/sustain_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Sustain"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="release_knob" parent="Control" instance=ExtResource("2_0xm2m")]
 position = Vector2(215, 116)
