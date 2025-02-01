@@ -1,5 +1,6 @@
 GDSynth:
-Real-time audio generator demo using Godot 4.4
+Real-time audio synthesis using Godot 4.4
+
 
 
 =====================================================
