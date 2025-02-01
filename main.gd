@@ -30,7 +30,7 @@ const max_sus_db:float = 0.0
 @export var stop_btn:Button
 
 @export var save_btn:Button
-@export var status:Label
+@export var save_status:Label
 var save_dir:String = "user://"
 
 var record_test = "Record"
@@ -301,7 +301,7 @@ func _on_save_pressed() -> void:
 		save_btn.disabled = true
 		var save_path = save_dir + "test.wav"
 		recording.save_to_wav(save_path)
-		status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
+		save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
 		await get_tree().create_timer(1.0).timeout
 		print("WAIWDOIAJSDASDASDASD")
 		save_btn.disabled = false

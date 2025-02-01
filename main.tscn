@@ -22,14 +22,14 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "status", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "polyphonic_player", "audio_player")]
 script = ExtResource("1_ig7tw")
 looping_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/looping")
 record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/record")
 play_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/play")
 stop_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/stop")
 save_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/save")
-status = NodePath("Control/VBoxContainer/Status")
+save_status = NodePath("Control/VBoxContainer/SaveStatus")
 peak_knob = NodePath("Knobs/peak_knob")
 attack_knob = NodePath("Knobs/attack_knob")
 decay_knob = NodePath("Knobs/decay_knob")
@@ -72,11 +72,18 @@ offset_right = 20.0
 offset_bottom = 40.0
 grow_horizontal = 2
 
-[node name="Status" type="Label" parent="Control/VBoxContainer"]
+[node name="VersionInfo" type="Label" parent="Control/VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0.294118)
+layout_mode = 2
+text = "GDSynth
+Version: 0.01"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SaveStatus" type="Label" parent="Control/VBoxContainer"]
 custom_minimum_size = Vector2(32, 50)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Click on the piano keys to play a tune"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -226,9 +233,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -43.5
+offset_left = -143.5
 offset_top = -49.0
-offset_right = 43.5
+offset_right = 143.5
 grow_horizontal = 2
 grow_vertical = 0
 text = "` to restart
@@ -236,6 +243,7 @@ ESC to Quit"
 horizontal_alignment = 1
 
 [node name="Knobs" type="Node2D" parent="."]
+position = Vector2(0, 56.025)
 
 [node name="peak_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
 position = Vector2(228, 127)
