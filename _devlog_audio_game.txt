@@ -2,35 +2,42 @@ GDSynth:
 Real-time audio generator demo using Godot 4.4
 
 
-
-Add multiple record track slots.
-
-Add A/S/D/R presets.
-0 decay sounds really cool with sus -10
-
-Add text to show current value of knobs (in ms?)
-
-And text edit fields to enter your own values
-make it time based instead of samples
-save knob presets
+=====================================================
 
 
 Todo:
+
+Save multiple (named) A/S/D/R knob presets
+0 decay sounds really cool with sus -10
+
+Add multiple record/loop track slots.
+
+
+
+=====================================================
+
+
+Stretch:
+Add text to show current value of knobs (in ms?)
+And text edit fields to enter your own values
 Add an option to allow press white keys in black key area (disable mouse filter)
 
 
 
-
+=====================================================
 
 Bugs:
 Looping still kind of weird
 Fix weird buzzing on multiple frequencies (phase issue?)
+--might just be audio clipping due to being too loud when layering multiple notes
 
 17 white notes
 12 black notes
 = 17 + 12 = 29 polyphony (32 will work)
 send note to polyphonic player for phase matching?
 
+
+=====================================================
 
 Changelog:
 # Add A/S/D/R functions.

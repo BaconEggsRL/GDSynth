@@ -16,9 +16,9 @@ const max_decay_samples:float = mix_rate * 4
 
 const min_peak_db:float = -80.0
 const max_peak_db:float = 0.0
-@export_range (min_peak_db, max_peak_db, 1) var peak_db = 0.0
+@export_range (min_peak_db, max_peak_db, 1) var peak_db = -20.0
 
-const min_sus_db:float = -40.0
+const min_sus_db:float = -80.0
 const max_sus_db:float = 0.0
 @export_range (min_sus_db, max_sus_db, 1) var sus_db = peak_db
 
@@ -27,6 +27,7 @@ const max_sus_db:float = 0.0
 @export var looping_btn:CheckButton
 @export var record_btn:Button
 @export var play_btn:Button
+@export var stop_btn:Button
 
 @export var save_btn:Button
 @export var status:Label
@@ -99,10 +100,12 @@ func _ready() -> void:
 	record_btn.text = record_test
 	self.record_btn.toggled.connect(_on_record_toggled)
 	self.play_btn.toggled.connect(_on_play_toggled)
+	self.stop_btn.toggled.connect(_on_stop_toggled)
 	# enable / disable
 	if not recording:
 		play_btn.disabled = true
 		save_btn.disabled = true
+		stop_btn.disabled = true
 	self.save_btn.pressed.connect(_on_save_pressed)
 
 	
@@ -304,10 +307,23 @@ func _on_save_pressed() -> void:
 		save_btn.disabled = false
 	
 	
+
+
+func _on_stop_toggled(_toggled_on: bool) -> void:
+	print("stop")
+	# stop_btn.button_pressed = false
+	stop_btn.disabled = true
 	
+	audio_player.stop()
+	
+	# play_btn.button_pressed = false
+	play_btn.disabled = false
+	
+	
+
+
 func _on_play_toggled(_toggled_on: bool) -> void:
 	if recording:
-		
 
 		print("recording: %s" % recording)
 		print("recording.format: %s" % recording.format)
@@ -323,6 +339,7 @@ func _on_play_toggled(_toggled_on: bool) -> void:
 		# if recording.loop_mode == AudioStreamWAV.LOOP_DISABLED:
 		# disable playback until complete
 		play_btn.disabled = true
+		stop_btn.disabled = false
 		
 		# apply loop mode
 		_apply_loop_mode()
@@ -337,6 +354,8 @@ func _apply_loop_mode() -> void:
 	if self.loop_mode == AudioStreamWAV.LOOP_DISABLED:
 		if audio_player.finished.is_connected(_on_loop):
 			audio_player.finished.disconnect(_on_loop)
+		if audio_player.finished.is_connected(_on_finished):
+			audio_player.finished.disconnect(_on_finished)
 		audio_player.finished.connect(_on_finished, CONNECT_ONE_SHOT)
 	
 	# looping
@@ -348,7 +367,10 @@ func _apply_loop_mode() -> void:
 			
 func _on_finished() -> void:
 	print("done") 
+	# play_btn.button_pressed = false
+	# stop_btn.button_pressed = false
 	play_btn.disabled = false
+	stop_btn.disabled = true
 	
 func _on_loop() -> void:
 	print("loop")
@@ -381,6 +403,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 		
 		play_btn.disabled = false
 		save_btn.disabled = false
+		# stop_btn.disabled = true
 		
 		# $RecordButton.text = "Record"
 		# $Status.text = ""
@@ -391,6 +414,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 		
 		play_btn.disabled = true
 		save_btn.disabled = true
+		# stop_btn.disabled = false
 		
 		# $RecordButton.text = "Stop"
 		# $Status.text = "Recording..."
@@ -508,13 +532,28 @@ func stop_freq() -> void:
 
 
 func fill_buffer():
-	var phase = 0.0
+	var phase:float = 0.0
 	var increment = pulse_hz / sample_hz
 	var frames_available = playback.get_frames_available()
 
 	for i in range(frames_available):
-		playback.push_frame(Vector2.ONE * sin(phase * TAU))
+		var waveform:float
+		
+		# sine waveform
+		var _sin = sin(phase * TAU)
+		
+		# sawtooth waveform
+		var _sawtooth = 2.0 * phase - 1.0  # Convert phase [0,1] to sawtooth [-1,1]
+
+		# choose waveform
+		waveform = _sin
+		# waveform = _sawtooth
+		
+		# push waveform and update phase
+		playback.push_frame(Vector2.ONE * waveform)
 		phase = fmod(phase + increment, 1.0)
+		
+
 
 
 
