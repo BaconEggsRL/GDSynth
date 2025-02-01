@@ -45,6 +45,8 @@ func create_audio_player() -> AudioStreamPlayer:
 	stream.mix_rate = mix_rate
 	stream.buffer_length = buffer_length
 	player.stream = stream
+	player.playback_type = AudioServer.PLAYBACK_TYPE_STREAM  # required for web build
+	
 	self.add_child(player)
 	return player
 

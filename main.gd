@@ -33,7 +33,7 @@ const max_sus_db:float = 0.0
 @export var save_status:Label
 var save_dir:String = "user://"
 
-var record_test = "Record"
+var record_text = "Record"
 var stop_text = "Stop"
 var effect:AudioEffectRecord
 var recording:AudioStreamWAV
@@ -59,7 +59,6 @@ var recording:AudioStreamWAV
 
 
 
-@export var polyphonic_player:AudioStreamPlayer
 @export var audio_player:AudioStreamPlayer
 
 var loop_mode:AudioStreamWAV.LoopMode = AudioStreamWAV.LOOP_DISABLED
@@ -97,7 +96,7 @@ func _ready() -> void:
 	
 	# connect signals
 	self.looping_btn.toggled.connect(_on_looping_toggled)
-	record_btn.text = record_test
+	record_btn.text = record_text
 	self.record_btn.toggled.connect(_on_record_toggled)
 	self.play_btn.toggled.connect(_on_play_toggled)
 	self.stop_btn.toggled.connect(_on_stop_toggled)
@@ -396,8 +395,9 @@ func _on_loop() -> void:
 func _on_record_toggled(_toggled_on: bool) -> void:
 	if effect.is_recording_active():
 		# stop recording
+		print("stop recording")
 		
-		record_btn.text = record_test
+		record_btn.text = record_text
 		recording = effect.get_recording()
 		effect.set_recording_active(false)
 		
@@ -409,6 +409,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 		# $Status.text = ""
 	else:
 		# start recording
+		print("start recording")
 		record_btn.text = stop_text
 		effect.set_recording_active(true)
 		

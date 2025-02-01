@@ -8,6 +8,9 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
+Octave slider (change octaves)
+Pitch bend
+
 Save multiple (named) A/S/D/R knob presets
 0 decay sounds really cool with sus -10
 
