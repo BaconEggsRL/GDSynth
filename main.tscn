@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=6 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
-[ext_resource type="AudioStream" uid="uid://c7roa7rvhw3uk" path="res://test.wav" id="2_h2yge"]
 
 [sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_ig7tw"]
 polyphony = 128
@@ -29,11 +28,11 @@ record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/
 play_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/play")
 save_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/save")
 status = NodePath("Control/VBoxContainer/Status")
-peak_knob = NodePath("Control/peak_knob")
-attack_knob = NodePath("Control/attack_knob")
-decay_knob = NodePath("Control/decay_knob")
-sus_knob = NodePath("Control/sustain_knob")
-release_knob = NodePath("Control/release_knob")
+peak_knob = NodePath("Knobs/peak_knob")
+attack_knob = NodePath("Knobs/attack_knob")
+decay_knob = NodePath("Knobs/decay_knob")
+sus_knob = NodePath("Knobs/sustain_knob")
+release_knob = NodePath("Knobs/release_knob")
 down = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/down")
 current = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/current")
 up = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/up")
@@ -44,7 +43,6 @@ polyphonic_player = NodePath("PolyphonicPlayer")
 audio_player = NodePath("AudioStreamPlayer")
 
 [node name="Test" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("2_h2yge")
 
 [node name="PolyphonicPlayer" type="AudioStreamPlayer" parent="."]
 stream = SubResource("AudioStreamPolyphonic_ig7tw")
@@ -208,7 +206,7 @@ layout_mode = 2
 [node name="piano_black" type="HBoxContainer" parent="Control/ControlBtns/piano"]
 layout_mode = 2
 
-[node name="HintLabel" type="Label" parent="Control"]
+[node name="RestartQuitLabel" type="Label" parent="Control"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -224,10 +222,12 @@ text = "` to restart
 ESC to Quit"
 horizontal_alignment = 1
 
-[node name="peak_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+[node name="Knobs" type="Node2D" parent="."]
+
+[node name="peak_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
 position = Vector2(228, 127)
 
-[node name="peak_label" type="Label" parent="Control/peak_knob"]
+[node name="peak_label" type="Label" parent="Knobs/peak_knob"]
 offset_left = -41.0
 offset_top = 34.0
 offset_right = 43.0
@@ -235,10 +235,10 @@ offset_bottom = 57.0
 text = "Attack dB"
 horizontal_alignment = 1
 
-[node name="attack_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+[node name="attack_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
 position = Vector2(382, 126)
 
-[node name="AttackLabel" type="Label" parent="Control/attack_knob"]
+[node name="AttackLabel" type="Label" parent="Knobs/attack_knob"]
 offset_left = -41.0
 offset_top = 34.0
 offset_right = 43.0
@@ -246,10 +246,10 @@ offset_bottom = 57.0
 text = "Attack"
 horizontal_alignment = 1
 
-[node name="decay_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+[node name="decay_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
 position = Vector2(530, 126)
 
-[node name="DecayLabel" type="Label" parent="Control/decay_knob"]
+[node name="DecayLabel" type="Label" parent="Knobs/decay_knob"]
 offset_left = -41.0
 offset_top = 34.0
 offset_right = 43.0
@@ -258,10 +258,10 @@ text = "Decay"
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="sustain_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+[node name="sustain_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
 position = Vector2(686, 128)
 
-[node name="SustainLabel" type="Label" parent="Control/sustain_knob"]
+[node name="SustainLabel" type="Label" parent="Knobs/sustain_knob"]
 offset_left = -41.0
 offset_top = 34.0
 offset_right = 43.0
@@ -270,10 +270,10 @@ text = "Sustain dB"
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
-[node name="release_knob" parent="Control" instance=ExtResource("2_0xm2m")]
+[node name="release_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
 position = Vector2(846, 126)
 
-[node name="ReleaseLabel" type="Label" parent="Control/release_knob"]
+[node name="ReleaseLabel" type="Label" parent="Knobs/release_knob"]
 offset_left = -41.0
 offset_top = 34.0
 offset_right = 43.0

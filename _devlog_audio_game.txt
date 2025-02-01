@@ -1,48 +1,39 @@
-Add a loop button to loop recorded tracks.
+GDSynth:
+Real-time audio generator demo using Godot 4.4
+
+
+
 Add multiple record track slots.
-Add A/S/D/R functions.
+
 Add A/S/D/R presets.
-Fix weird buzzing on multiple frequencies (phase issue?)
-
-
-Looping still kind of weird
 0 decay sounds really cool with sus -10
-add text to show current value of knobs
-and text edit fields to enter your own values
+
+Add text to show current value of knobs (in ms?)
+
+And text edit fields to enter your own values
 make it time based instead of samples
 save knob presets
 
 
 Todo:
+Add an option to allow press white keys in black key area (disable mouse filter)
 
-# Add mouse drag / hover events for on-screen buttons
-# (Play slide on click+drag)
 
-Pressing keyboard keys works great (can press same key multiple times.)
-But if I use mouse, I can't press the same key I just pressed.
-Need to UNTOGGLE button on mouse release.
 
-Update physical keyboard keys to behave the same way (release kills it.)
-currently it's a bit buggy, it keeps re-triggering the event for some reason.
+
+
+Bugs:
+Looping still kind of weird
+Fix weird buzzing on multiple frequencies (phase issue?)
 
 17 white notes
 12 black notes
-
 = 17 + 12 = 29 polyphony (32 will work)
-send note to polyphonic player?
+send note to polyphonic player for phase matching?
 
 
-50.
-18.
-81.
-
-
-
-Hey there -- I was thoroughly amused by this video, and used it as inspiration for a game that I made:
-
-The game is called "Cyfraith Cath: Medieval Purrsuits".
-The goal: Become the richest cat merchant in Medieval Wales.
-https://baconeggsrl.itch.io/cyfraith-cath-medieval-purrsuits
-
-(I used some of the arts in this video, hopefully tis OK since the description says they are public domain.)
-I had a lot of fun making it, please enjoy. Thanks!
+Changelog:
+# Add A/S/D/R functions.
+# Add a loop button to loop recorded tracks.
+# Add mouse drag / hover events for on-screen buttons
+# (Play slide on click+drag)
