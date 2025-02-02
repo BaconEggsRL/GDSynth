@@ -3,6 +3,7 @@ Real-time audio synthesis using Godot 4.4
 
 
 
+
 =====================================================
 
 
@@ -31,6 +32,11 @@ Add an option to allow press white keys in black key area (disable mouse filter)
 =====================================================
 
 Bugs:
+
+AudioEffectRecord does not work in Web build
+--effects in general seem to work once Stream is enabled (such as Reverb.)
+
+
 Looping still kind of weird
 Fix weird buzzing on multiple frequencies (phase issue?)
 --might just be audio clipping due to being too loud when layering multiple notes
