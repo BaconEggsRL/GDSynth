@@ -1,6 +1,6 @@
 extends Node
 
-var capture_mix_rate:float = 44100.0  # Default, but will be set dynamically
+
 const mix_rate:float = 11025.0
 
 const min_attack_samples:float = 0
@@ -37,6 +37,7 @@ var save_dir:String = "user://"
 var record_text = "Record"
 var stop_text = "Stop"
 
+var capture_mix_rate:float = 44100.0  # Default, but will be set dynamically
 var capture_effect:AudioEffectCapture
 var capture_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
