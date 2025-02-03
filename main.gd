@@ -5,15 +5,15 @@ const mix_rate:float = 11025.0
 
 const min_attack_samples:float = 0
 const max_attack_samples:float = mix_rate * 2
-@export_range (min_attack_samples, max_attack_samples, 1) var attack_samples = 0
+@export_range (min_attack_samples, max_attack_samples, 1) var attack_samples = min_attack_samples
 
 const min_release_samples:float = 100
 const max_release_samples:float = mix_rate * 4
-@export_range (min_release_samples, max_release_samples, 1) var release_samples = 100
+@export_range (min_release_samples, max_release_samples, 1) var release_samples = min_release_samples
 
 const min_decay_samples:float = 0
 const max_decay_samples:float = mix_rate * 4
-@export_range (min_decay_samples, max_decay_samples, 1) var decay_samples = 0
+@export_range (min_decay_samples, max_decay_samples, 1) var decay_samples = min_decay_samples
 
 const min_peak_db:float = -80.0
 const max_peak_db:float = 0.0

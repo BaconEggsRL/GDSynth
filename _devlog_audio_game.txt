@@ -33,6 +33,11 @@ Add an option to allow press white keys in black key area (disable mouse filter)
 
 Bugs:
 
+Popping sound on note start -- seems more prominent with low Attack
+The pop is intermittent (doesn't always occur.)
+
+Keys held by keyboard repeat when releasing a key held by mouse.
+
 Output latency web: default is 50, max is 100? try tinkering
 
 AudioEffectRecord does not work in Web build
