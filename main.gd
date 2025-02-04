@@ -717,4 +717,4 @@ func _on_wave_table_item_selected(idx: int) -> void:
 		current_waveform = wave_keys[idx]
 		print("Current waveform set to: ", current_waveform)
 		for btn:PianoButton in piano_buttons:
-			btn.queue_waveform_change(idx, current_waveform)
+			btn.queue_waveform_change(idx)

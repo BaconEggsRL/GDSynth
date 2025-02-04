@@ -60,7 +60,6 @@ var wave_table: Dictionary = {
 	"sawtooth": func(_phase): return 2.0 * _phase - 1.0,
 	"pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
 }
-var current_waveform = "sin"
 var waveform_index: float = 0.0
 
 var waveform_target_index: float = 0.0
@@ -74,7 +73,7 @@ var prev_waveform: float = 0.0         # Tracks the previous sample value
 
 
 # wave mod
-var pending_waveform_change: String = "sin"  # Stores the next pitch shift
+var pending_waveform_change: float = 0.0  # Stores the next wave shift
 var apply_waveform_change: bool = false   # Flag to apply pitch change
 
 
@@ -117,11 +116,10 @@ func queue_pitch_change(target_scale:float) -> void:
 	apply_pitch_change = true  # Set flag to apply change on zero crossing
 
 
-func queue_waveform_change(idx:float, _current_waveform:String) -> void:
-	print("waveform change")
+func queue_waveform_change(idx:float) -> void:
+	# print("waveform change")
 	self.waveform_index = idx
-	self.current_waveform = _current_waveform
-	# pending_waveform_change = target_waveform
+	# pending_waveform_change = idx
 	# apply_waveform_change = true  # Set flag to apply change on zero crossing
 	
 	
@@ -286,25 +284,6 @@ func stop_freq(smooth:bool = true) -> void:
 		audio_player.stop()
 		pass
 
-
-#func fill_buffer():
-	#var increment = freq / mix_rate
-	#var frames_available = playback.get_frames_available()
-	#
-	## update waveform
-	#var temp = current_waveform
-	#var wave_keys = wave_table.keys()
-	#var wave_count = wave_keys.size()
-	#var index = int(waveform_index) % wave_count
-	#current_waveform = wave_keys[index]
-	#if temp != current_waveform:
-		#print(current_waveform)
-	#
-	#var waveform:float
-	#for i in range(frames_available):
-		#waveform = wave_table[current_waveform].call(phase)
-		#playback.push_frame(Vector2.ONE * waveform)
-		#phase = fmod(phase + increment, 1.0)
 
 
 func fill_buffer():
