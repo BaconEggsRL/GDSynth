@@ -159,12 +159,13 @@ focus_mode = 0
 text = "Looping?"
 
 [node name="record" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
+custom_minimum_size = Vector2(145, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
 toggle_mode = true
 action_mode = 0
-text = "Record"
+text = "Waiting for Key..."
 
 [node name="play" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
 custom_minimum_size = Vector2(64, 0)

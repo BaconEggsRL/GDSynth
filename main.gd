@@ -36,9 +36,6 @@ const max_sus_db:float = 0.0
 @export var save_status:Label
 var save_dir:String = "user://"
 
-var record_text = "Record"
-var stop_text = "Stop"
-
 var capture_mix_rate:float = 44100.0  # Default, but will be set dynamically
 var capture_effect:AudioEffectCapture
 var capture_data: PackedFloat32Array  # Stores interleaved stereo data
@@ -74,6 +71,10 @@ var scale_tween:Tween
 
 # note label
 @export var note_label:Label
+var queue_capture:bool = false
+var start_recording_text:String = "Start Recording"
+var queue_recording_text:String = "Waiting for Key..."
+var stop_recording_text:String = "Stop Recording"
 
 
 
@@ -127,7 +128,6 @@ func _ready() -> void:
 	
 	# connect signals
 	self.looping_btn.toggled.connect(_on_looping_toggled)
-	record_btn.text = record_text
 	self.record_btn.toggled.connect(_on_record_toggled)
 	self.play_btn.toggled.connect(_on_play_toggled)
 	self.stop_btn.toggled.connect(_on_stop_toggled)
@@ -145,6 +145,7 @@ func _ready() -> void:
 	
 	
 	note_label.text = ""
+	record_btn.text = start_recording_text
 	
 	print(piano_frequencies)
 	print()
@@ -504,7 +505,7 @@ func start_capturing():
 	print("Start Capturing")
 	is_capturing = true
 
-	record_btn.text = "Stop Capturing"
+	record_btn.text = stop_recording_text
 	play_btn.disabled = true
 	save_btn.disabled = true
 	
@@ -513,7 +514,7 @@ func stop_capturing():
 	print("Stop Capturing")
 	is_capturing = false
 
-	record_btn.text = "Start Capturing"
+	record_btn.text = start_recording_text
 	play_btn.disabled = false  # Enable play button after capturing stops
 	save_btn.disabled = false
 	
@@ -521,15 +522,24 @@ func stop_capturing():
 	
 func _on_record_toggled(_toggled_on: bool) -> void:
 	if _toggled_on:
-		start_capturing()
+		queue_capture = true
+		record_btn.text = queue_recording_text
+		# start_capturing()
 	else:
-		stop_capturing()
-
-
-
+		if queue_capture:
+			queue_capture = false
+			record_btn.text = start_recording_text
+		else:
+			stop_capturing()
+	
+	
 func _on_piano_button_pressed(btn:PianoButton) -> void:
-	# print("hello")
+	print("hello")
 	note_label.text = btn.text
+	# start capture if queued
+	if queue_capture:
+		queue_capture = false
+		start_capturing()
 	
 	
 func _on_knob_turned(deg:float, type:String="") -> void:
