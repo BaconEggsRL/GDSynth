@@ -300,6 +300,8 @@ func _on_octave_up() -> void:
 		var new_octave = last_octave + 1
 		btn.note[-1] = str(new_octave)
 		btn.text = "%s\n%s" % [btn.note, btn.qwerty_key]
+		if new_octave == 8:
+			octave_up_btn.disabled = true
 
 	
 
@@ -313,6 +315,8 @@ func _on_octave_down() -> void:
 		var new_octave = last_octave - 1
 		btn.note[-1] = str(new_octave)
 		btn.text = "%s\n%s" % [btn.note, btn.qwerty_key]
+		if octave_up_btn.disabled:
+			octave_up_btn.disabled = false
 	
 	
 	
@@ -583,7 +587,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 
 
 func _on_piano_button_pressed(btn:PianoButton) -> void:
-	print("hello")
+	# print("hello")
 	note_label.text = btn.text
 	
 	

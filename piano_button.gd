@@ -165,13 +165,13 @@ func _is_touch_inside(pos: Vector2) -> bool:
 	
 	
 func _on_piano_button_pressed() -> void:
-	print("down, %s" % self.name)
+	print("down, %s" % self.note)
 	self.button_pressed = true
 	play_freq()
 	piano_button_pressed.emit(self)
 
 func _on_piano_button_up() -> void:
-	print("up, %s" % self.name)
+	print("up, %s" % self.note)
 	self.button_pressed = false
 	stop_freq()
 	
@@ -199,7 +199,7 @@ func play_freq() -> void:
 	# attack
 	audio_player.volume_db = -80.0
 	var attack_time = attack_samples / mix_rate
-	print("attack_time = %s" % attack_time)
+	# print("attack_time = %s" % attack_time)
 	# tween
 	volume_tweener = create_tween()
 	volume_tweener.finished.connect(func():
@@ -216,13 +216,14 @@ func play_freq() -> void:
 
 
 func decay_sustain() -> void:
-	print("decay")
+	# print("decay")
 	var decay_time = decay_samples / mix_rate
 	if volume_tweener:
 		volume_tweener.kill()
 	volume_tweener = create_tween()
 	volume_tweener.finished.connect(func():
-		print("sustain")
+		# print("sustain")
+		pass
 	)
 	volume_tweener.tween_property(audio_player, "volume_db", sus_db, decay_time)
 
