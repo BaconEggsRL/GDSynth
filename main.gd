@@ -45,7 +45,11 @@ var capture_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
 
 # pitch shift
-
+@export var pitch_slider:VSlider
+var pitch_slider_center_value = 0.0
+var max_pitch_slide_time = 0.5
+var pitch_tween:Tween
+var scale_tween:Tween
 
 # KNOBS!
 @export var peak_knob:Knob
@@ -103,9 +107,11 @@ func _ready() -> void:
 	print("output_latency = %s" % output_latency)
 	
 	# pitch shift
+	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
+	pitch_slider.drag_ended.connect(_on_pitch_slider_drag_ended)
 	pitch_bend_effect = AudioServer.get_bus_effect(idx, 1)
-	pitch_bend_effect.fft_size = AudioEffectPitchShift.FFT_SIZE_1024
-	pitch_bend_effect.oversampling = 16
+	pitch_bend_effect.fft_size = AudioEffectPitchShift.FFT_SIZE_4096
+	pitch_bend_effect.oversampling = 32
 	
 	# connect signals
 	self.looping_btn.toggled.connect(_on_looping_toggled)
@@ -149,6 +155,7 @@ func _ready() -> void:
 		
 		if piano_frequencies.has(note):
 			piano_btn.freq = piano_frequencies[note]
+			piano_btn.current_freq = piano_frequencies[note]
 		
 		if piano_qwerty.has(note):
 			var qwerty_int:Key = piano_qwerty[note] as Key
@@ -300,6 +307,7 @@ func _on_octave_up() -> void:
 	piano_buttons = get_tree().get_nodes_in_group(PIANO_BUTTON_GROUP)
 	for btn:PianoButton in piano_buttons:
 		btn.freq *= 2.0
+		btn.current_freq = btn.freq
 		var last_char = btn.note[-1] # Get the last character
 		var last_octave = int(last_char) # Convert to integer
 		var new_octave = last_octave + 1
@@ -317,6 +325,7 @@ func _on_octave_down() -> void:
 	piano_buttons = get_tree().get_nodes_in_group(PIANO_BUTTON_GROUP)
 	for btn:PianoButton in piano_buttons:
 		btn.freq *= 0.5
+		btn.current_freq = btn.freq
 		var last_char = btn.note[-1] # Get the last character
 		var last_octave = int(last_char) # Convert to integer
 		var new_octave = last_octave - 1
@@ -663,7 +672,47 @@ func generate_piano_qwerty() -> Dictionary:
 
 
 func _on_pitch_slider_value_changed(value: float) -> void:
-	print(value)
-	var scale = remap(value, -1.0, 1.0, 1.0 - 0.059*2.0, 1.0 + 0.059*2.0)
-	pitch_bend_effect.pitch_scale = scale
+	print("value changed: %s" % value)
+	var target_scale = remap(value, -1.0, 1.0, 1.0 - 0.059*2.0, 1.0 + 0.059*2.0)
+	for btn:PianoButton in piano_buttons:
+		btn.queue_pitch_change(target_scale)
+				
+	pass
+	#print("value changed: %s" % value)
+	#
+	#var target_scale = remap(value, -1.0, 1.0, 1.0 - 0.059*2.0, 1.0 + 0.059*2.0)
+	#pitch_bend_effect.pitch_scale = target_scale
+	#
+	## Smoothly interpolate pitch scale instead of setting directly
+	#if scale_tween:
+		#scale_tween.kill()
+	#scale_tween = create_tween()
+	#scale_tween.set_ease(Tween.EASE_OUT)
+	#scale_tween.set_trans(Tween.TRANS_SINE)
+	#scale_tween.tween_property(pitch_bend_effect, "pitch_scale", target_scale, 0.05)  # Adjust time for smoothness
+
+
+func _on_pitch_slider_drag_ended(_value_changed: bool) -> void:
+	# Return slider to zero smoothly
+	var distance_from_center = abs(pitch_slider.value)
+	if pitch_tween:
+		pitch_tween.kill()
+	pitch_tween = create_tween()
+	pitch_tween.set_ease(Tween.EASE_OUT)
+	pitch_tween.set_trans(Tween.TRANS_SINE)
+	pitch_tween.tween_property(pitch_slider, "value", pitch_slider_center_value, max_pitch_slide_time * distance_from_center)
+
+	# Smoothly ease back to pitch_scale 1.0 to avoid clicks
+	pitch_tween.tween_property(pitch_bend_effect, "pitch_scale", 1.0, max_pitch_slide_time * distance_from_center)
 	
+	
+#func _on_pitch_slider_drag_ended(_value_changed: bool) -> void:
+	#pass
+	 #return slider to zero
+	#var distance_from_center = abs(pitch_slider.value)
+	#if pitch_tween:
+		#pitch_tween.kill()
+	#pitch_tween = create_tween()
+	#pitch_tween.set_ease(Tween.EASE_OUT)
+	#pitch_tween.set_trans(Tween.TRANS_CUBIC)
+	#pitch_tween.tween_property(pitch_slider, "value", pitch_slider_center_value, max_pitch_slide_time * distance_from_center)

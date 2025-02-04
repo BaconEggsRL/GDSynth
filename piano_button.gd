@@ -13,6 +13,7 @@ var sus_db = -10.0
 
 @export var note:String = "A4"
 @export var freq:float = -1.0
+var current_freq:float = -1.0
 
 @export var is_black:bool = false
 
@@ -23,7 +24,8 @@ var sus_db = -10.0
 var mix_rate:float = 11025.0
 var release_samples = mix_rate
 var attack_samples = mix_rate
-@export var buffer_length:float = 0.5
+
+var buffer_length:float = 0.015  # 0.050
 
 var volume_tweener:Tween
 @onready var audio_player:AudioStreamPlayer = self.create_audio_player()
@@ -64,6 +66,12 @@ var waveform_target_index: float = 0.0
 var tween:Tween
 
 
+# pitch mod
+var pending_pitch_change: float = 1.0  # Stores the next pitch shift
+var apply_pitch_change: bool = false   # Flag to apply pitch change
+var prev_waveform: float = 0.0         # Tracks the previous sample value
+
+
 	
 	
 func create_audio_player() -> AudioStreamPlayer:
@@ -94,6 +102,12 @@ func _restart_waveform_tween(target_index:int = 0):
 	tween.tween_property(self, "waveform_index", target_index, tween_time)
 	tween.finished.connect(_start_waveform_tween)
 	tween.play()
+	
+
+func queue_pitch_change(target_scale:float) -> void:
+	# print("pitch change")
+	pending_pitch_change = target_scale
+	apply_pitch_change = true  # Set flag to apply change on zero crossing
 	
 	
 	
@@ -279,7 +293,8 @@ func stop_freq(smooth:bool = true) -> void:
 
 
 func fill_buffer():
-	var increment = freq / mix_rate
+	print("fill buffer")
+	
 	var frames_available = playback.get_frames_available()
 	var wave_keys = wave_table.keys()
 	var wave_count = wave_keys.size()
@@ -301,11 +316,20 @@ func fill_buffer():
 	}
 
 	for i in range(frames_available):
+		# Interpolate between waveforms
 		var lower_value = lower_waveform.call(phase) * normalization_factors[wave_keys[lower_index]]
 		var upper_value = upper_waveform.call(phase) * normalization_factors[wave_keys[upper_index]]
+		var waveform = lerp(lower_value, upper_value, blend_factor)  
 		
-		# Interpolate between the two waveforms
-		var waveform = lerp(lower_value, upper_value, blend_factor)
-
+		# Zero-crossing detection: Apply pitch change only when crossing zero
+		var _tol = 0.1
+		if apply_pitch_change: # and abs(waveform) < tol:
+		# if apply_pitch_change and ((prev_waveform < tol and waveform >= tol) or (prev_waveform > tol and waveform <= tol)):
+			current_freq = freq * pending_pitch_change
+			# freq *= pending_pitch_change  # Apply pitch shift only at zero crossing
+			apply_pitch_change = false  # Reset flag until the next change request
+		
+		# Push waveform and update phase
 		playback.push_frame(Vector2.ONE * waveform)
-		phase = fmod(phase + increment, 1.0)
+		prev_waveform = waveform  # Store previous value for next iteration
+		phase = fmod(phase + (current_freq / mix_rate), 1.0)
