@@ -51,7 +51,7 @@ var tween_time: float = 2.0
 var wave_table: Dictionary = {
 	"sin": func(_phase): return sin(_phase * TAU),
 	# "triangle": func(_phase): return 1.0 - 4.0 * abs(round(_phase - 0.25) - (_phase - 0.25)),
-	"sawtooth": func(_phase): return 2.0 * _phase - 1.0,
+	# "sawtooth": func(_phase): return 2.0 * _phase - 1.0,
 	# "pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
 }
 var current_waveform = "sin"

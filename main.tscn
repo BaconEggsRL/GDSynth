@@ -19,8 +19,10 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
 script = ExtResource("1_ig7tw")
+octave_up_btn = NodePath("Control/Octave/OctaveUp")
+octave_down_btn = NodePath("Control/Octave/OctaveDown")
 looping_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/looping")
 record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/record")
 play_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/play")
@@ -203,6 +205,31 @@ grow_vertical = 0
 text = "` to restart
 ESC to Quit"
 horizontal_alignment = 1
+
+[node name="Octave" type="VBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -111.0
+offset_top = -66.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="OctaveUp" type="Button" parent="Control/Octave"]
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+text = "Octave Up"
+
+[node name="OctaveDown" type="Button" parent="Control/Octave"]
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+text = "Octave Down"
 
 [node name="Knobs" type="Node2D" parent="."]
 position = Vector2(0, 56.025)

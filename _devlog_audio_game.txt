@@ -25,8 +25,23 @@ Fix interactions between keypress and touch
 Master volume btn / knob
 Make knobs look better (no john godots)
 
+
+
+
 Octave slider (change octaves)
 Pitch bend
+piano--7 octaves (of C) = 49 + 2 = 51
+black: 7 octaves (of B flat) = 49
+51+49 = 
+
+12 keys in one Octave
+*7 = 84 + 3 + 1 = 88
+
+
+starts on A, ends on C
+
+
+
 
 Save multiple (named) A/S/D/R knob presets
 0 decay sounds really cool with sus -10

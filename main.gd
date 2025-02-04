@@ -24,6 +24,8 @@ const max_sus_db:float = 0.0
 @export_range (min_sus_db, max_sus_db, 1) var sus_db = peak_db
 
 
+@export var octave_up_btn:Button
+@export var octave_down_btn:Button
 
 @export var looping_btn:CheckButton
 @export var record_btn:Button
@@ -113,7 +115,10 @@ func _ready() -> void:
 		save_btn.disabled = true
 		stop_btn.disabled = true
 	self.save_btn.pressed.connect(_on_save_pressed)
-
+	
+	# octave
+	octave_up_btn.pressed.connect(_on_octave_up)
+	octave_down_btn.pressed.connect(_on_octave_down)
 	
 	
 	note_label.text = ""
@@ -146,38 +151,41 @@ func _ready() -> void:
 			qwerty_key.keycode = qwerty_int
 			piano_btn.qwerty_key = qwerty_key.as_text()
 		
+		# skip these freqs
 		if piano_btn.freq < 261.62 or piano_btn.freq > 1319:
-			pass
-		else:
-			# connect signals
-			piano_btn.piano_button_pressed.connect(_on_piano_button_pressed)
+			continue
 			
-			# add child
-			if piano_btn.note.contains("#"):
-				if piano_btn.note == "C#3":
-					var spacer = Label.new()
-					spacer.custom_minimum_size.x = 64.0 / 2.0
-					spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-					piano_black.add_child(spacer)
-				elif piano_btn.note.contains("F"):
-					# piano_btn.note == "F#3":
-					var spacer = Label.new()
-					spacer.custom_minimum_size.x = 64.0
-					spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-					piano_black.add_child(spacer)
-				elif piano_btn.note.contains("C"):
-					# piano_btn.note == "C#4":
-					var spacer = Label.new()
-					spacer.custom_minimum_size.x = 64.0
-					spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-					piano_black.add_child(spacer)
-					
+			
+		
+		# connect signals
+		piano_btn.piano_button_pressed.connect(_on_piano_button_pressed)
+		
+		# add child
+		if piano_btn.note.contains("#"):
+			if piano_btn.note == "C#3":
+				var spacer = Label.new()
+				spacer.custom_minimum_size.x = 64.0 / 2.0
+				spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				piano_black.add_child(spacer)
+			elif piano_btn.note.contains("F"):
+				# piano_btn.note == "F#3":
+				var spacer = Label.new()
+				spacer.custom_minimum_size.x = 64.0
+				spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				piano_black.add_child(spacer)
+			elif piano_btn.note.contains("C"):
+				# piano_btn.note == "C#4":
+				var spacer = Label.new()
+				spacer.custom_minimum_size.x = 64.0
+				spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				piano_black.add_child(spacer)
 				
-				piano_btn.is_black = true
-				# piano_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				piano_black.add_child(piano_btn)
-			else:
-				piano_white.add_child(piano_btn)
+			
+			piano_btn.is_black = true
+			# piano_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			piano_black.add_child(piano_btn)
+		else:
+			piano_white.add_child(piano_btn)
 				
 	
 	# test
@@ -282,6 +290,32 @@ func process_event(event) -> void:
 
 
 
+func _on_octave_up() -> void:
+	print("up")
+	piano_buttons = get_tree().get_nodes_in_group(PIANO_BUTTON_GROUP)
+	for btn:PianoButton in piano_buttons:
+		btn.freq *= 2.0
+		var last_char = btn.note[-1] # Get the last character
+		var last_octave = int(last_char) # Convert to integer
+		var new_octave = last_octave + 1
+		btn.note[-1] = str(new_octave)
+		btn.text = "%s\n%s" % [btn.note, btn.qwerty_key]
+
+	
+
+func _on_octave_down() -> void:
+	print("down")
+	piano_buttons = get_tree().get_nodes_in_group(PIANO_BUTTON_GROUP)
+	for btn:PianoButton in piano_buttons:
+		btn.freq *= 0.5
+		var last_char = btn.note[-1] # Get the last character
+		var last_octave = int(last_char) # Convert to integer
+		var new_octave = last_octave - 1
+		btn.note[-1] = str(new_octave)
+		btn.text = "%s\n%s" % [btn.note, btn.qwerty_key]
+	
+	
+	
 func _on_looping_toggled(_toggled_on: bool) -> void:
 	if _toggled_on:
 		self.loop_mode = AudioStreamWAV.LOOP_FORWARD
@@ -655,6 +689,7 @@ func generate_piano_frequencies() -> Dictionary:
 	return frequencies
 
 
+# assign qwerty key to each piano note
 func generate_piano_qwerty() -> Dictionary:
 	var result = {}
 
@@ -664,6 +699,7 @@ func generate_piano_qwerty() -> Dictionary:
 	for octave in range(0, 8):
 		for note in note_names:
 			var key_name = "%s%d" % [note, octave]
+			
 			
 			if octave < 3:  # Skip notes before C3
 				continue
