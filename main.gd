@@ -672,7 +672,7 @@ func generate_piano_qwerty() -> Dictionary:
 
 
 func _on_pitch_slider_value_changed(value: float) -> void:
-	print("value changed: %s" % value)
+	# print("value changed: %s" % value)
 	var target_scale = remap(value, -1.0, 1.0, 1.0 - 0.059*2.0, 1.0 + 0.059*2.0)
 	for btn:PianoButton in piano_buttons:
 		btn.queue_pitch_change(target_scale)
