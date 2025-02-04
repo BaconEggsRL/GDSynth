@@ -44,9 +44,6 @@ var capture_effect:AudioEffectCapture
 var capture_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
 
-var record_effect:AudioEffectRecord
-var recording:AudioStreamWAV
-
 
 # KNOBS!
 @export var peak_knob:Knob
@@ -108,12 +105,13 @@ func _ready() -> void:
 	self.record_btn.toggled.connect(_on_record_toggled)
 	self.play_btn.toggled.connect(_on_play_toggled)
 	self.stop_btn.toggled.connect(_on_stop_toggled)
-	# enable / disable
-	if not recording:
-		play_btn.disabled = true
-		save_btn.disabled = true
-		stop_btn.disabled = true
 	self.save_btn.pressed.connect(_on_save_pressed)
+	
+	# enable / disable btns at start
+	play_btn.disabled = true
+	save_btn.disabled = true
+	stop_btn.disabled = true
+	
 	
 	# octave
 	octave_up_btn.pressed.connect(_on_octave_up)
@@ -335,14 +333,6 @@ func _on_looping_toggled(_toggled_on: bool) -> void:
 
 
 func _on_save_pressed() -> void:
-	#if recording:
-		#save_btn.disabled = true
-		#var save_path = save_dir + "test.wav"
-		#recording.save_to_wav(save_path)
-		#save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
-		#await get_tree().create_timer(1.0).timeout
-		#print("WAIWDOIAJSDASDASDASD")
-		#save_btn.disabled = false
 	
 	if capture_data.is_empty():
 		print("No audio captured!")
@@ -428,31 +418,6 @@ func _on_play_toggled(_toggled_on: bool) -> void:
 	
 	# play
 	audio_player.play()
-		
-		
-	#if recording:
-#
-		#print("recording: %s" % recording)
-		#print("recording.format: %s" % recording.format)
-		#print("recording.mix_rate: %s" % recording.mix_rate)
-		#print("recording.stereo: %s" % recording.stereo)
-		#var _data = recording.get_data()
-		#print("data.size(): %s" % _data.size())
-		#
-		## set stream
-		#audio_player.stream = recording
-		#
-		## enable/disable btn
-		## if recording.loop_mode == AudioStreamWAV.LOOP_DISABLED:
-		## disable playback until complete
-		#play_btn.disabled = true
-		#stop_btn.disabled = false
-		#
-		## apply loop mode
-		#_apply_loop_mode()
-		#
-		## play
-		#audio_player.play()
 
 	
 
@@ -549,44 +514,7 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 		start_capturing()
 	else:
 		stop_capturing()
-	#if record_effect.is_recording_active():
-		## stop recording
-		#print("stop recording")
-#
-		#record_btn.text = record_text
-		#print("recording = effect.get_recording()")
-		#print("record_effect = %s" % record_effect)
-		#print("recording = %s" % recording)
-		#recording = record_effect.get_recording()
-		#print("record_effect = %s" % record_effect)
-		#print("recording = %s" % recording)
-		#print("effect.set_recording_active(false)")
-		#record_effect.set_recording_active(false)
-		#
-		#play_btn.disabled = false
-		#save_btn.disabled = false
-		## stop_btn.disabled = true
-		#
-		## $RecordButton.text = "Record"
-		## $Status.text = ""
-	#else:
-		## start recording
-		#print("start recording")
-		#record_btn.text = stop_text
-		#
-		#print("record_effect = %s" % record_effect)
-		#print("recording = %s" % recording)
-		#print("effect.set_recording_active(true)")
-		#record_effect.set_recording_active(true)
-		#print("record_effect = %s" % record_effect)
-		#print("recording = %s" % recording)
-		#
-		#play_btn.disabled = true
-		#save_btn.disabled = true
-		## stop_btn.disabled = false
-		#
-		## $RecordButton.text = "Stop"
-		## $Status.text = "Recording..."
+
 
 
 func _on_piano_button_pressed(btn:PianoButton) -> void:
