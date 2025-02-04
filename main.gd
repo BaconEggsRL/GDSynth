@@ -44,6 +44,8 @@ var capture_effect:AudioEffectCapture
 var capture_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
 
+# pitch shift
+
 
 # KNOBS!
 @export var peak_knob:Knob
@@ -83,6 +85,7 @@ var note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#
 const PIANO_BUTTON_GROUP = "piano_button"
 var piano_buttons:Array
 
+var pitch_bend_effect:AudioEffectPitchShift
 
 
 
@@ -98,6 +101,11 @@ func _ready() -> void:
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
 	var output_latency = AudioServer.get_output_latency()
 	print("output_latency = %s" % output_latency)
+	
+	# pitch shift
+	pitch_bend_effect = AudioServer.get_bus_effect(idx, 1)
+	pitch_bend_effect.fft_size = AudioEffectPitchShift.FFT_SIZE_1024
+	pitch_bend_effect.oversampling = 16
 	
 	# connect signals
 	self.looping_btn.toggled.connect(_on_looping_toggled)
@@ -656,4 +664,6 @@ func generate_piano_qwerty() -> Dictionary:
 
 func _on_pitch_slider_value_changed(value: float) -> void:
 	print(value)
+	var scale = remap(value, -1.0, 1.0, 1.0 - 0.059*2.0, 1.0 + 0.059*2.0)
+	pitch_bend_effect.pitch_scale = scale
 	
