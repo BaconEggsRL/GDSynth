@@ -9,45 +9,31 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
-More complex oscillators (besides sine wave)
-Frequency modulation -- pulling peaks and valleys tighter together
-Phase modulation, phase distortion, wave folding
-wave table -- sine, triangle, saw, square
 
-smooth morph between waveforms using LFO
-(low frequency oscillator -- changes the waveform over time.)
-
-
-
-Add multitouch support for mobile (switch to touch screen button?)
-Fix interactions between keypress and touch
+KNOBS:
 
 Master volume btn / knob
 Make knobs look better (no john godots)
 
 
+WAVE TABLE:
+
+More complex oscillators (besides sine wave)
+--Frequency modulation -- pulling peaks and valleys tighter together
+--Phase modulation, phase distortion, wave folding
+--wave table -- sine, triangle, saw, square
+
+smooth morph between waveforms using LFO
+--(low frequency oscillator -- changes the waveform over time.)
 
 
-# Octave slider (change octaves)
-Pitch bend
-
-
-
-piano--7 octaves (of C) = 49 + 2 = 51
-black: 7 octaves (of B flat) = 49
-51+49 = 
-
-12 keys in one Octave
-*7 = 84 + 3 + 1 = 88
-
-
-starts on A, ends on C
-
-
-
+KNOB PRESETS:
 
 Save multiple (named) A/S/D/R knob presets
 0 decay sounds really cool with sus -10
+
+
+MUTLI-TRACK:
 
 Add multiple record/loop track slots.
 
@@ -95,3 +81,16 @@ Changelog:
 # Add a loop button to loop recorded tracks.
 # Add mouse drag / hover events for on-screen buttons
 # (Play slide on click+drag)
+
+# Add multitouch support for mobile (switch to touch screen button?)
+# Fix interactions between keypress and touch
+
+# Octave slider (change octaves)
+# Pitch bend
+
+# piano--7 octaves (of C) = 49 + 2 = 51
+# black: 7 octaves (of B flat) = 49
+# 51+49 = 
+# 12 keys in one Octave
+# *7 = 84 + 3 + 1 = 88
+# starts on A, ends on C
