@@ -322,7 +322,7 @@ func fill_buffer():
 		var waveform = lerp(lower_value, upper_value, blend_factor)  
 		
 		# Zero-crossing detection: Apply pitch change only when crossing zero
-		var _tol = 0.1
+		# var _tol = 0.1
 		if apply_pitch_change: # and abs(waveform) < tol:
 		# if apply_pitch_change and ((prev_waveform < tol and waveform >= tol) or (prev_waveform > tol and waveform <= tol)):
 			current_freq = freq * pending_pitch_change

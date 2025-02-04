@@ -44,6 +44,16 @@ var capture_effect:AudioEffectCapture
 var capture_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
 
+# wave table
+@export var wave_table_item_list:ItemList
+var wave_table: Dictionary = {
+	"sin": func(_phase): return sin(_phase * TAU),
+	"triangle": func(_phase): return 1.0 - 4.0 * abs(round(_phase - 0.25) - (_phase - 0.25)),
+	"sawtooth": func(_phase): return 2.0 * _phase - 1.0,
+	"pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
+}
+var current_waveform = "sin"
+
 # pitch shift
 @export var pitch_slider:VSlider
 var pitch_slider_center_value = 0.0
@@ -58,15 +68,16 @@ var scale_tween:Tween
 @export var sus_knob:Knob
 @export var release_knob:Knob
 
-
+# piano
 @export var piano_black:HBoxContainer
 @export var piano_white:HBoxContainer
 
+# note label
 @export var note_label:Label
 
 
 
-
+# audio player 
 @export var audio_player:AudioStreamPlayer
 
 var loop_mode:AudioStreamWAV.LoopMode = AudioStreamWAV.LOOP_DISABLED
@@ -94,6 +105,7 @@ var pitch_bend_effect:AudioEffectPitchShift
 
 
 
+
 	
 func _ready() -> void:
 	# record button
@@ -105,6 +117,9 @@ func _ready() -> void:
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
 	var output_latency = AudioServer.get_output_latency()
 	print("output_latency = %s" % output_latency)
+	
+	# wave table
+	wave_table_item_list.select(0)
 	
 	# pitch shift
 	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
@@ -716,3 +731,12 @@ func _on_pitch_slider_drag_ended(_value_changed: bool) -> void:
 	#pitch_tween.set_ease(Tween.EASE_OUT)
 	#pitch_tween.set_trans(Tween.TRANS_CUBIC)
 	#pitch_tween.tween_property(pitch_slider, "value", pitch_slider_center_value, max_pitch_slide_time * distance_from_center)
+
+
+func _on_wave_table_item_selected(idx: int) -> void:
+	print(idx)
+	var wave_keys = wave_table.keys()
+	# print(wave_keys)
+	if idx >= 0 and idx < wave_keys.size():
+		current_waveform = wave_keys[idx]
+		print("Current waveform set to: ", current_waveform)
