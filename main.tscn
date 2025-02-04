@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=7 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
 [ext_resource type="Theme" uid="uid://3ddvs2gn88bk" path="res://ui_btn_theme.tres" id="2_h2yge"]
+[ext_resource type="Script" uid="uid://c7jt6jaa7axhi" path="res://wave_table_item_list.gd" id="3_1bvp3"]
 
 [sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_ig7tw"]
 mix_rate = 11025.0
@@ -271,6 +272,7 @@ item_0/text = "sin"
 item_1/text = "triangle"
 item_2/text = "sawtooth"
 item_3/text = "pulse"
+script = ExtResource("3_1bvp3")
 
 [node name="Knobs" type="Node2D" parent="."]
 position = Vector2(0, 56.025)
