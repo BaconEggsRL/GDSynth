@@ -9,6 +9,11 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
+Add multitouch support for mobile (switch to touch screen button?)
+
+Master volume btn / knob
+Make knobs look better (no john godots)
+
 Octave slider (change octaves)
 Pitch bend
 

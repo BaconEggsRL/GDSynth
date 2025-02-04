@@ -123,21 +123,24 @@ func play_freq() -> void:
 	if volume_tweener:
 		volume_tweener.kill()
 	
+	# reset phase
+	self.phase = 0.0
+	
 	# attack
 	audio_player.volume_db = -80.0
 	var attack_time = attack_samples / mix_rate
 	print("attack_time = %s" % attack_time)
-	
+	# tween
 	volume_tweener = create_tween()
 	volume_tweener.finished.connect(func():
 		decay_sustain()
 	)
 	volume_tweener.tween_property(audio_player, "volume_db", peak_db, attack_time)
 	
-	# audio_player.volume_db = 0.0
+	# play
 	audio_player.play()
 	
-	
+	# fill buffer
 	playback = audio_player.get_stream_playback()
 	fill_buffer()
 
