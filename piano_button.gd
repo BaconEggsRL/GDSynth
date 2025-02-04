@@ -44,13 +44,15 @@ signal piano_button_pressed
 
 # multi-touch for mobile
 var active_touches: Dictionary = {}
+var tween_time: float = 2.0
+
 
 # wave table
 var wave_table: Dictionary = {
 	"sin": func(_phase): return sin(_phase * TAU),
-	"triangle": func(_phase): return 1.0 - 4.0 * abs(round(_phase - 0.25) - (_phase - 0.25)),
+	# "triangle": func(_phase): return 1.0 - 4.0 * abs(round(_phase - 0.25) - (_phase - 0.25)),
 	"sawtooth": func(_phase): return 2.0 * _phase - 1.0,
-	"pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
+	# "pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
 }
 var current_waveform = "sin"
 var waveform_index: float = 0.0
@@ -76,7 +78,7 @@ func _start_waveform_tween(target_index:int = wave_table.keys().size() - 1):
 	tween = create_tween()
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "waveform_index", target_index, 2.0)
+	tween.tween_property(self, "waveform_index", target_index, tween_time)
 	tween.finished.connect(_restart_waveform_tween)
 	tween.play()
 
@@ -85,7 +87,7 @@ func _restart_waveform_tween(target_index:int = 0):
 	tween = create_tween()
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "waveform_index", target_index, 2.0)
+	tween.tween_property(self, "waveform_index", target_index, tween_time)
 	tween.finished.connect(_start_waveform_tween)
 	tween.play()
 	
@@ -246,21 +248,54 @@ func stop_freq(smooth:bool = true) -> void:
 		pass
 
 
+#func fill_buffer():
+	#var increment = freq / mix_rate
+	#var frames_available = playback.get_frames_available()
+	#
+	## update waveform
+	#var temp = current_waveform
+	#var wave_keys = wave_table.keys()
+	#var wave_count = wave_keys.size()
+	#var index = int(waveform_index) % wave_count
+	#current_waveform = wave_keys[index]
+	#if temp != current_waveform:
+		#print(current_waveform)
+	#
+	#var waveform:float
+	#for i in range(frames_available):
+		#waveform = wave_table[current_waveform].call(phase)
+		#playback.push_frame(Vector2.ONE * waveform)
+		#phase = fmod(phase + increment, 1.0)
+
+
 func fill_buffer():
 	var increment = freq / mix_rate
 	var frames_available = playback.get_frames_available()
-	
-	# update waveform
-	var temp = current_waveform
 	var wave_keys = wave_table.keys()
 	var wave_count = wave_keys.size()
-	var index = int(waveform_index) % wave_count
-	current_waveform = wave_keys[index]
-	if temp != current_waveform:
-		print(current_waveform)
-	
-	var waveform:float
+
+	# Get lower and upper wave indices for interpolation
+	var lower_index = int(waveform_index) % wave_count
+	var upper_index = (lower_index + 1) % wave_count
+	var blend_factor = waveform_index - lower_index  # Fractional part
+
+	var lower_waveform = wave_table[wave_keys[lower_index]]
+	var upper_waveform = wave_table[wave_keys[upper_index]]
+
+	# Amplitude normalization factors per waveform
+	var normalization_factors = {
+		"sin": 1.0,  # Already normalized
+		"sawtooth": 1.0, # 0.707,  # Reduce harshness
+		"triangle": 0.707,  # Similar to sine
+		"pulse": 0.5  # Very loud, needs reduction
+	}
+
 	for i in range(frames_available):
-		waveform = wave_table[current_waveform].call(phase)
+		var lower_value = lower_waveform.call(phase) * normalization_factors[wave_keys[lower_index]]
+		var upper_value = upper_waveform.call(phase) * normalization_factors[wave_keys[upper_index]]
+		
+		# Interpolate between the two waveforms
+		var waveform = lerp(lower_value, upper_value, blend_factor)
+
 		playback.push_frame(Vector2.ONE * waveform)
 		phase = fmod(phase + increment, 1.0)
