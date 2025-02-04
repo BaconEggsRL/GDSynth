@@ -118,9 +118,6 @@ func _ready() -> void:
 	var output_latency = AudioServer.get_output_latency()
 	print("output_latency = %s" % output_latency)
 	
-	# wave table
-	wave_table_item_list.select(0)
-	
 	# pitch shift
 	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
 	pitch_slider.drag_ended.connect(_on_pitch_slider_drag_ended)
@@ -219,6 +216,11 @@ func _ready() -> void:
 	piano_buttons = get_tree().get_nodes_in_group(PIANO_BUTTON_GROUP)
 	print("piano_buttons")
 	print(piano_buttons)
+	
+	# wave table
+	wave_table_item_list.select(0)
+	
+	
 	
 	# turn knobs
 	
@@ -692,20 +694,6 @@ func _on_pitch_slider_value_changed(value: float) -> void:
 	for btn:PianoButton in piano_buttons:
 		btn.queue_pitch_change(target_scale)
 				
-	pass
-	#print("value changed: %s" % value)
-	#
-	#var target_scale = remap(value, -1.0, 1.0, 1.0 - 0.059*2.0, 1.0 + 0.059*2.0)
-	#pitch_bend_effect.pitch_scale = target_scale
-	#
-	## Smoothly interpolate pitch scale instead of setting directly
-	#if scale_tween:
-		#scale_tween.kill()
-	#scale_tween = create_tween()
-	#scale_tween.set_ease(Tween.EASE_OUT)
-	#scale_tween.set_trans(Tween.TRANS_SINE)
-	#scale_tween.tween_property(pitch_bend_effect, "pitch_scale", target_scale, 0.05)  # Adjust time for smoothness
-
 
 func _on_pitch_slider_drag_ended(_value_changed: bool) -> void:
 	# Return slider to zero smoothly
@@ -719,18 +707,6 @@ func _on_pitch_slider_drag_ended(_value_changed: bool) -> void:
 
 	# Smoothly ease back to pitch_scale 1.0 to avoid clicks
 	pitch_tween.tween_property(pitch_bend_effect, "pitch_scale", 1.0, max_pitch_slide_time * distance_from_center)
-	
-	
-#func _on_pitch_slider_drag_ended(_value_changed: bool) -> void:
-	#pass
-	 #return slider to zero
-	#var distance_from_center = abs(pitch_slider.value)
-	#if pitch_tween:
-		#pitch_tween.kill()
-	#pitch_tween = create_tween()
-	#pitch_tween.set_ease(Tween.EASE_OUT)
-	#pitch_tween.set_trans(Tween.TRANS_CUBIC)
-	#pitch_tween.tween_property(pitch_slider, "value", pitch_slider_center_value, max_pitch_slide_time * distance_from_center)
 
 
 func _on_wave_table_item_selected(idx: int) -> void:
@@ -740,3 +716,5 @@ func _on_wave_table_item_selected(idx: int) -> void:
 	if idx >= 0 and idx < wave_keys.size():
 		current_waveform = wave_keys[idx]
 		print("Current waveform set to: ", current_waveform)
+		for btn:PianoButton in piano_buttons:
+			btn.queue_waveform_change(idx, current_waveform)

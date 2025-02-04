@@ -56,12 +56,13 @@ var qwerty:bool = false
 # wave table
 var wave_table: Dictionary = {
 	"sin": func(_phase): return sin(_phase * TAU),
-	# "triangle": func(_phase): return 1.0 - 4.0 * abs(round(_phase - 0.25) - (_phase - 0.25)),
-	# "sawtooth": func(_phase): return 2.0 * _phase - 1.0,
-	# "pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
+	"triangle": func(_phase): return 1.0 - 4.0 * abs(round(_phase - 0.25) - (_phase - 0.25)),
+	"sawtooth": func(_phase): return 2.0 * _phase - 1.0,
+	"pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
 }
 var current_waveform = "sin"
 var waveform_index: float = 0.0
+
 var waveform_target_index: float = 0.0
 var tween:Tween
 
@@ -70,6 +71,12 @@ var tween:Tween
 var pending_pitch_change: float = 1.0  # Stores the next pitch shift
 var apply_pitch_change: bool = false   # Flag to apply pitch change
 var prev_waveform: float = 0.0         # Tracks the previous sample value
+
+
+# wave mod
+var pending_waveform_change: String = "sin"  # Stores the next pitch shift
+var apply_waveform_change: bool = false   # Flag to apply pitch change
+
 
 
 	
@@ -86,34 +93,42 @@ func create_audio_player() -> AudioStreamPlayer:
 	return player
 
 
-func _start_waveform_tween(target_index:int = wave_table.keys().size() - 1):
-	tween = create_tween()
-	tween.set_trans(Tween.TRANS_SINE)
-	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "waveform_index", target_index, tween_time)
-	tween.finished.connect(_restart_waveform_tween)
-	tween.play()
-
-
-func _restart_waveform_tween(target_index:int = 0):
-	tween = create_tween()
-	tween.set_trans(Tween.TRANS_SINE)
-	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "waveform_index", target_index, tween_time)
-	tween.finished.connect(_start_waveform_tween)
-	tween.play()
+#func _start_waveform_tween(target_index:int = wave_table.keys().size() - 1):
+	#tween = create_tween()
+	#tween.set_trans(Tween.TRANS_SINE)
+	#tween.set_ease(Tween.EASE_IN_OUT)
+	#tween.tween_property(self, "waveform_index", target_index, tween_time)
+	#tween.finished.connect(_restart_waveform_tween)
+	#tween.play()
+#
+#
+#func _restart_waveform_tween(target_index:int = 0):
+	#tween = create_tween()
+	#tween.set_trans(Tween.TRANS_SINE)
+	#tween.set_ease(Tween.EASE_IN_OUT)
+	#tween.tween_property(self, "waveform_index", target_index, tween_time)
+	#tween.finished.connect(_start_waveform_tween)
+	#tween.play()
 	
 
 func queue_pitch_change(target_scale:float) -> void:
 	# print("pitch change")
 	pending_pitch_change = target_scale
 	apply_pitch_change = true  # Set flag to apply change on zero crossing
+
+
+func queue_waveform_change(idx:float, _current_waveform:String) -> void:
+	print("waveform change")
+	self.waveform_index = idx
+	self.current_waveform = _current_waveform
+	# pending_waveform_change = target_waveform
+	# apply_waveform_change = true  # Set flag to apply change on zero crossing
 	
 	
 	
 func _ready() -> void:
 	# waveform tweener
-	_start_waveform_tween(wave_table.keys().size() - 1)
+	# _start_waveform_tween(wave_table.keys().size() - 1)
 	
 	# group
 	self.add_to_group(PIANO_BUTTON_GROUP)
@@ -301,11 +316,11 @@ func fill_buffer():
 
 	# Get lower and upper wave indices for interpolation
 	var lower_index = int(waveform_index) % wave_count
-	var upper_index = (lower_index + 1) % wave_count
-	var blend_factor = waveform_index - lower_index  # Fractional part
+	# var upper_index = (lower_index + 1) % wave_count
+	# var blend_factor = waveform_index - lower_index  # Fractional part
 
 	var lower_waveform = wave_table[wave_keys[lower_index]]
-	var upper_waveform = wave_table[wave_keys[upper_index]]
+	# var upper_waveform = wave_table[wave_keys[upper_index]]
 
 	# Amplitude normalization factors per waveform
 	var normalization_factors = {
@@ -318,8 +333,9 @@ func fill_buffer():
 	for i in range(frames_available):
 		# Interpolate between waveforms
 		var lower_value = lower_waveform.call(phase) * normalization_factors[wave_keys[lower_index]]
-		var upper_value = upper_waveform.call(phase) * normalization_factors[wave_keys[upper_index]]
-		var waveform = lerp(lower_value, upper_value, blend_factor)  
+		# var upper_value = upper_waveform.call(phase) * normalization_factors[wave_keys[upper_index]]
+		# var waveform = lerp(lower_value, upper_value, blend_factor)  
+		var waveform = lower_value
 		
 		# Zero-crossing detection: Apply pitch change only when crossing zero
 		# var _tol = 0.1
