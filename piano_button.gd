@@ -165,13 +165,13 @@ func _is_touch_inside(pos: Vector2) -> bool:
 	
 	
 func _on_piano_button_pressed() -> void:
-	print("down, %s" % self.note)
+	print("down, %s, %s" % [self.note, self.freq])
 	self.button_pressed = true
 	play_freq()
 	piano_button_pressed.emit(self)
 
 func _on_piano_button_up() -> void:
-	print("up, %s" % self.note)
+	print("up, %s, %s" % [self.note, self.freq])
 	self.button_pressed = false
 	stop_freq()
 	
@@ -286,7 +286,7 @@ func fill_buffer():
 	# Amplitude normalization factors per waveform
 	var normalization_factors = {
 		"sin": 1.0,  # Already normalized
-		"sawtooth": 1.0, # 0.707,  # Reduce harshness
+		"sawtooth": 0.707,  # Reduce harshness
 		"triangle": 0.707,  # Similar to sine
 		"pulse": 0.5  # Very loud, needs reduction
 	}

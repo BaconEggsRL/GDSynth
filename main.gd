@@ -300,7 +300,9 @@ func _on_octave_up() -> void:
 		var new_octave = last_octave + 1
 		btn.note[-1] = str(new_octave)
 		btn.text = "%s\n%s" % [btn.note, btn.qwerty_key]
-		if new_octave == 8:
+		if octave_down_btn.disabled:
+			octave_down_btn.disabled = false
+		if new_octave == 6:
 			octave_up_btn.disabled = true
 
 	
@@ -317,6 +319,8 @@ func _on_octave_down() -> void:
 		btn.text = "%s\n%s" % [btn.note, btn.qwerty_key]
 		if octave_up_btn.disabled:
 			octave_up_btn.disabled = false
+		if new_octave == 1:
+			octave_down_btn.disabled = true
 	
 	
 	
