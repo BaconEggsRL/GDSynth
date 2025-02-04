@@ -294,15 +294,30 @@ func _on_looping_toggled(_toggled_on: bool) -> void:
 
 
 func _on_save_pressed() -> void:
-	if recording:
-		save_btn.disabled = true
-		var save_path = save_dir + "test.wav"
-		recording.save_to_wav(save_path)
-		save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
-		await get_tree().create_timer(1.0).timeout
-		print("WAIWDOIAJSDASDASDASD")
-		save_btn.disabled = false
+	#if recording:
+		#save_btn.disabled = true
+		#var save_path = save_dir + "test.wav"
+		#recording.save_to_wav(save_path)
+		#save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
+		#await get_tree().create_timer(1.0).timeout
+		#print("WAIWDOIAJSDASDASDASD")
+		#save_btn.disabled = false
 	
+	if capture_data.is_empty():
+		print("No audio captured!")
+		return
+	
+	print("Saving captured audio")
+	var capture_wav = convert_to_wav(capture_data)
+	
+	# save data
+	save_btn.disabled = true
+	var save_path = save_dir + "test.wav"
+	capture_wav.save_to_wav(save_path)
+	save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
+	await get_tree().create_timer(1.0).timeout
+	print("WAIWDOIAJSDASDASDASD")
+	save_btn.disabled = false
 	
 
 
@@ -475,6 +490,7 @@ func start_capturing():
 
 	record_btn.text = "Stop Capturing"
 	play_btn.disabled = true
+	save_btn.disabled = true
 	
 
 func stop_capturing():
@@ -483,6 +499,7 @@ func stop_capturing():
 
 	record_btn.text = "Start Capturing"
 	play_btn.disabled = false  # Enable play button after capturing stops
+	save_btn.disabled = false
 	
 	
 	

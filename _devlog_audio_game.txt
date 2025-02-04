@@ -12,11 +12,15 @@ Todo:
 More complex oscillators (besides sine wave)
 Frequency modulation -- pulling peaks and valleys tighter together
 Phase modulation, phase distortion, wave folding
-wave table -- sine, triangle, saw, square, 
+wave table -- sine, triangle, saw, square
+
+smooth morph between waveforms using LFO
+(low frequency oscillator -- changes the waveform over time.)
 
 
 
 Add multitouch support for mobile (switch to touch screen button?)
+Fix interactions between keypress and touch
 
 Master volume btn / knob
 Make knobs look better (no john godots)

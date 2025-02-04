@@ -32,6 +32,9 @@ var volume_tweener:Tween
 
 # for continuous press
 var phase: float = 0.0
+# for waveform modulation
+var LFO_phase: float = 0.0
+var LFO_rate: float = 0.01  # Adjust speed of LFO modulation
 
 var is_hovering:bool = false
 const PIANO_BUTTON_GROUP = "piano_button"
@@ -39,6 +42,24 @@ const PIANO_BUTTON_GROUP = "piano_button"
 signal piano_button_pressed
 
 
+# multi-touch for mobile
+var active_touches: Dictionary = {}
+
+# wave table
+var wave_table: Dictionary = {
+	"sin": func(_phase): return sin(_phase * TAU),
+	"triangle": func(_phase): return 1.0 - 4.0 * abs(round(_phase - 0.25) - (_phase - 0.25)),
+	"sawtooth": func(_phase): return 2.0 * _phase - 1.0,
+	"pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
+}
+var current_waveform = "sin"
+var waveform_index: float = 0.0
+var waveform_target_index: float = 0.0
+var tween:Tween
+
+
+	
+	
 func create_audio_player() -> AudioStreamPlayer:
 	var player := AudioStreamPlayer.new()
 	var stream := AudioStreamGenerator.new()
@@ -51,7 +72,29 @@ func create_audio_player() -> AudioStreamPlayer:
 	return player
 
 
+func _start_waveform_tween(target_index:int = wave_table.keys().size() - 1):
+	tween = create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "waveform_index", target_index, 2.0)
+	tween.finished.connect(_restart_waveform_tween)
+	tween.play()
+
+
+func _restart_waveform_tween(target_index:int = 0):
+	tween = create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "waveform_index", target_index, 2.0)
+	tween.finished.connect(_start_waveform_tween)
+	tween.play()
+	
+	
+	
 func _ready() -> void:
+	# waveform tweener
+	_start_waveform_tween(wave_table.keys().size() - 1)
+	
 	# group
 	self.add_to_group(PIANO_BUTTON_GROUP)
 	
@@ -93,7 +136,32 @@ func _process(_delta:float) -> void:
 			button_up.emit()
 
 
-
+func _input(event):
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if _is_touch_inside(event.position):
+				active_touches[event.index] = true
+				self.pressed.emit()
+		else:
+			if event.index in active_touches:
+				active_touches.erase(event.index)
+				if active_touches.is_empty():
+					self.button_up.emit()
+	
+	elif event is InputEventScreenDrag:
+		if event.index in active_touches and not _is_touch_inside(event.position):
+			active_touches.erase(event.index)
+			if active_touches.is_empty():
+				self.button_up.emit()
+				
+				
+func _is_touch_inside(pos: Vector2) -> bool:
+	return get_global_rect().has_point(pos)
+	
+	
+	
+	
+	
 func _on_piano_button_pressed() -> void:
 	print("down, %s" % self.name)
 	self.button_pressed = true
@@ -176,39 +244,23 @@ func stop_freq(smooth:bool = true) -> void:
 	else:
 		audio_player.stop()
 		pass
-	
-	
-
-#func fill_buffer():
-	## var phase = 0.0
-	#var increment = freq / mix_rate
-	#var frames_available = playback.get_frames_available()
-#
-	#for i in range(frames_available):
-		#playback.push_frame(Vector2.ONE * sin(phase * TAU))
-		#phase = fmod(phase + increment, 1.0)
 
 
 func fill_buffer():
-	# var phase:float = 0.0
 	var increment = freq / mix_rate
 	var frames_available = playback.get_frames_available()
-
+	
+	# update waveform
+	var temp = current_waveform
+	var wave_keys = wave_table.keys()
+	var wave_count = wave_keys.size()
+	var index = int(waveform_index) % wave_count
+	current_waveform = wave_keys[index]
+	if temp != current_waveform:
+		print(current_waveform)
+	
+	var waveform:float
 	for i in range(frames_available):
-		var waveform:float
-		
-		# sine waveform
-		var _sin = sin(phase * TAU)
-		
-		# sawtooth waveform
-		var _sawtooth = 2.0 * phase - 1.0  # Convert phase [0,1] to sawtooth [-1,1]
-
-		# choose waveform
-		waveform = _sin
-		# waveform = _sawtooth
-		
-		# push waveform and update phase
+		waveform = wave_table[current_waveform].call(phase)
 		playback.push_frame(Vector2.ONE * waveform)
 		phase = fmod(phase + increment, 1.0)
-		
-		
