@@ -179,11 +179,36 @@ func stop_freq(smooth:bool = true) -> void:
 	
 	
 
+#func fill_buffer():
+	## var phase = 0.0
+	#var increment = freq / mix_rate
+	#var frames_available = playback.get_frames_available()
+#
+	#for i in range(frames_available):
+		#playback.push_frame(Vector2.ONE * sin(phase * TAU))
+		#phase = fmod(phase + increment, 1.0)
+
+
 func fill_buffer():
-	# var phase = 0.0
+	# var phase:float = 0.0
 	var increment = freq / mix_rate
 	var frames_available = playback.get_frames_available()
 
 	for i in range(frames_available):
-		playback.push_frame(Vector2.ONE * sin(phase * TAU))
+		var waveform:float
+		
+		# sine waveform
+		var _sin = sin(phase * TAU)
+		
+		# sawtooth waveform
+		var _sawtooth = 2.0 * phase - 1.0  # Convert phase [0,1] to sawtooth [-1,1]
+
+		# choose waveform
+		waveform = _sin
+		# waveform = _sawtooth
+		
+		# push waveform and update phase
+		playback.push_frame(Vector2.ONE * waveform)
 		phase = fmod(phase + increment, 1.0)
+		
+		

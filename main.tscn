@@ -19,7 +19,7 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "down", "current", "up", "piano_black", "piano_white", "note_label", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
 script = ExtResource("1_ig7tw")
 looping_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/looping")
 record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/record")
@@ -32,9 +32,6 @@ attack_knob = NodePath("Knobs/attack_knob")
 decay_knob = NodePath("Knobs/decay_knob")
 sus_knob = NodePath("Knobs/sustain_knob")
 release_knob = NodePath("Knobs/release_knob")
-down = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/down")
-current = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/current")
-up = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/quick/up")
 piano_black = NodePath("Control/ControlBtns/piano/piano_black")
 piano_white = NodePath("Control/ControlBtns/piano/piano_white")
 note_label = NodePath("Control/VBoxContainer/StatsPanel/MarginContainer/VBoxContainer/HBoxContainer/NoteLabel")
@@ -181,33 +178,6 @@ focus_mode = 0
 action_mode = 0
 text = "Save"
 
-[node name="quick" type="HBoxContainer" parent="Control/ControlBtns/MarginContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/separation = 20
-
-[node name="down" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/quick"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-focus_mode = 0
-action_mode = 0
-text = "go down"
-
-[node name="current" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/quick"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-focus_mode = 0
-action_mode = 0
-text = "current"
-
-[node name="up" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/quick"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-focus_mode = 0
-action_mode = 0
-text = "go up"
-
 [node name="piano" type="VBoxContainer" parent="Control/ControlBtns"]
 layout_mode = 2
 theme_override_constants/separation = -200
@@ -293,7 +263,3 @@ offset_right = 43.0
 offset_bottom = 57.0
 text = "Release"
 horizontal_alignment = 1
-
-[connection signal="pressed" from="Control/ControlBtns/MarginContainer/VBoxContainer/quick/down" to="." method="_on_down_pressed"]
-[connection signal="pressed" from="Control/ControlBtns/MarginContainer/VBoxContainer/quick/current" to="." method="_on_current_pressed"]
-[connection signal="pressed" from="Control/ControlBtns/MarginContainer/VBoxContainer/quick/up" to="." method="_on_up_pressed"]

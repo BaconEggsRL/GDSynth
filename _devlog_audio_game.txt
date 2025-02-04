@@ -9,6 +9,13 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
+More complex oscillators (besides sine wave)
+Frequency modulation -- pulling peaks and valleys tighter together
+Phase modulation, phase distortion, wave folding
+wave table -- sine, triangle, saw, square, 
+
+
+
 Add multitouch support for mobile (switch to touch screen button?)
 
 Master volume btn / knob

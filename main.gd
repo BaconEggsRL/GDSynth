@@ -54,10 +54,6 @@ var recording:AudioStreamWAV
 @export var release_knob:Knob
 
 
-@export var down:Button
-@export var current:Button
-@export var up:Button
-
 @export var piano_black:HBoxContainer
 @export var piano_white:HBoxContainer
 
@@ -269,27 +265,18 @@ func _input(_event) -> void:
 func process_event(event) -> void:
 	if event is InputEventKey:
 		if white_keys.has(event.keycode) or black_keys.has(event.keycode):
-			# print(event.as_text())
 			var note = piano_qwerty.find_key(event.keycode)
-			# print(note)
 			var freq = piano_frequencies[note]
-			# print(freq)
 			
 			if event.pressed and pulse_hz != freq:
-				# play_freq(freq)
-				# note_label.text = note
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
 					if btn.name == note and btn.button_pressed == false:
-						# btn.button_pressed = true
-						# btn.toggled.emit(true)
 						btn.pressed.emit()
 			else:
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
 					if btn.name == note and btn.button_pressed == true:
-						# btn.button_pressed = false
-						# btn.toggled.emit(false)
 						btn.button_up.emit()
 	
 
@@ -597,56 +584,7 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 		_:
 			push_warning("'%s' type not matched" % type)
 	pass
-	
-	
-	
-# func _on_piano_key_toggled(_toggled_on:bool, _btn:PianoButton) -> void:
-	# pass
-	# update button pressed
-	# btn.button_pressed = toggled_on
-	
-	#if toggled_on:
-		#var freq = btn.freq
-		#if pulse_hz != freq:
-			#print("NEW FREQ")
-			#play_freq(freq)
-			#note_label.text = btn.note
-		## play_freq(freq)
-	#else:
-		#var freq = btn.freq
-		#if pulse_hz == freq:
-			#print("STOP FREQ")
-			#stop_freq()
-			#note_label.text = btn.note
 
-
-
-# play note and reset index to new note
-func play_note(new_index:int = 0, save:bool = true) -> void:
-	# update index and clamp to keys array size
-	var temp = clamp(new_index, 0, keys.size()-1)
-	# update index
-	if save:
-		index = temp
-	
-	# get note name to play
-	var note = keys[temp]
-	print(note)
-	
-	# get freq to play
-	var freq = piano_frequencies[note]
-	# play frequency
-	play_freq(freq)
-
-
-func play_freq(freq:float = 440.0) -> void:
-	# get frequency to play
-	pulse_hz = freq
-	
-	# play the frequency
-	audio_player.play()
-	playback = audio_player.get_stream_playback()
-	fill_buffer()
 
 
 func stop_freq() -> void:
@@ -726,15 +664,3 @@ func generate_piano_qwerty() -> Dictionary:
 					white_key_index += 1
 
 	return result
-	
-	
-func _on_down_pressed() -> void:
-	play_note(index - 1, true)
-
-
-func _on_current_pressed() -> void:
-	play_note(index, true)
-
-
-func _on_up_pressed() -> void:
-	play_note(index + 1, true)
