@@ -473,29 +473,16 @@ func _apply_loop_mode() -> void:
 			
 func _on_finished() -> void:
 	print("done") 
-	# play_btn.button_pressed = false
-	# stop_btn.button_pressed = false
 	play_btn.disabled = false
 	stop_btn.disabled = true
 	
 func _on_loop() -> void:
 	print("loop")
-	#audio_player.volume_db = -20  # Fade out to reduce pop noise
-	#audio_player.seek(0.0)  # Reset to the start without stopping
-	#await get_tree().create_timer(0.05).timeout  # Small delay
-	#audio_player.volume_db = 0  # Restore volume
-	# await get_tree().process_frame
 	audio_player.play()
 	var test = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix()
 	print("test = %s" % test)
 	
 
-#func _process(_delta: float) -> void:
-	#if audio_player.playing and self.loop_mode == AudioStreamWAV.LOOP_FORWARD:
-		#var len = audio_player.stream.get_length()
-		#var play_pos = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix()
-		#print("play_pos = %s" % play_pos)
-		#print("len = %s" % len)
 
 func _process(_delta):
 	if is_capturing:
@@ -506,18 +493,7 @@ func _process(_delta):
 				capture_data.append(frame.x)  # Left channel
 				capture_data.append(frame.y)  # Right channel
 
-			
-#func _process(_delta):
-	#if is_capturing and capture_effect.can_get_buffer(256):
-		#var buffer = capture_effect.get_buffer(256)
-		## append buffer
-		## capture_data.append_array(buffer)
-		#for frame in buffer:
-			#capture_data.append(frame.x)  # Left channel
-			#capture_data.append(frame.y)  # Right channel
-		## clear buffer
-		#capture_effect.clear_buffer()
-		
+
 
 
 func start_capturing():

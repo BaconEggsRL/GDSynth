@@ -169,27 +169,27 @@ func _process(_delta:float) -> void:
 			button_up.emit()
 
 
-#func _input(event):
-	#if event is InputEventScreenTouch:
-		#if event.pressed:
-			#if _is_touch_inside(event.position):
-				#active_touches[event.index] = true
-				#self.pressed.emit()
-		#else:
-			#if event.index in active_touches:
-				#active_touches.erase(event.index)
-				#if active_touches.is_empty():
-					#self.button_up.emit()
-	#
-	#elif event is InputEventScreenDrag:
-		#if event.index in active_touches and not _is_touch_inside(event.position):
-			#active_touches.erase(event.index)
-			#if active_touches.is_empty():
-				#self.button_up.emit()
+func _input(event):
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if _is_touch_inside(event.position):
+				active_touches[event.index] = true
+				self.pressed.emit()
+		else:
+			if event.index in active_touches:
+				active_touches.erase(event.index)
+				if active_touches.is_empty():
+					self.button_up.emit()
+	
+	elif event is InputEventScreenDrag:
+		if event.index in active_touches and not _is_touch_inside(event.position):
+			active_touches.erase(event.index)
+			if active_touches.is_empty():
+				self.button_up.emit()
 				
 				
-#func _is_touch_inside(pos: Vector2) -> bool:
-	#return get_global_rect().has_point(pos)
+func _is_touch_inside(pos: Vector2) -> bool:
+	return get_global_rect().has_point(pos)
 	
 	
 	
