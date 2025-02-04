@@ -46,6 +46,10 @@ signal piano_button_pressed
 var active_touches: Dictionary = {}
 var tween_time: float = 2.0
 
+# var to track whether pressed by qwerty or mouse
+var qwerty:bool = false
+
+
 
 # wave table
 var wave_table: Dictionary = {
@@ -132,45 +136,48 @@ func _process(_delta:float) -> void:
 		if playback:
 			fill_buffer()
 
-	# stop playing if click released
-	if Input.is_action_just_released("click"):
+	# stop playing if click released and not qwerty key
+	if Input.is_action_just_released("click") and self.is_hovering:
 		if self.button_pressed:
 			button_up.emit()
 
 
-func _input(event):
-	if event is InputEventScreenTouch:
-		if event.pressed:
-			if _is_touch_inside(event.position):
-				active_touches[event.index] = true
-				self.pressed.emit()
-		else:
-			if event.index in active_touches:
-				active_touches.erase(event.index)
-				if active_touches.is_empty():
-					self.button_up.emit()
-	
-	elif event is InputEventScreenDrag:
-		if event.index in active_touches and not _is_touch_inside(event.position):
-			active_touches.erase(event.index)
-			if active_touches.is_empty():
-				self.button_up.emit()
+#func _input(event):
+	#if event is InputEventScreenTouch:
+		#if event.pressed:
+			#if _is_touch_inside(event.position):
+				#active_touches[event.index] = true
+				#self.pressed.emit()
+		#else:
+			#if event.index in active_touches:
+				#active_touches.erase(event.index)
+				#if active_touches.is_empty():
+					#self.button_up.emit()
+	#
+	#elif event is InputEventScreenDrag:
+		#if event.index in active_touches and not _is_touch_inside(event.position):
+			#active_touches.erase(event.index)
+			#if active_touches.is_empty():
+				#self.button_up.emit()
 				
 				
-func _is_touch_inside(pos: Vector2) -> bool:
-	return get_global_rect().has_point(pos)
+#func _is_touch_inside(pos: Vector2) -> bool:
+	#return get_global_rect().has_point(pos)
 	
 	
 	
 	
 	
-func _on_piano_button_pressed() -> void:
+func _on_piano_button_pressed(_qwerty:bool = false) -> void:
+	self.qwerty = _qwerty
+	print("qwerty = %s" % self.qwerty)
 	print("down, %s, %s" % [self.note, self.freq])
 	self.button_pressed = true
 	play_freq()
 	piano_button_pressed.emit(self)
 
 func _on_piano_button_up() -> void:
+	self.qwerty = false
 	print("up, %s, %s" % [self.note, self.freq])
 	self.button_pressed = false
 	stop_freq()
@@ -178,13 +185,15 @@ func _on_piano_button_up() -> void:
 	
 func _on_mouse_entered() -> void:
 	is_hovering = true
-	if Input.is_action_pressed("click"):
-		pressed.emit()
+	if not self.qwerty:
+		if Input.is_action_pressed("click"):
+			pressed.emit()
 		
 func _on_mouse_exited() -> void:
 	is_hovering = false
-	if self.button_pressed:
-		button_up.emit()
+	if not self.qwerty:
+		if self.button_pressed:
+			button_up.emit()
 
 
 # play the frequency

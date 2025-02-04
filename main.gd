@@ -280,7 +280,7 @@ func process_event(event) -> void:
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:
 					if btn.name == note and btn.button_pressed == false:
-						btn.pressed.emit()
+						btn.pressed.emit(true)
 			else:
 				# update piano button toggled
 				for btn:PianoButton in piano_buttons:

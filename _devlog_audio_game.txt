@@ -28,7 +28,7 @@ Make knobs look better (no john godots)
 
 
 
-Octave slider (change octaves)
+# Octave slider (change octaves)
 Pitch bend
 piano--7 octaves (of C) = 49 + 2 = 51
 black: 7 octaves (of B flat) = 49
