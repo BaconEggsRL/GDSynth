@@ -97,8 +97,7 @@ func _ready() -> void:
 	var idx = AudioServer.get_bus_index("Master")
 	# And use it to retrieve its first effect, which has been defined
 	# as an "AudioEffectRecord" resource.
-	record_effect = AudioServer.get_bus_effect(idx, 0)
-	capture_effect = AudioServer.get_bus_effect(idx, 1)
+	capture_effect = AudioServer.get_bus_effect(idx, 0)
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
 	var output_latency = AudioServer.get_output_latency()
 	print("output_latency = %s" % output_latency)
@@ -725,3 +724,8 @@ func generate_piano_qwerty() -> Dictionary:
 					white_key_index += 1
 
 	return result
+
+
+func _on_pitch_slider_value_changed(value: float) -> void:
+	print(value)
+	
