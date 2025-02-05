@@ -25,7 +25,9 @@ var mix_rate:float = 11025.0
 var release_samples = mix_rate
 var attack_samples = mix_rate
 
-var buffer_length:float = 0.015  # 0.050
+# 0.050 for mobile?
+# 0.015 for desktop / web
+var buffer_length:float = 0.015
 
 var volume_tweener:Tween
 @onready var audio_player:AudioStreamPlayer = self.create_audio_player()
