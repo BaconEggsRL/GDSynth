@@ -9,33 +9,36 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
+EFFECTS:
+Reverb, sustain, realistic piano sounds?
+
+METRONOME:
+Built-in metronome with adjustable BPM and time signature
 
 KNOBS:
-
 Master volume btn / knob
 Make knobs look better (no john godots)
 
+KNOB PRESETS:
+Save multiple (named) A/S/D/R knob presets
+0 decay sounds really cool with sus -10
+
+MUTLI-TRACK:
+Add multiple record/loop track slots.
+
 
 WAVE TABLE:
-
 More complex oscillators (besides sine wave)
 --Frequency modulation -- pulling peaks and valleys tighter together
 --Phase modulation, phase distortion, wave folding
 --wave table -- sine, triangle, saw, square
-
 smooth morph between waveforms using LFO
 --(low frequency oscillator -- changes the waveform over time.)
 
 
-KNOB PRESETS:
-
-Save multiple (named) A/S/D/R knob presets
-0 decay sounds really cool with sus -10
 
 
-MUTLI-TRACK:
 
-Add multiple record/loop track slots.
 
 
 
