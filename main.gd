@@ -368,22 +368,77 @@ func _on_looping_toggled(_toggled_on: bool) -> void:
 
 
 func _on_save_pressed() -> void:
-	
+	# Return if no data to save
 	if capture_data.is_empty():
 		print("No audio captured!")
 		return
 	
+	# Get WAV data
 	print("Saving captured audio")
 	var capture_wav = convert_to_wav(capture_data)
-	
-	# save data
+
+	# Disable the save button temporarily
 	save_btn.disabled = true
-	var save_path = save_dir + "test.wav"
-	capture_wav.save_to_wav(save_path)
-	save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [save_path, ProjectSettings.globalize_path(save_path)]
+	
+	# Check if running on a web build
+	if OS.has_feature("web"):
+		save_file_web(capture_data)
+	else:
+		save_file_native(capture_wav)
+	
+	# Wait to allow save again
 	await get_tree().create_timer(1.0).timeout
-	print("WAIWDOIAJSDASDASDASD")
 	save_btn.disabled = false
+
+# Function for native file save dialog
+func save_file_native(capture_wav: AudioStreamWAV) -> void:
+	var file_dialog = FileDialog.new()
+	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	file_dialog.filters = ["*.wav ; WAV Audio File"]
+	file_dialog.title = "Save Audio File"
+	file_dialog.use_native_dialog = true
+	# file_dialog.dir_selected.emit(save_dir)
+	# file_dialog.current_path = save_dir + "test.wav"  # Set default directory and filename
+	add_child(file_dialog)
+	
+	file_dialog.file_selected.connect(func(path):
+		var error = capture_wav.save_to_wav(path)
+		if error == OK:
+			save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [path, ProjectSettings.globalize_path(path)]
+		else:
+			save_status.text = "Failed to save WAV file!"
+		file_dialog.queue_free()
+	)
+	
+	file_dialog.popup_centered()
+
+# Function for web file download
+func save_file_web(audio_data: PackedFloat32Array) -> void:
+	var file_name = "captured_audio.wav"
+	
+	# Convert raw audio data to a proper WAV file format
+	var wav_data = convert_audio_to_wav_bytes(audio_data)
+	
+	if wav_data.is_empty():
+		print("Failed to generate WAV data for web download.")
+		return
+	
+	# Encode buffer to Base64 for JavaScript download
+	var base64_str = Marshalls.raw_to_base64(wav_data)
+	var js_code = """
+		(function() {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:audio/wav;base64,%s');
+			element.setAttribute('download', '%s');
+			element.style.display = 'none';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+		})();
+	""" % [base64_str, file_name]
+	
+	JavaScriptBridge.eval(js_code)
 	
 
 
@@ -399,7 +454,70 @@ func _on_stop_toggled(_toggled_on: bool) -> void:
 	
 	
 
+func _int16_to_bytes(value: int) -> PackedByteArray:
+	var bytes = PackedByteArray()
+	bytes.append(value & 0xFF)
+	bytes.append((value >> 8) & 0xFF)
+	return bytes
 
+func _int32_to_bytes(value: int) -> PackedByteArray:
+	var bytes = PackedByteArray()
+	bytes.append(value & 0xFF)
+	bytes.append((value >> 8) & 0xFF)
+	bytes.append((value >> 16) & 0xFF)
+	bytes.append((value >> 24) & 0xFF)
+	return bytes
+	
+	
+func create_wav_header(data_size: int, sample_rate: float, channels: int) -> PackedByteArray:
+	var header = PackedByteArray()
+	var byte_rate = int(sample_rate) * channels * 2  # 16-bit PCM
+	
+	# RIFF Header
+	header.append_array("RIFF".to_utf8_buffer())  # ChunkID
+	header.append_array(_int32_to_bytes(36 + data_size))  # ChunkSize
+	header.append_array("WAVE".to_utf8_buffer())  # Format
+	
+	# fmt Subchunk
+	header.append_array("fmt ".to_utf8_buffer())  # Subchunk1ID
+	header.append_array(_int32_to_bytes(16))  # Subchunk1Size (16 for PCM)
+	header.append_array(_int16_to_bytes(1))  # AudioFormat (1 for PCM)
+	header.append_array(_int16_to_bytes(channels))  # NumChannels
+	header.append_array(_int32_to_bytes(int(sample_rate)))  # SampleRate
+	header.append_array(_int32_to_bytes(byte_rate))  # ByteRate
+	header.append_array(_int16_to_bytes(channels * 2))  # BlockAlign
+	header.append_array(_int16_to_bytes(16))  # BitsPerSample (16-bit)
+	
+	# data Subchunk
+	header.append_array("data".to_utf8_buffer())  # Subchunk2ID
+	header.append_array(_int32_to_bytes(data_size))  # Subchunk2Size
+	
+	return header
+	
+	
+func convert_audio_to_wav_bytes(audio_data: PackedFloat32Array) -> PackedByteArray:
+	var pcm_data = PackedByteArray()
+
+	# Convert float (-1.0 to 1.0) to 16-bit PCM (-32768 to 32767)
+	for i in range(0, audio_data.size(), 2):  # Process stereo pairs
+		var left_sample = int(clamp(audio_data[i] * 32767.0, -32768, 32767))
+		var right_sample = int(clamp(audio_data[i + 1] * 32767.0, -32768, 32767))
+
+		# Append left sample (little-endian format)
+		pcm_data.append(left_sample & 0xFF)
+		pcm_data.append((left_sample >> 8) & 0xFF)
+
+		# Append right sample (little-endian format)
+		pcm_data.append(right_sample & 0xFF)
+		pcm_data.append((right_sample >> 8) & 0xFF)
+
+	# WAV file header
+	var wav_header = create_wav_header(pcm_data.size(), capture_mix_rate, 2)  # Stereo (2 channels)
+	
+	# Return the full WAV file (header + PCM data)
+	return wav_header + pcm_data
+	
+	
 func convert_to_wav(audio_data: PackedFloat32Array) -> AudioStreamWAV:
 	var wav_stream = AudioStreamWAV.new()
 	

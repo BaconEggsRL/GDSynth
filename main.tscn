@@ -47,6 +47,66 @@ stream = SubResource("AudioStreamGenerator_ig7tw")
 max_polyphony = 128
 playback_type = 1
 
+[node name="Knobs" type="Node2D" parent="."]
+position = Vector2(0, 56.025)
+
+[node name="peak_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
+position = Vector2(228, 127)
+
+[node name="peak_label" type="Label" parent="Knobs/peak_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Attack dB"
+horizontal_alignment = 1
+
+[node name="attack_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
+position = Vector2(382, 126)
+
+[node name="AttackLabel" type="Label" parent="Knobs/attack_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Attack"
+horizontal_alignment = 1
+
+[node name="decay_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
+position = Vector2(530, 126)
+
+[node name="DecayLabel" type="Label" parent="Knobs/decay_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Decay"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="sustain_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
+position = Vector2(686, 128)
+
+[node name="SustainLabel" type="Label" parent="Knobs/sustain_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Sustain dB"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="release_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
+position = Vector2(846, 126)
+
+[node name="ReleaseLabel" type="Label" parent="Knobs/release_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 43.0
+offset_bottom = 57.0
+text = "Release"
+horizontal_alignment = 1
+
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
@@ -274,65 +334,5 @@ item_1/text = "triangle"
 item_2/text = "sawtooth"
 item_3/text = "pulse"
 script = ExtResource("3_1bvp3")
-
-[node name="Knobs" type="Node2D" parent="."]
-position = Vector2(0, 56.025)
-
-[node name="peak_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(228, 127)
-
-[node name="peak_label" type="Label" parent="Knobs/peak_knob"]
-offset_left = -41.0
-offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
-text = "Attack dB"
-horizontal_alignment = 1
-
-[node name="attack_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(382, 126)
-
-[node name="AttackLabel" type="Label" parent="Knobs/attack_knob"]
-offset_left = -41.0
-offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
-text = "Attack"
-horizontal_alignment = 1
-
-[node name="decay_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(530, 126)
-
-[node name="DecayLabel" type="Label" parent="Knobs/decay_knob"]
-offset_left = -41.0
-offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
-text = "Decay"
-horizontal_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="sustain_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(686, 128)
-
-[node name="SustainLabel" type="Label" parent="Knobs/sustain_knob"]
-offset_left = -41.0
-offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
-text = "Sustain dB"
-horizontal_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="release_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(846, 126)
-
-[node name="ReleaseLabel" type="Label" parent="Knobs/release_knob"]
-offset_left = -41.0
-offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
-text = "Release"
-horizontal_alignment = 1
 
 [connection signal="item_selected" from="WaveTableItemList" to="." method="_on_wave_table_item_selected"]
