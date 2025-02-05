@@ -385,36 +385,57 @@ func _on_save_pressed() -> void:
 		save_file_web(capture_data)
 	else:
 		save_file_native(capture_wav)
-	
-	# Wait to allow save again
-	await get_tree().create_timer(1.0).timeout
-	save_btn.disabled = false
+
 
 # Function for native file save dialog
 func save_file_native(capture_wav: AudioStreamWAV) -> void:
+	# default name for file
+	var file_name = "captured_audio.wav"
+	
 	var file_dialog = FileDialog.new()
 	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
 	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
 	file_dialog.filters = ["*.wav ; WAV Audio File"]
 	file_dialog.title = "Save Audio File"
 	file_dialog.use_native_dialog = true
-	# file_dialog.dir_selected.emit(save_dir)
-	# file_dialog.current_path = save_dir + "test.wav"  # Set default directory and filename
+	# set default file name
+	file_dialog.current_path = save_dir + file_name  # Set default directory and file name
 	add_child(file_dialog)
 	
+	# Handle file selection
 	file_dialog.file_selected.connect(func(path):
 		var error = capture_wav.save_to_wav(path)
 		if error == OK:
 			save_status.text = "Saved WAV file to: \"%s\"\n(%s)" % [path, ProjectSettings.globalize_path(path)]
 		else:
 			save_status.text = "Failed to save WAV file!"
+		file_dialog.hide()  # Hide the dialog after a file is selected
+		# Cleanup after dialog closes
 		file_dialog.queue_free()
+		# Re-enable save button
+		await get_tree().create_timer(1.0).timeout
+		save_btn.disabled = false
 	)
 	
+	# Handle dialog cancellation
+	file_dialog.canceled.connect(func():
+		save_status.text = "Save canceled!"
+		file_dialog.hide()  # Hide the dialog when canceled
+		# Cleanup after dialog closes
+		file_dialog.queue_free()
+		# Re-enable save button
+		await get_tree().create_timer(1.0).timeout
+		save_btn.disabled = false
+	)
+	
+	# Show the dialog and wait for it to be closed
 	file_dialog.popup_centered()
+
+
 
 # Function for web file download
 func save_file_web(audio_data: PackedFloat32Array) -> void:
+	# default name for file
 	var file_name = "captured_audio.wav"
 	
 	# Convert raw audio data to a proper WAV file format
@@ -438,7 +459,11 @@ func save_file_web(audio_data: PackedFloat32Array) -> void:
 		})();
 	""" % [base64_str, file_name]
 	
-	JavaScriptBridge.eval(js_code)
+	await JavaScriptBridge.eval(js_code)
+	
+	# Re-enable save button
+	await get_tree().create_timer(1.0).timeout
+	save_btn.disabled = false
 	
 
 
