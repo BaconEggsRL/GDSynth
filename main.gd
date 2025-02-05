@@ -413,7 +413,7 @@ func save_file_native(capture_wav: AudioStreamWAV) -> void:
 		# Cleanup after dialog closes
 		file_dialog.queue_free()
 		# Re-enable save button
-		await get_tree().create_timer(1.0).timeout
+		# await get_tree().create_timer(1.0).timeout
 		save_btn.disabled = false
 	)
 	
@@ -424,7 +424,7 @@ func save_file_native(capture_wav: AudioStreamWAV) -> void:
 		# Cleanup after dialog closes
 		file_dialog.queue_free()
 		# Re-enable save button
-		await get_tree().create_timer(1.0).timeout
+		# await get_tree().create_timer(1.0).timeout
 		save_btn.disabled = false
 	)
 	
@@ -462,7 +462,7 @@ func save_file_web(audio_data: PackedFloat32Array) -> void:
 	await JavaScriptBridge.eval(js_code)
 	
 	# Re-enable save button
-	await get_tree().create_timer(1.0).timeout
+	# await get_tree().create_timer(1.0).timeout
 	save_btn.disabled = false
 	
 
