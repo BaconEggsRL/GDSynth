@@ -36,9 +36,6 @@ var volume_tweener:Tween
 
 # for continuous press
 var phase: float = 0.0
-# for waveform modulation
-var LFO_phase: float = 0.0
-var LFO_rate: float = 0.01  # Adjust speed of LFO modulation
 
 var is_hovering:bool = false
 const PIANO_BUTTON_GROUP = "piano_button"
@@ -99,12 +96,13 @@ func create_audio_player() -> AudioStreamPlayer:
 
 
 # func start_waveform_tween(target_index:float = wave_table.keys().size()-0.01):
-func start_waveform_tween(target_index:float = 1+radius-0.01):
+# 1+radius-0.01
+func start_waveform_tween(target_index:float = 0.5+radius):
 	if tween:
 		tween.kill()
 	tween = create_tween()
-	# tween.set_trans(Tween.TRANS_SINE)
-	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_trans(Tween.TRANS_SINE)
+	# tween.set_trans(Tween.TRANS_CUBIC)
 	tween.set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(self, "waveform_index", target_index, tween_time)
 	tween.finished.connect(restart_waveform_tween)
@@ -115,8 +113,8 @@ func restart_waveform_tween(target_index:float = 0.0):
 	if tween:
 		tween.kill()
 	tween = create_tween()
-	# tween.set_trans(Tween.TRANS_SINE)
-	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_trans(Tween.TRANS_SINE)
+	# tween.set_trans(Tween.TRANS_CUBIC)
 	tween.set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(self, "waveform_index", target_index, tween_time)
 	tween.finished.connect(start_waveform_tween)
@@ -332,25 +330,38 @@ func fill_buffer():
 	var upper_index = clamp((lower_index + 1), 0, radius)
 	var blend_factor = waveform_index - lower_index  # Fractional part
 
+	# var sin_waveform = wave_table[wave_keys[0]]
 	var lower_waveform = wave_table[wave_keys[lower_index]]
 	var upper_waveform = wave_table[wave_keys[upper_index]]
 
 	# Amplitude normalization factors per waveform
 	var normalization_factors = {
 		"sin": 1.0,  # Already normalized
-		"sawtooth": 1.0, # 0.707,  # Reduce harshness
 		"triangle": 1.0, # 0.707,  # Similar to sine
+		"sawtooth": 0.5, # 0.707,  # Reduce harshness
 		"pulse": 0.5  # Very loud, needs reduction
 	}
 
 	for i in range(frames_available):
+		
+		# normalized phase
+		# var lower_waveform_phase = fmod(phase, 1.0)
+		# var upper_waveform_phase = fmod(phase + 0.5, 1.0)  # or some offset to avoid perfect phase match
+		var lower_waveform_phase = phase
+		var upper_waveform_phase = phase
+	
 		# Interpolate between waveforms
-		var lower_value = lower_waveform.call(phase) * normalization_factors[wave_keys[lower_index]]
-		var upper_value = upper_waveform.call(phase) * normalization_factors[wave_keys[upper_index]]
+		# var sin_value = sin_waveform.call(phase) * normalization_factors[wave_keys[0]]
+		# var lower_value = lower_waveform.call(phase) * normalization_factors[wave_keys[lower_index]]
+		# var upper_value = upper_waveform.call(phase) * normalization_factors[wave_keys[upper_index]]
+		# Interpolate between waveforms based on normalized phases
+		var lower_value = lower_waveform.call(lower_waveform_phase) * normalization_factors[wave_keys[lower_index]]
+		var upper_value = upper_waveform.call(upper_waveform_phase) * normalization_factors[wave_keys[upper_index]]
 		
 		var waveform:float
 		if blend:
-			waveform = lerp(lower_value, upper_value, blend_factor)
+			# waveform = lerp(sin_value, lerp(lower_value, upper_value, smoothstep(0.0, 1.0, blend_factor)), 0.5)
+			waveform = lerp(lower_value, upper_value, smoothstep(0.0, 1.0, blend_factor))
 		else:
 			waveform = lower_value
 		
@@ -364,4 +375,11 @@ func fill_buffer():
 		# Push waveform and update phase
 		playback.push_frame(Vector2.ONE * waveform)
 		prev_waveform = waveform  # Store previous value for next iteration
-		phase = fmod(phase + (current_freq / mix_rate), 1.0)
+		
+		var phase_difference:float = (current_freq / mix_rate) # qqq* blend_factor
+		#if blend:
+			#phase_difference = (current_freq / mix_rate) * blend_factor  # Smooth phase shift based on blend factor
+		#else:
+			#phase_difference = (current_freq / mix_rate)
+		# phase = fmod(phase + (current_freq / mix_rate), 1.0)
+		phase = fmod(phase + phase_difference, 1.0)

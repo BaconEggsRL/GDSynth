@@ -15,4 +15,4 @@ bus/0/effect/0/enabled = true
 bus/0/effect/1/effect = SubResource("AudioEffectPitchShift_j3pel")
 bus/0/effect/1/enabled = true
 bus/0/effect/2/effect = SubResource("AudioEffectReverb_j3pel")
-bus/0/effect/2/enabled = false
+bus/0/effect/2/enabled = true
