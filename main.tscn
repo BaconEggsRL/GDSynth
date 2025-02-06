@@ -158,6 +158,13 @@ value = 1.0
 alignment = 2
 script = ExtResource("4_lquwl")
 
+[node name="Reverb" type="Button" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Reverb"
+
 [node name="WaveTableItemList" type="ItemList" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer"]
 custom_minimum_size = Vector2(89.7, 0)
 layout_mode = 2
@@ -372,4 +379,5 @@ horizontal_alignment = 1
 [connection signal="toggled" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep" to="." method="_on_sweep_toggled"]
 [connection signal="toggled" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Blend" to="." method="_on_blend_toggled"]
 [connection signal="value_changed" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Radius" to="." method="_on_radius_value_changed"]
+[connection signal="toggled" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Reverb" to="." method="_on_reverb_toggled"]
 [connection signal="item_selected" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList" to="." method="_on_wave_table_item_selected"]

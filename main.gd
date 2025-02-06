@@ -102,7 +102,7 @@ const PIANO_BUTTON_GROUP = "piano_button"
 var piano_buttons:Array
 
 var pitch_bend_effect:AudioEffectPitchShift
-
+var reverb_effect:AudioEffectReverb
 
 
 
@@ -115,16 +115,22 @@ func _ready() -> void:
 	# And use it to retrieve its first effect, which has been defined
 	# as an "AudioEffectRecord" resource.
 	capture_effect = AudioServer.get_bus_effect(idx, 0)
+	pitch_bend_effect = AudioServer.get_bus_effect(idx, 1)
+	reverb_effect = AudioServer.get_bus_effect(idx, 2)
+	
+	# capture settings
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
 	var output_latency = AudioServer.get_output_latency()
 	print("output_latency = %s" % output_latency)
 	
-	# pitch shift
+	# pitch shift settings
 	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
 	pitch_slider.drag_ended.connect(_on_pitch_slider_drag_ended)
-	pitch_bend_effect = AudioServer.get_bus_effect(idx, 1)
 	pitch_bend_effect.fft_size = AudioEffectPitchShift.FFT_SIZE_4096
 	pitch_bend_effect.oversampling = 32
+	
+	# reverb settings
+	pass
 	
 	# connect signals
 	self.looping_btn.toggled.connect(_on_looping_toggled)
@@ -872,3 +878,11 @@ func _on_blend_toggled(toggled_on: bool) -> void:
 func _on_radius_value_changed(value: float) -> void:
 	for btn:PianoButton in piano_buttons:
 		btn.radius = value
+
+
+func _on_reverb_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		AudioServer.set_bus_effect_enabled(0, 2, true)
+	else:
+		AudioServer.set_bus_effect_enabled(0, 2, false)
+		
