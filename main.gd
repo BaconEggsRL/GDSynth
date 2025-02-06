@@ -446,6 +446,7 @@ func save_file_web(audio_data: PackedFloat32Array) -> void:
 		return
 	
 	# Encode buffer to Base64 for JavaScript download
+	# TODO -- use built in function JavaScriptBridge.download_buffer()
 	var base64_str = Marshalls.raw_to_base64(wav_data)
 	var js_code = """
 		(function() {
@@ -847,3 +848,27 @@ func _on_wave_table_item_selected(idx: int) -> void:
 		print("Current waveform set to: ", current_waveform)
 		for btn:PianoButton in piano_buttons:
 			btn.queue_waveform_change(idx)
+
+
+func _on_sweep_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		for btn:PianoButton in piano_buttons:
+			btn.start_waveform_tween()
+	else:
+		for btn:PianoButton in piano_buttons:
+			btn.stop_waveform_tween()
+		
+
+
+func _on_blend_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		for btn:PianoButton in piano_buttons:
+			btn.blend = true
+	else:
+		for btn:PianoButton in piano_buttons:
+			btn.blend = false
+
+
+func _on_radius_value_changed(value: float) -> void:
+	for btn:PianoButton in piano_buttons:
+		btn.radius = value
