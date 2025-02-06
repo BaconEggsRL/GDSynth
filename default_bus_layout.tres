@@ -1,18 +1,3 @@
-[gd_resource type="AudioBusLayout" load_steps=4 format=3 uid="uid://c8vxm0sctd011"]
-
-[sub_resource type="AudioEffectCapture" id="AudioEffectCapture_j3pel"]
-resource_name = "Capture"
-
-[sub_resource type="AudioEffectPitchShift" id="AudioEffectPitchShift_j3pel"]
-resource_name = "PitchShift"
-
-[sub_resource type="AudioEffectReverb" id="AudioEffectReverb_j3pel"]
-resource_name = "Reverb"
+[gd_resource type="AudioBusLayout" format=3 uid="uid://c8vxm0sctd011"]
 
 [resource]
-bus/0/effect/0/effect = SubResource("AudioEffectCapture_j3pel")
-bus/0/effect/0/enabled = true
-bus/0/effect/1/effect = SubResource("AudioEffectPitchShift_j3pel")
-bus/0/effect/1/enabled = true
-bus/0/effect/2/effect = SubResource("AudioEffectReverb_j3pel")
-bus/0/effect/2/enabled = false

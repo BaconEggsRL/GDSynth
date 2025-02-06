@@ -8,8 +8,11 @@ Real-time audio synthesis using Godot 4.4
 
 
 Todo:
+Save effects in recorded WAV?
+
 
 EFFECTS:
+Delay, Phaser, Chorus
 Reverb, sustain, realistic piano sounds?
 
 METRONOME:

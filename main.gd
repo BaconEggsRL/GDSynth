@@ -37,7 +37,6 @@ const max_sus_db:float = 0.0
 var save_dir:String = "user://"
 
 var capture_mix_rate:float = 44100.0  # Default, but will be set dynamically
-var capture_effect:AudioEffectCapture
 var capture_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
 
@@ -101,23 +100,39 @@ var note_names = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#
 const PIANO_BUTTON_GROUP = "piano_button"
 var piano_buttons:Array
 
-var pitch_bend_effect:AudioEffectPitchShift
-var reverb_effect:AudioEffectReverb
 
+
+
+@onready var capture_effect := AudioEffectCapture.new()
+@onready var pitch_bend_effect := AudioEffectPitchShift.new()
+@onready var reverb_effect := AudioEffectReverb.new()
+@onready var delay_effect := AudioEffectDelay.new()
+
+@onready var effects:Array = [
+	capture_effect,
+	pitch_bend_effect,
+	reverb_effect,
+	delay_effect,
+]
 
 
 
 	
 func _ready() -> void:
-	# record button
-	# We get the index of the "Record" bus.
+	# master / effect bus
 	var idx = AudioServer.get_bus_index("Master")
-	# And use it to retrieve its first effect, which has been defined
-	# as an "AudioEffectRecord" resource.
-	capture_effect = AudioServer.get_bus_effect(idx, 0)
-	pitch_bend_effect = AudioServer.get_bus_effect(idx, 1)
-	reverb_effect = AudioServer.get_bus_effect(idx, 2)
 	
+	# add effects
+	for i in effects.size():
+		var effect = effects[i]
+		AudioServer.add_bus_effect(idx, effect, i)
+		if effect is AudioEffectReverb or effect is AudioEffectDelay:
+			AudioServer.set_bus_effect_enabled(idx, i, false)
+	#capture_effect = AudioServer.get_bus_effect(idx, 0)
+	#pitch_bend_effect = AudioServer.get_bus_effect(idx, 1)
+	#reverb_effect = AudioServer.get_bus_effect(idx, 2)
+	#delay_effect = AudioServer.get_bus_effect(idx, 3)
+
 	# capture settings
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
 	var output_latency = AudioServer.get_output_latency()
@@ -372,6 +387,47 @@ func _on_looping_toggled(_toggled_on: bool) -> void:
 	_apply_loop_mode()
 
 
+## Function to apply active effects to the captured audio data
+#func apply_active_effects(raw_capture_data:PackedFloat32Array) -> PackedFloat32Array:
+	#var processed_data:PackedFloat32Array = []
+	#
+	## Iterate over the captured audio data and apply effects to each frame
+	#for i in range(0, capture_data.size(), 2):  # Process in stereo pairs (left, right)
+		#var left_channel = raw_capture_data[i]
+		#var right_channel = raw_capture_data[i + 1]
+#
+		## Apply reverb if it's enabled on bus 2 (Example for reverb)
+		#if AudioServer.is_bus_effect_enabled(0, 2):  # Bus 0, Effect 2
+			#left_channel = apply_reverb(left_channel)
+			#right_channel = apply_reverb(right_channel)
+		#
+		## Apply delay if it's enabled on bus 3 (Example for delay)
+		#if AudioServer.is_bus_effect_enabled(0, 3):  # Bus 0, Effect 3
+			#left_channel = apply_delay(left_channel)
+			#right_channel = apply_delay(right_channel)
+#
+		## Add the processed audio back to the processed_data array
+		#processed_data.append(left_channel)
+		#processed_data.append(right_channel)
+#
+	## Return processed data
+	#return processed_data
+#
+#
+#
+## Example function to simulate reverb effect (you would replace this with a real effect)
+#func apply_reverb(audio_sample: float) -> float:
+	## For the sake of simplicity, we're applying a simple reverb effect as an example
+	## A real reverb effect would be more complex and based on audio buffer manipulation
+	#return audio_sample * 0.9  # Apply a simple decay to simulate reverb
+#
+## Example function to simulate delay effect (you would replace this with a real effect)
+#func apply_delay(audio_sample: float) -> float:
+	## For the sake of simplicity, we're applying a simple delay effect as an example
+	## A real delay effect would involve storing past samples and mixing them
+	#return audio_sample * 0.8  # Apply a simple delay effect by reducing the sample volume
+	
+	
 
 func _on_save_pressed() -> void:
 	# Return if no data to save
@@ -379,9 +435,14 @@ func _on_save_pressed() -> void:
 		print("No audio captured!")
 		return
 	
+	# Manually apply any active effects to the captured audio
+	print("Applying active effects to captured audio...")
+	# var processed_data = apply_active_effects(capture_data)
+	
 	# Get WAV data
 	print("Saving captured audio")
 	var capture_wav = convert_to_wav(capture_data)
+	# var capture_wav = convert_to_wav(processed_data)
 
 	# Disable the save button temporarily
 	save_btn.disabled = true
@@ -389,6 +450,7 @@ func _on_save_pressed() -> void:
 	# Check if running on a web build
 	if OS.has_feature("web"):
 		save_file_web(capture_data)
+		# save_file_web(processed_data)
 	else:
 		save_file_native(capture_wav)
 
@@ -881,8 +943,17 @@ func _on_radius_value_changed(value: float) -> void:
 
 
 func _on_reverb_toggled(toggled_on: bool) -> void:
+	var reverb_index = effects.find(reverb_effect)
 	if toggled_on:
-		AudioServer.set_bus_effect_enabled(0, 2, true)
+		AudioServer.set_bus_effect_enabled(0, reverb_index, true)
 	else:
-		AudioServer.set_bus_effect_enabled(0, 2, false)
+		AudioServer.set_bus_effect_enabled(0, reverb_index, false)
 		
+
+
+func _on_delay_toggled(toggled_on: bool) -> void:
+	var delay_index = effects.find(delay_effect)
+	if toggled_on:
+		AudioServer.set_bus_effect_enabled(0, delay_index, true)
+	else:
+		AudioServer.set_bus_effect_enabled(0, delay_index, false)
