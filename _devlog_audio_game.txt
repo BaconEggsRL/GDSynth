@@ -10,6 +10,10 @@ Real-time audio synthesis using Godot 4.4
 Todo:
 Save effects in recorded WAV?
 
+Add a "playback" bus to optionally apply effects to when
+playing back recorded audio.
+
+
 
 EFFECTS:
 Delay, Phaser, Chorus

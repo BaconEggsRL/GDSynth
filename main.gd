@@ -37,7 +37,8 @@ const max_sus_db:float = 0.0
 var save_dir:String = "user://"
 
 var capture_mix_rate:float = 44100.0  # Default, but will be set dynamically
-var capture_data: PackedFloat32Array  # Stores interleaved stereo data
+var capture_play_data: PackedFloat32Array  # Stores interleaved stereo data
+var capture_save_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
 
 # wave table
@@ -103,14 +104,16 @@ var piano_buttons:Array
 
 
 
-@onready var capture_effect := AudioEffectCapture.new()
+@onready var capture_play_effect := AudioEffectCapture.new()
 @onready var reverb_effect := AudioEffectReverb.new()
 @onready var delay_effect := AudioEffectDelay.new()
+@onready var capture_save_effect := AudioEffectCapture.new()
 
 @onready var effects:Array = [
-	capture_effect,
+	capture_play_effect,
 	reverb_effect,
 	delay_effect,
+	capture_save_effect,
 ]
 
 
@@ -423,7 +426,7 @@ func _on_looping_toggled(_toggled_on: bool) -> void:
 
 func _on_save_pressed() -> void:
 	# Return if no data to save
-	if capture_data.is_empty():
+	if capture_save_data.is_empty():
 		print("No audio captured!")
 		return
 	
@@ -433,7 +436,7 @@ func _on_save_pressed() -> void:
 	
 	# Get WAV data
 	print("Saving captured audio")
-	var capture_wav = convert_to_wav(capture_data)
+	var capture_wav = convert_to_wav(capture_save_data)
 	# var capture_wav = convert_to_wav(processed_data)
 
 	# Disable the save button temporarily
@@ -441,7 +444,7 @@ func _on_save_pressed() -> void:
 	
 	# Check if running on a web build
 	if OS.has_feature("web"):
-		save_file_web(capture_data)
+		save_file_web(capture_save_data)
 		# save_file_web(processed_data)
 	else:
 		save_file_native(capture_wav)
@@ -632,12 +635,12 @@ func convert_to_wav(audio_data: PackedFloat32Array) -> AudioStreamWAV:
 	
 	
 func _on_play_toggled(_toggled_on: bool) -> void:
-	if capture_data.is_empty():
+	if capture_play_data.is_empty():
 		print("No audio captured!")
 		return
 	
 	print("Playing captured audio")
-	var capture_wav = convert_to_wav(capture_data)
+	var capture_wav = convert_to_wav(capture_play_data)
 	
 	# print("capture_data: %s" % capture_data)
 	print("capture_wav.format: %s" % capture_wav.format)
@@ -691,20 +694,30 @@ func _on_loop() -> void:
 
 func _process(_delta):
 	if is_capturing:
-		var available_frames = capture_effect.get_frames_available()
-		if available_frames > 0:
-			var buffer = capture_effect.get_buffer(available_frames)  # Get only the required frames
-			for frame in buffer:
-				capture_data.append(frame.x)  # Left channel
-				capture_data.append(frame.y)  # Right channel
+		# playback data (no effects applied)
+		var available_play_frames = capture_play_effect.get_frames_available()
+		if available_play_frames > 0:
+			var play_buffer = capture_play_effect.get_buffer(available_play_frames)  # Get only the required frames
+			for frame in play_buffer:
+				capture_play_data.append(frame.x)  # Left channel
+				capture_play_data.append(frame.y)  # Right channel
+		# save data (all effects applied)
+		var available_save_frames = capture_save_effect.get_frames_available()
+		if available_save_frames > 0:
+			var save_buffer = capture_save_effect.get_buffer(available_save_frames)  # Get only the required frames
+			for frame in save_buffer:
+				capture_save_data.append(frame.x)  # Left channel
+				capture_save_data.append(frame.y)  # Right channel
 
 
 
 
 func start_capturing():
 	# clear buffer
-	capture_effect.clear_buffer()
-	capture_data.clear()
+	capture_play_effect.clear_buffer()
+	capture_play_data.clear()
+	capture_save_effect.clear_buffer()
+	capture_save_data.clear()
 	
 	print("Start Capturing")
 	is_capturing = true
