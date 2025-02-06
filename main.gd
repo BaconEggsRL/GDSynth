@@ -128,10 +128,6 @@ func _ready() -> void:
 		AudioServer.add_bus_effect(idx, effect, i)
 		if effect is AudioEffectReverb or effect is AudioEffectDelay:
 			AudioServer.set_bus_effect_enabled(idx, i, false)
-	#capture_effect = AudioServer.get_bus_effect(idx, 0)
-	#pitch_bend_effect = AudioServer.get_bus_effect(idx, 1)
-	#reverb_effect = AudioServer.get_bus_effect(idx, 2)
-	#delay_effect = AudioServer.get_bus_effect(idx, 3)
 
 	# capture settings
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
