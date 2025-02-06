@@ -104,13 +104,11 @@ var piano_buttons:Array
 
 
 @onready var capture_effect := AudioEffectCapture.new()
-@onready var pitch_bend_effect := AudioEffectPitchShift.new()
 @onready var reverb_effect := AudioEffectReverb.new()
 @onready var delay_effect := AudioEffectDelay.new()
 
 @onready var effects:Array = [
 	capture_effect,
-	pitch_bend_effect,
 	reverb_effect,
 	delay_effect,
 ]
@@ -137,8 +135,6 @@ func _ready() -> void:
 	# pitch shift settings
 	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
 	pitch_slider.drag_ended.connect(_on_pitch_slider_drag_ended)
-	pitch_bend_effect.fft_size = AudioEffectPitchShift.FFT_SIZE_4096
-	pitch_bend_effect.oversampling = 32
 	
 	# reverb settings
 	pass
@@ -898,9 +894,6 @@ func _on_pitch_slider_drag_ended(_value_changed: bool) -> void:
 	pitch_tween.set_ease(Tween.EASE_OUT)
 	pitch_tween.set_trans(Tween.TRANS_SINE)
 	pitch_tween.tween_property(pitch_slider, "value", pitch_slider_center_value, max_pitch_slide_time * distance_from_center)
-
-	# Smoothly ease back to pitch_scale 1.0 to avoid clicks
-	pitch_tween.tween_property(pitch_bend_effect, "pitch_scale", 1.0, max_pitch_slide_time * distance_from_center)
 
 
 func _on_wave_table_item_selected(idx: int) -> void:
