@@ -1,8 +1,8 @@
 @tool
 extends Node2D
 
-@export var pos_init:Vector2 = Vector2(210.0, 130.0)
-@export var spacing:float = 164.0
+@export var pos_init:Vector2 = Vector2(214.0, 130.0)
+@export var spacing:float = 163.0
 
 @export var update_positions_triggered: bool = false:
 	get:
