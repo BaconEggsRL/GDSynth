@@ -10,18 +10,22 @@ Real-time audio synthesis using Godot 4.4
 play:
 uses capture_save_data and converts to wav (capture_wav)
 
-Todo:
-Save effects in recorded WAV?
 
-Add a "playback" bus to optionally apply effects to when
-playing back recorded audio.
+
+
+
+Todo:
+# Save effects in recorded WAV?
+
+# Add a "playback" bus to optionally apply effects to when
+# playing back recorded audio.
 
 
 
 
 EFFECTS:
-Delay, Phaser, Chorus
-Reverb, sustain, realistic piano sounds?
+Chorus, Phaser
+realistic piano sounds?
 
 METRONOME:
 Built-in metronome with adjustable BPM and time signature

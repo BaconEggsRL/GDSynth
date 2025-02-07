@@ -305,6 +305,13 @@ toggle_mode = true
 action_mode = 0
 text = "Reverb"
 
+[node name="Chorus" type="Button" parent="Control/HBoxContainer/Effects"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Chorus"
+
 [node name="Delay" type="Button" parent="Control/HBoxContainer/Effects"]
 layout_mode = 2
 focus_mode = 0
@@ -314,6 +321,7 @@ text = "Delay"
 
 [node name="Octave" type="VBoxContainer" parent="Control/HBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 8
 theme_override_constants/separation = 10
 
 [node name="OctaveUp" type="Button" parent="Control/HBoxContainer/Octave"]
@@ -413,4 +421,5 @@ horizontal_alignment = 1
 [connection signal="value_changed" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Radius" to="." method="_on_radius_value_changed"]
 [connection signal="item_selected" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList" to="." method="_on_wave_table_item_selected"]
 [connection signal="toggled" from="Control/HBoxContainer/Effects/Reverb" to="." method="_on_reverb_toggled"]
+[connection signal="toggled" from="Control/HBoxContainer/Effects/Chorus" to="." method="_on_chorus_toggled"]
 [connection signal="toggled" from="Control/HBoxContainer/Effects/Delay" to="." method="_on_delay_toggled"]

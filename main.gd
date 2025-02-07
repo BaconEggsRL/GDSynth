@@ -111,14 +111,17 @@ var piano_buttons:Array
 
 @onready var capture_raw_effect := AudioEffectCapture.new()
 @onready var reverb_effect := AudioEffectReverb.new()
+@onready var chorus_effect := AudioEffectChorus.new()
 @onready var delay_effect := AudioEffectDelay.new()
+
 @onready var capture_save_effect := AudioEffectCapture.new()
 
 @onready var effects:Array = [
 	capture_raw_effect,
 	reverb_effect,
+	chorus_effect,
 	delay_effect,
-	# capture_save_effect,
+	# capture_save_effect,  # add this to master bus
 ]
 
 # master / effect bus
@@ -133,12 +136,18 @@ var piano_buttons:Array
 
 	
 func _ready() -> void:
+	# List of effect types that should be disabled initially
+	var disable_effects = ["AudioEffectReverb", "AudioEffectDelay", "AudioEffectChorus"]
+	
 	# add effects
 	for i in effects.size():
-		var effect = effects[i]
+		var effect:AudioEffect = effects[i]
 		AudioServer.add_bus_effect(keyboard_fx_bus, effect, i)
-		if effect is AudioEffectReverb or effect is AudioEffectDelay:
+		
+		# Check if the effect is an instance of any type in the list
+		if effect.get_class() in disable_effects:
 			AudioServer.set_bus_effect_enabled(keyboard_fx_bus, i, false)
+
 
 	# add capture effect to master
 	AudioServer.add_bus_effect(master_bus, capture_save_effect, 0)
@@ -993,7 +1002,14 @@ func _on_delay_toggled(toggled_on: bool) -> void:
 		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, delay_index, false)
 
 
+func _on_chorus_toggled(toggled_on: bool) -> void:
+	var chorus_index = effects.find(chorus_effect)
+	if toggled_on:
+		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, chorus_index, true)
+	else:
+		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, chorus_index, false)
+
+
 func _on_osc_speed_slider_value_changed(value) -> void:
 	for btn:PianoButton in piano_buttons:
 		btn.sweep_time = value
-	
