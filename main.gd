@@ -37,7 +37,7 @@ const max_sus_db:float = 0.0
 var save_dir:String = "user://"
 
 var capture_mix_rate:float = 44100.0  # Default, but will be set dynamically
-var capture_play_data: PackedFloat32Array  # Stores interleaved stereo data
+var capture_raw_data: PackedFloat32Array  # Stores interleaved stereo data
 var capture_save_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
 
@@ -83,7 +83,7 @@ var stop_recording_text:String = "Stop Recording"
 
 var loop_mode:AudioStreamWAV.LoopMode = AudioStreamWAV.LOOP_DISABLED
 var playback # Will hold the AudioStreamGeneratorPlayback.
-@onready var sample_hz = audio_player.stream.mix_rate
+#@onready var sample_hz = audio_player.stream.mix_rate
 var pulse_hz = -1.0 # The frequency of the sound wave.
 
 var white_keys = [KEY_Q, KEY_W, KEY_E, KEY_R, KEY_T, KEY_Y, KEY_U, KEY_I, KEY_O, KEY_P, KEY_Z, KEY_X, KEY_C, KEY_V, KEY_B, KEY_N, KEY_M]
@@ -104,31 +104,36 @@ var piano_buttons:Array
 
 
 
-@onready var capture_play_effect := AudioEffectCapture.new()
+@onready var capture_raw_effect := AudioEffectCapture.new()
 @onready var reverb_effect := AudioEffectReverb.new()
 @onready var delay_effect := AudioEffectDelay.new()
 @onready var capture_save_effect := AudioEffectCapture.new()
 
 @onready var effects:Array = [
-	capture_play_effect,
+	capture_raw_effect,
 	reverb_effect,
 	delay_effect,
 	capture_save_effect,
 ]
 
+# master / effect bus
+@onready var master_bus = AudioServer.get_bus_index("Master")
+# output from playing saved capture data--no effects on this bus.
+@onready var capture_playback_bus = AudioServer.get_bus_index("capture_playback")
+# output from playing keyboard and any current active effects.
+@onready var keyboard_fx_bus = AudioServer.get_bus_index("keyboard_fx")
+	
+	
 
 
 	
 func _ready() -> void:
-	# master / effect bus
-	var idx = AudioServer.get_bus_index("Master")
-	
 	# add effects
 	for i in effects.size():
 		var effect = effects[i]
-		AudioServer.add_bus_effect(idx, effect, i)
+		AudioServer.add_bus_effect(keyboard_fx_bus, effect, i)
 		if effect is AudioEffectReverb or effect is AudioEffectDelay:
-			AudioServer.set_bus_effect_enabled(idx, i, false)
+			AudioServer.set_bus_effect_enabled(keyboard_fx_bus, i, false)
 
 	# capture settings
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
@@ -635,12 +640,12 @@ func convert_to_wav(audio_data: PackedFloat32Array) -> AudioStreamWAV:
 	
 	
 func _on_play_toggled(_toggled_on: bool) -> void:
-	if capture_play_data.is_empty():
+	if capture_raw_data.is_empty():
 		print("No audio captured!")
 		return
 	
 	print("Playing captured audio")
-	var capture_wav = convert_to_wav(capture_play_data)
+	var capture_wav = convert_to_wav(capture_raw_data)
 	
 	# print("capture_data: %s" % capture_data)
 	print("capture_wav.format: %s" % capture_wav.format)
@@ -695,12 +700,12 @@ func _on_loop() -> void:
 func _process(_delta):
 	if is_capturing:
 		# playback data (no effects applied)
-		var available_play_frames = capture_play_effect.get_frames_available()
-		if available_play_frames > 0:
-			var play_buffer = capture_play_effect.get_buffer(available_play_frames)  # Get only the required frames
-			for frame in play_buffer:
-				capture_play_data.append(frame.x)  # Left channel
-				capture_play_data.append(frame.y)  # Right channel
+		var available_raw_frames = capture_raw_effect.get_frames_available()
+		if available_raw_frames > 0:
+			var raw_buffer = capture_raw_effect.get_buffer(available_raw_frames)  # Get only the required frames
+			for frame in raw_buffer:
+				capture_raw_data.append(frame.x)  # Left channel
+				capture_raw_data.append(frame.y)  # Right channel
 		# save data (all effects applied)
 		var available_save_frames = capture_save_effect.get_frames_available()
 		if available_save_frames > 0:
@@ -714,8 +719,8 @@ func _process(_delta):
 
 func start_capturing():
 	# clear buffer
-	capture_play_effect.clear_buffer()
-	capture_play_data.clear()
+	capture_raw_effect.clear_buffer()
+	capture_raw_data.clear()
 	capture_save_effect.clear_buffer()
 	capture_save_data.clear()
 	
@@ -807,39 +812,6 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 		_:
 			push_warning("'%s' type not matched" % type)
 	pass
-
-
-
-func stop_freq() -> void:
-	audio_player.stop()
-	pulse_hz = -1.0  # reset freq
-
-
-
-func fill_buffer():
-	var phase:float = 0.0
-	var increment = pulse_hz / sample_hz
-	var frames_available = playback.get_frames_available()
-
-	for i in range(frames_available):
-		var waveform:float
-		
-		# sine waveform
-		var _sin = sin(phase * TAU)
-		
-		# sawtooth waveform
-		var _sawtooth = 2.0 * phase - 1.0  # Convert phase [0,1] to sawtooth [-1,1]
-
-		# choose waveform
-		waveform = _sin
-		# waveform = _sawtooth
-		
-		# push waveform and update phase
-		playback.push_frame(Vector2.ONE * waveform)
-		phase = fmod(phase + increment, 1.0)
-		
-
-
 
 
 
@@ -947,15 +919,15 @@ func _on_radius_value_changed(value: float) -> void:
 func _on_reverb_toggled(toggled_on: bool) -> void:
 	var reverb_index = effects.find(reverb_effect)
 	if toggled_on:
-		AudioServer.set_bus_effect_enabled(0, reverb_index, true)
+		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, reverb_index, true)
 	else:
-		AudioServer.set_bus_effect_enabled(0, reverb_index, false)
+		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, reverb_index, false)
 		
 
 
 func _on_delay_toggled(toggled_on: bool) -> void:
 	var delay_index = effects.find(delay_effect)
 	if toggled_on:
-		AudioServer.set_bus_effect_enabled(0, delay_index, true)
+		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, delay_index, true)
 	else:
-		AudioServer.set_bus_effect_enabled(0, delay_index, false)
+		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, delay_index, false)

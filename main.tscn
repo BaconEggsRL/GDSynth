@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=8 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
@@ -6,9 +6,6 @@
 [ext_resource type="Theme" uid="uid://3ddvs2gn88bk" path="res://ui_btn_theme.tres" id="2_h2yge"]
 [ext_resource type="Script" uid="uid://c7jt6jaa7axhi" path="res://wave_table_item_list.gd" id="3_1bvp3"]
 [ext_resource type="Script" uid="uid://dp2858wiasx1i" path="res://radius.gd" id="4_lquwl"]
-
-[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_ig7tw"]
-mix_rate = 11025.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0xm2m"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -42,10 +39,9 @@ release_knob = NodePath("Knobs/release_knob")
 piano_black = NodePath("Control/ControlBtns/piano/piano_black")
 piano_white = NodePath("Control/ControlBtns/piano/piano_white")
 note_label = NodePath("Control/VBoxContainer/StatsPanel/PanelMargin/NoteContainer/HBoxContainer/NoteLabel")
-audio_player = NodePath("AudioStreamPlayer")
+audio_player = NodePath("CapturePlayback")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = SubResource("AudioStreamGenerator_ig7tw")
+[node name="CapturePlayback" type="AudioStreamPlayer" parent="."]
 max_polyphony = 128
 playback_type = 1
 

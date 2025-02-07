@@ -15,6 +15,7 @@ playing back recorded audio.
 
 
 
+
 EFFECTS:
 Delay, Phaser, Chorus
 Reverb, sustain, realistic piano sounds?

@@ -91,6 +91,10 @@ func create_audio_player() -> AudioStreamPlayer:
 	player.stream = stream
 	player.playback_type = AudioServer.PLAYBACK_TYPE_STREAM  # required for web build
 	
+	# set audio bus for keyboard output
+	player.bus = &"keyboard_fx"
+
+	
 	self.add_child(player)
 	return player
 
