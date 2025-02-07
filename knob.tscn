@@ -16,6 +16,7 @@ knobPoint = NodePath("knob/knobPoint")
 middlePoint = NodePath("middlePoint")
 
 [node name="back" type="Sprite2D" parent="."]
+texture_filter = 1
 texture = ExtResource("2_vq8ne")
 
 [node name="knob" type="Marker2D" parent="."]

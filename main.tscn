@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=9 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
 [ext_resource type="Script" uid="uid://dqmtfc3x32hn5" path="res://knobs.gd" id="2_7mycd"]
 [ext_resource type="Theme" uid="uid://3ddvs2gn88bk" path="res://ui_btn_theme.tres" id="2_h2yge"]
 [ext_resource type="Script" uid="uid://c7jt6jaa7axhi" path="res://wave_table_item_list.gd" id="3_1bvp3"]
+[ext_resource type="Script" uid="uid://c0a6bieoyyd85" path="res://osc_container.gd" id="3_272bh"]
 [ext_resource type="Script" uid="uid://dp2858wiasx1i" path="res://radius.gd" id="4_lquwl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0xm2m"]
@@ -153,6 +154,23 @@ max_value = 3.0
 value = 1.0
 alignment = 2
 script = ExtResource("4_lquwl")
+
+[node name="OscContainer" type="HBoxContainer" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("3_272bh")
+
+[node name="OscSpeedSlider" type="HSlider" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
+custom_minimum_size = Vector2(96, 23)
+layout_mode = 2
+min_value = 0.2
+max_value = 4.0
+step = 0.1
+value = 1.0
+
+[node name="OscSpeedLabel" type="Label" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
+layout_mode = 2
+text = "1.0"
+horizontal_alignment = 2
 
 [node name="WaveTableItemList" type="ItemList" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer"]
 custom_minimum_size = Vector2(89.7, 0)

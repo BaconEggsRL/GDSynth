@@ -45,13 +45,18 @@ signal piano_button_pressed
 
 # multi-touch for mobile
 var active_touches: Dictionary = {}
-var tween_time: float = 1.0
+
 
 # var to track whether pressed by qwerty or mouse
 var qwerty:bool = false
 
+
+# LFO
+# time to sweep through all waveforms
+var sweep_time: float = 1.0
 # whether to blend waveforms
 var blend:bool = false
+# blend radius (number of waveforms to blend through: 1 = sin/tri, 2 = sin/tri/saw, etc.)
 var radius:float = 1.0
 
 
@@ -108,7 +113,7 @@ func start_waveform_tween(target_index:float = 0.5+radius):
 	tween.set_trans(Tween.TRANS_SINE)
 	# tween.set_trans(Tween.TRANS_CUBIC)
 	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "waveform_index", target_index, tween_time)
+	tween.tween_property(self, "waveform_index", target_index, sweep_time)
 	tween.finished.connect(restart_waveform_tween)
 	tween.play()
 
@@ -120,7 +125,7 @@ func restart_waveform_tween(target_index:float = 0.0):
 	tween.set_trans(Tween.TRANS_SINE)
 	# tween.set_trans(Tween.TRANS_CUBIC)
 	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "waveform_index", target_index, tween_time)
+	tween.tween_property(self, "waveform_index", target_index, sweep_time)
 	tween.finished.connect(start_waveform_tween)
 	tween.play()
 
@@ -321,7 +326,7 @@ func stop_freq(smooth:bool = true) -> void:
 
 func fill_buffer():
 	# print("fill buffer")
-	# print(waveform_index)
+	print(waveform_index)
 	
 	var frames_available = playback.get_frames_available()
 	var wave_keys = wave_table.keys()
