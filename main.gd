@@ -845,7 +845,7 @@ func stop_capturing():
 	
 func _on_record_toggled(_toggled_on: bool) -> void:
 	if _toggled_on:
-		if not audio_player.playing:
+		if not audio_player.playing and not (arp_enabled and latch_enabled and not latched_keys.is_empty()):
 			# wait for keypress
 			queue_capture = true
 			record_btn.text = queue_recording_text
