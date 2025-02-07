@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://qpwnrp6mvont"]
+[gd_scene load_steps=10 format=3 uid="uid://qpwnrp6mvont"]
 
 [ext_resource type="Script" uid="uid://b16uxesxhm868" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://bapp2hd88h2ob" path="res://knob.tscn" id="2_0xm2m"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://c7jt6jaa7axhi" path="res://wave_table_item_list.gd" id="3_1bvp3"]
 [ext_resource type="Script" uid="uid://c0a6bieoyyd85" path="res://osc_container.gd" id="3_272bh"]
 [ext_resource type="Script" uid="uid://dp2858wiasx1i" path="res://radius.gd" id="4_lquwl"]
+[ext_resource type="Script" uid="uid://dur4xbce8otpk" path="res://vol_slider.gd" id="6_5vw27"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0xm2m"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -22,25 +23,25 @@ corner_radius_bottom_left = 4
 
 [node name="main" type="Node" node_paths=PackedStringArray("octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "wave_table_item_list", "pitch_slider", "osc_speed_slider", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
 script = ExtResource("1_ig7tw")
-octave_up_btn = NodePath("Control/HBoxContainer/Octave/OctaveUp")
-octave_down_btn = NodePath("Control/HBoxContainer/Octave/OctaveDown")
-looping_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/looping")
-record_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/record")
-play_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/play")
-stop_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/stop")
-save_btn = NodePath("Control/ControlBtns/MarginContainer/VBoxContainer/record/save")
-save_status = NodePath("Control/VBoxContainer/SaveStatus")
-wave_table_item_list = NodePath("Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList")
-pitch_slider = NodePath("Control/PitchSlider")
-osc_speed_slider = NodePath("Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer/OscSpeedSlider")
+octave_up_btn = NodePath("Control/BottomRightBtns/Octave/OctaveUp")
+octave_down_btn = NodePath("Control/BottomRightBtns/Octave/OctaveDown")
+looping_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/looping")
+record_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/record")
+play_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/play")
+stop_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/stop")
+save_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/save")
+save_status = NodePath("Control/ControlPanel/SaveStatus")
+wave_table_item_list = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList")
+pitch_slider = NodePath("Control/MidRight/PitchSlider")
+osc_speed_slider = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer/OscSpeedSlider")
 peak_knob = NodePath("Knobs/peak_knob")
 attack_knob = NodePath("Knobs/attack_knob")
 decay_knob = NodePath("Knobs/decay_knob")
 sus_knob = NodePath("Knobs/sustain_knob")
 release_knob = NodePath("Knobs/release_knob")
-piano_black = NodePath("Control/ControlBtns/piano/piano_black")
-piano_white = NodePath("Control/ControlBtns/piano/piano_white")
-note_label = NodePath("Control/VBoxContainer/StatsPanel/PanelMargin/NoteContainer/HBoxContainer/NoteLabel")
+piano_black = NodePath("Control/CenterBtns/piano/piano_black")
+piano_white = NodePath("Control/CenterBtns/piano/piano_white")
+note_label = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/NoteContainer/HBoxContainer/NoteLabel")
 audio_player = NodePath("CapturePlayback")
 
 [node name="CapturePlayback" type="AudioStreamPlayer" parent="."]
@@ -56,7 +57,7 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_lock_ = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+[node name="ControlPanel" type="VBoxContainer" parent="Control"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -66,7 +67,7 @@ offset_right = 20.0
 offset_bottom = 40.0
 grow_horizontal = 2
 
-[node name="VersionInfo" type="Label" parent="Control/VBoxContainer"]
+[node name="VersionInfo" type="Label" parent="Control/ControlPanel"]
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
 text = "GDSynth
@@ -74,20 +75,20 @@ Version: 0.03"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SaveStatus" type="Label" parent="Control/VBoxContainer"]
+[node name="SaveStatus" type="Label" parent="Control/ControlPanel"]
 custom_minimum_size = Vector2(32, 50)
 layout_mode = 2
 size_flags_horizontal = 4
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StatsPanel" type="Panel" parent="Control/VBoxContainer"]
+[node name="StatsPanel" type="Panel" parent="Control/ControlPanel"]
 custom_minimum_size = Vector2(1152, 151)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0xm2m")
 
-[node name="PanelMargin" type="MarginContainer" parent="Control/VBoxContainer/StatsPanel"]
+[node name="PanelMargin" type="MarginContainer" parent="Control/ControlPanel/StatsPanel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -100,17 +101,17 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 15
 
-[node name="NoteContainer" type="VBoxContainer" parent="Control/VBoxContainer/StatsPanel/PanelMargin"]
+[node name="NoteContainer" type="VBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin"]
 layout_mode = 2
 alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/VBoxContainer/StatsPanel/PanelMargin/NoteContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin/NoteContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 3
 theme_override_constants/separation = 15
 
-[node name="NoteLabel" type="Label" parent="Control/VBoxContainer/StatsPanel/PanelMargin/NoteContainer/HBoxContainer"]
+[node name="NoteLabel" type="Label" parent="Control/ControlPanel/StatsPanel/PanelMargin/NoteContainer/HBoxContainer"]
 custom_minimum_size = Vector2(32, 50)
 layout_mode = 2
 text = "C3
@@ -118,21 +119,21 @@ Q"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="sep1" type="VSeparator" parent="Control/VBoxContainer/StatsPanel/PanelMargin/NoteContainer/HBoxContainer"]
+[node name="sep1" type="VSeparator" parent="Control/ControlPanel/StatsPanel/PanelMargin/NoteContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="ControlContainer" type="HBoxContainer" parent="Control/VBoxContainer/StatsPanel/PanelMargin"]
+[node name="ControlContainer" type="HBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin"]
 layout_mode = 2
 theme_override_constants/separation = 15
 alignment = 2
 
-[node name="sep2" type="VSeparator" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer"]
+[node name="sep2" type="VSeparator" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer"]
 layout_mode = 2
 
-[node name="Sweep" type="Button" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+[node name="Sweep" type="Button" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 focus_mode = 0
@@ -140,7 +141,7 @@ toggle_mode = true
 action_mode = 0
 text = "LFO Sweep"
 
-[node name="Blend" type="Button" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+[node name="Blend" type="Button" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 focus_mode = 0
@@ -148,7 +149,7 @@ toggle_mode = true
 action_mode = 0
 text = "LFO Blend"
 
-[node name="Radius" type="SpinBox" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+[node name="Radius" type="SpinBox" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
 layout_mode = 2
 min_value = 1.0
 max_value = 3.0
@@ -156,11 +157,11 @@ value = 1.0
 alignment = 2
 script = ExtResource("4_lquwl")
 
-[node name="OscContainer" type="HBoxContainer" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+[node name="OscContainer" type="HBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
 layout_mode = 2
 script = ExtResource("3_272bh")
 
-[node name="OscSpeedSlider" type="HSlider" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
+[node name="OscSpeedSlider" type="HSlider" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
 custom_minimum_size = Vector2(96, 23)
 layout_mode = 2
 min_value = 0.1
@@ -168,12 +169,12 @@ max_value = 4.0
 step = 0.1
 value = 0.2
 
-[node name="OscSpeedLabel" type="Label" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
+[node name="OscSpeedLabel" type="Label" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
 layout_mode = 2
 text = "1.0"
 horizontal_alignment = 2
 
-[node name="WaveTableItemList" type="ItemList" parent="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer"]
+[node name="WaveTableItemList" type="ItemList" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer"]
 custom_minimum_size = Vector2(89.7, 0)
 layout_mode = 2
 focus_mode = 0
@@ -184,7 +185,7 @@ item_2/text = "sawtooth"
 item_3/text = "pulse"
 script = ExtResource("3_1bvp3")
 
-[node name="ControlBtns" type="VBoxContainer" parent="Control"]
+[node name="CenterBtns" type="VBoxContainer" parent="Control"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -198,7 +199,7 @@ offset_bottom = 48.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/ControlBtns"]
+[node name="MarginContainer" type="MarginContainer" parent="Control/CenterBtns"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/margin_left = 10
@@ -206,21 +207,21 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/ControlBtns/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterBtns/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="record" type="HBoxContainer" parent="Control/ControlBtns/MarginContainer/VBoxContainer"]
+[node name="record" type="HBoxContainer" parent="Control/CenterBtns/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="looping" type="CheckButton" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
+[node name="looping" type="CheckButton" parent="Control/CenterBtns/MarginContainer/VBoxContainer/record"]
 layout_mode = 2
 focus_mode = 0
 text = "Looping?"
 
-[node name="record" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
+[node name="record" type="Button" parent="Control/CenterBtns/MarginContainer/VBoxContainer/record"]
 custom_minimum_size = Vector2(145, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -229,7 +230,7 @@ toggle_mode = true
 action_mode = 0
 text = "Waiting for Key..."
 
-[node name="play" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
+[node name="play" type="Button" parent="Control/CenterBtns/MarginContainer/VBoxContainer/record"]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 focus_mode = 0
@@ -238,7 +239,7 @@ toggle_mode = true
 action_mode = 0
 text = "Play"
 
-[node name="stop" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
+[node name="stop" type="Button" parent="Control/CenterBtns/MarginContainer/VBoxContainer/record"]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 focus_mode = 0
@@ -247,24 +248,81 @@ toggle_mode = true
 action_mode = 0
 text = "Stop"
 
-[node name="save" type="Button" parent="Control/ControlBtns/MarginContainer/VBoxContainer/record"]
+[node name="save" type="Button" parent="Control/CenterBtns/MarginContainer/VBoxContainer/record"]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 focus_mode = 0
 action_mode = 0
 text = "Save"
 
-[node name="piano" type="VBoxContainer" parent="Control/ControlBtns"]
+[node name="piano" type="VBoxContainer" parent="Control/CenterBtns"]
 layout_mode = 2
 theme_override_constants/separation = -200
 
-[node name="piano_white" type="HBoxContainer" parent="Control/ControlBtns/piano"]
+[node name="piano_white" type="HBoxContainer" parent="Control/CenterBtns/piano"]
 layout_mode = 2
 
-[node name="piano_black" type="HBoxContainer" parent="Control/ControlBtns/piano"]
+[node name="piano_black" type="HBoxContainer" parent="Control/CenterBtns/piano"]
 layout_mode = 2
 
-[node name="RestartQuickLabel" type="Label" parent="Control"]
+[node name="BottomRightBtns" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -111.0
+offset_top = -72.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 15
+
+[node name="Effects" type="VBoxContainer" parent="Control/BottomRightBtns"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Reverb" type="Button" parent="Control/BottomRightBtns/Effects"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Reverb"
+
+[node name="Chorus" type="Button" parent="Control/BottomRightBtns/Effects"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Chorus"
+
+[node name="Delay" type="Button" parent="Control/BottomRightBtns/Effects"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Delay"
+
+[node name="Octave" type="VBoxContainer" parent="Control/BottomRightBtns"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 10
+
+[node name="OctaveUp" type="Button" parent="Control/BottomRightBtns/Octave"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+text = "Octave Up"
+
+[node name="OctaveDown" type="Button" parent="Control/BottomRightBtns/Octave"]
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+text = "Octave Down"
+
+[node name="RestartLabel" type="Label" parent="Control"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -280,80 +338,59 @@ text = "` to restart
 ESC to Quit"
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+[node name="MidRight" type="HBoxContainer" parent="Control"]
+custom_minimum_size = Vector2(0, 194)
 layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -111.0
-offset_top = -72.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/separation = 15
-
-[node name="Effects" type="VBoxContainer" parent="Control/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Reverb" type="Button" parent="Control/HBoxContainer/Effects"]
-custom_minimum_size = Vector2(125, 0)
-layout_mode = 2
-focus_mode = 0
-toggle_mode = true
-action_mode = 0
-text = "Reverb"
-
-[node name="Chorus" type="Button" parent="Control/HBoxContainer/Effects"]
-layout_mode = 2
-focus_mode = 0
-toggle_mode = true
-action_mode = 0
-text = "Chorus"
-
-[node name="Delay" type="Button" parent="Control/HBoxContainer/Effects"]
-layout_mode = 2
-focus_mode = 0
-toggle_mode = true
-action_mode = 0
-text = "Delay"
-
-[node name="Octave" type="VBoxContainer" parent="Control/HBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 8
-theme_override_constants/separation = 10
-
-[node name="OctaveUp" type="Button" parent="Control/HBoxContainer/Octave"]
-custom_minimum_size = Vector2(125, 0)
-layout_mode = 2
-focus_mode = 0
-action_mode = 0
-text = "Octave Up"
-
-[node name="OctaveDown" type="Button" parent="Control/HBoxContainer/Octave"]
-layout_mode = 2
-focus_mode = 0
-action_mode = 0
-text = "Octave Down"
-
-[node name="PitchSlider" type="VSlider" parent="Control"]
-layout_mode = 1
-anchors_preset = 6
+anchors_preset = -1
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -34.0
-offset_top = -24.0
-offset_right = -7.0
-offset_bottom = 170.0
+offset_left = -40.0
+offset_top = -21.0
+offset_bottom = 173.0
 grow_horizontal = 0
 grow_vertical = 2
+
+[node name="PitchSlider" type="VSlider" parent="Control/MidRight"]
+layout_mode = 2
 min_value = -1.0
 max_value = 1.0
 step = 0.01
 scrollable = false
+
+[node name="Label" type="Label" parent="Control/MidRight"]
+layout_mode = 2
+text = "B
+E
+N
+D"
+horizontal_alignment = 1
+
+[node name="MidLeft" type="HBoxContainer" parent="Control"]
+custom_minimum_size = Vector2(0, 194)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = 55.0
+offset_right = 40.0
+offset_bottom = 97.0
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Control/MidLeft"]
+layout_mode = 2
+text = "V
+O
+L"
+horizontal_alignment = 1
+
+[node name="VolSlider" type="VSlider" parent="Control/MidLeft"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+scrollable = false
+script = ExtResource("6_5vw27")
 
 [node name="Knobs" type="Node2D" parent="."]
 position = Vector2(0, 56.025)
@@ -416,10 +453,10 @@ offset_bottom = 57.0
 text = "Release"
 horizontal_alignment = 1
 
-[connection signal="toggled" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep" to="." method="_on_sweep_toggled"]
-[connection signal="toggled" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Blend" to="." method="_on_blend_toggled"]
-[connection signal="value_changed" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Radius" to="." method="_on_radius_value_changed"]
-[connection signal="item_selected" from="Control/VBoxContainer/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList" to="." method="_on_wave_table_item_selected"]
-[connection signal="toggled" from="Control/HBoxContainer/Effects/Reverb" to="." method="_on_reverb_toggled"]
-[connection signal="toggled" from="Control/HBoxContainer/Effects/Chorus" to="." method="_on_chorus_toggled"]
-[connection signal="toggled" from="Control/HBoxContainer/Effects/Delay" to="." method="_on_delay_toggled"]
+[connection signal="toggled" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep" to="." method="_on_sweep_toggled"]
+[connection signal="toggled" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Blend" to="." method="_on_blend_toggled"]
+[connection signal="value_changed" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Radius" to="." method="_on_radius_value_changed"]
+[connection signal="item_selected" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList" to="." method="_on_wave_table_item_selected"]
+[connection signal="toggled" from="Control/BottomRightBtns/Effects/Reverb" to="." method="_on_reverb_toggled"]
+[connection signal="toggled" from="Control/BottomRightBtns/Effects/Chorus" to="." method="_on_chorus_toggled"]
+[connection signal="toggled" from="Control/BottomRightBtns/Effects/Delay" to="." method="_on_delay_toggled"]

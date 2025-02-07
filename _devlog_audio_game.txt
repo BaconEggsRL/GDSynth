@@ -10,6 +10,8 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
+Arpeggiator
+
 
 EFFECTS:
 Fade effects in and out instead of cutting off instantly (help with popping sounds.)
