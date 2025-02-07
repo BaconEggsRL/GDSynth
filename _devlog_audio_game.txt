@@ -10,7 +10,23 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
-Arpeggiator
+Arpeggiator:
+UP: 1234
+DOWN: 4321
+UP+DOWN: 12344321
+UP/DOWN: 123432
+PLAYED_ORDER: plays arpeggio in key order played by the user****
+RANDOM: random order (with repeats / without repeats)
+CHORD: just pulses the held chord
+
+Knobs:
+TEMPO -- control speed
+OCTAVE -- control number of octaves to play on (will repeat held notes up/down octave.)
+GATE -- how long the note is held
+LATCH -- continue playing after keys are released
+(intelligent latch -- old chord latches, but goes away when a new chord is played.)
+
+
 
 
 EFFECTS:

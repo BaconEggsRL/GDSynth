@@ -23,6 +23,7 @@ const min_sus_db:float = -80.0
 const max_sus_db:float = 0.0
 @export_range (min_sus_db, max_sus_db, 1) var sus_db = peak_db
 
+@export var arp_btn:Button
 @export var sweep_btn:Button
 
 @export var octave_up_btn:Button
@@ -63,6 +64,9 @@ var scale_tween:Tween
 
 # osc speed
 @export var osc_speed_slider:HSlider
+
+# arp time
+@export var arp_time_slider:HSlider
 
 # KNOBS!
 @export var peak_knob:Knob
@@ -132,10 +136,24 @@ var piano_buttons:Array
 # output from playing keyboard and any current active effects.
 @onready var keyboard_fx_bus = AudioServer.get_bus_index("keyboard_fx")
 	
-	
+
+# arp stuff
+# whether arp is enabled
+@onready var arp_enabled:bool = false
+# list of currently pressed keys
+@onready var pressed_keys:Array[PianoButton] = []
+# Time in seconds between note changes
+@onready var arp_time: float = 0.5
+# current index playing in arp
+@onready var arp_index: int = 0
+# timer to switch index
+@onready var arp_timer: float = 0.0
+# Track the last played note
+var last_note: Node = null
 
 
-	
+
+
 func _ready() -> void:
 	# List of effect types that should be disabled initially
 	# var disable_effects_str = ["AudioEffectReverb", "AudioEffectDelay", "AudioEffectChorus"]
@@ -170,6 +188,10 @@ func _ready() -> void:
 	# osc speed settings
 	# Connect the slider's value_changed signal to update the label
 	osc_speed_slider.value_changed.connect(_on_osc_speed_slider_value_changed)
+	
+	# arp settings
+	arp_time_slider.value_changed.connect(_on_arp_time_slider_value_changed)
+	arp_time_slider.value = self.arp_time
 	
 	# pitch shift settings
 	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
@@ -211,6 +233,7 @@ func _ready() -> void:
 		piano_btn.note = note
 		piano_btn.mix_rate = self.mix_rate
 		piano_btn.sweep_time = self.osc_speed_slider.value
+		piano_btn.arp_time = self.arp_time
 		
 		piano_btn.attack_samples = self.attack_samples
 		piano_btn.release_samples = self.release_samples
@@ -236,7 +259,7 @@ func _ready() -> void:
 			
 		
 		# connect signals
-		piano_btn.piano_button_pressed.connect(_on_piano_button_pressed)
+		piano_btn.piano_button_toggled.connect(_on_piano_button_toggled)
 		
 		# add child
 		if piano_btn.note.contains("#"):
@@ -704,7 +727,40 @@ func _on_loop() -> void:
 	
 
 
-func _process(_delta):
+
+func play_next_arpeggio_note() -> void:
+	# Return if no keys
+	if pressed_keys.is_empty():
+		return
+	
+	# Ensure arp_index is within bounds
+	arp_index = arp_index % pressed_keys.size()
+	
+	# Stop the last played note
+	if last_note:
+		last_note.stop_freq()
+
+	# Play the next note
+	var note_button = pressed_keys[arp_index]
+	note_button.play_freq()
+
+	# Update last played note
+	last_note = note_button
+
+	# Move to next note
+	arp_index = (arp_index + 1) % pressed_keys.size()
+
+
+
+func _process(delta):
+	# arp
+	if arp_enabled and pressed_keys.size() > 0:
+		arp_timer += delta
+		if arp_timer >= arp_time:
+			arp_timer = 0.0
+			play_next_arpeggio_note()
+			
+	# capture
 	if is_capturing:
 		# playback data (no effects applied)
 		var available_raw_frames = capture_raw_effect.get_frames_available()
@@ -793,13 +849,30 @@ func _on_record_toggled(_toggled_on: bool) -> void:
 			stop_capturing()
 	
 	
-func _on_piano_button_pressed(btn:PianoButton) -> void:
-	print("hello")
-	note_label.text = btn.text
-	# start capture if queued
-	if queue_capture:
-		queue_capture = false
-		start_capturing()
+func _on_piano_button_toggled(btn:PianoButton, toggled_on:bool) -> void:
+	
+	if toggled_on:
+		print("key_down")
+		# add to list of pressed keys
+		if btn not in pressed_keys:
+			pressed_keys.append(btn)
+			print(pressed_keys)
+		
+		# update current note text
+		note_label.text = btn.text
+		# start capture if queued
+		if queue_capture:
+			queue_capture = false
+			start_capturing()
+			
+	else:
+		print("key_up")
+		# remove from list of pressed keys
+		if btn in pressed_keys:
+			if last_note == btn:
+				last_note = null
+			pressed_keys.erase(btn)
+			print(pressed_keys)
 	
 	
 func _on_knob_turned(deg:float, type:String="") -> void:
@@ -989,3 +1062,22 @@ func _on_chorus_toggled(toggled_on: bool) -> void:
 func _on_osc_speed_slider_value_changed(value) -> void:
 	for btn:PianoButton in piano_buttons:
 		btn.sweep_time = value
+
+
+func _on_arp_time_slider_value_changed(value) -> void:
+	self.arp_time = value
+	for btn:PianoButton in piano_buttons:
+		btn.arp_time = value
+		
+
+func _on_arp_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		print("arp enabled")
+		self.arp_enabled = true
+		for btn:PianoButton in piano_buttons:
+			btn.arp_enabled = toggled_on
+	else:
+		print("arp disabled")
+		self.arp_enabled = false
+		for btn:PianoButton in piano_buttons:
+			btn.arp_enabled = toggled_on

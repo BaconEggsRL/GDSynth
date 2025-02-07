@@ -40,7 +40,11 @@ var phase: float = 0.0
 var is_hovering:bool = false
 const PIANO_BUTTON_GROUP = "piano_button"
 
-signal piano_button_pressed
+
+# signals for main
+# signal piano_button_pressed
+signal piano_button_toggled
+
 
 
 # multi-touch for mobile
@@ -53,12 +57,11 @@ var qwerty:bool = false
 
 # LFO
 # time to sweep through all waveforms
-var sweep_time: float = 1.0
+var sweep_time:float = 1.0
 # whether to blend waveforms
 var blend:bool = false
 # blend radius (number of waveforms to blend through: 1 = sin/tri, 2 = sin/tri/saw, etc.)
 var radius:float = 1.0
-
 
 
 # wave table
@@ -84,6 +87,13 @@ var prev_waveform: float = 0.0         # Tracks the previous sample value
 # wave mod
 var pending_waveform_change: float = 0.0  # Stores the next wave shift
 var apply_waveform_change: bool = false   # Flag to apply pitch change
+
+
+# arpeggiator
+# arp mode
+var arp_enabled:bool = false
+# time to switch notes
+var arp_time:float = 1.0
 
 
 
@@ -240,14 +250,20 @@ func _on_piano_button_pressed(_qwerty:bool = false) -> void:
 	print("qwerty = %s" % self.qwerty)
 	print("down, %s, %s" % [self.note, self.freq])
 	self.button_pressed = true
-	play_freq()
-	piano_button_pressed.emit(self)
+	# arp mode
+	if not arp_enabled:
+		play_freq()
+	# emit signal
+	piano_button_toggled.emit(self, true)
 
 func _on_piano_button_up() -> void:
 	self.qwerty = false
 	print("up, %s, %s" % [self.note, self.freq])
 	self.button_pressed = false
 	stop_freq()
+	# emit signal
+	piano_button_toggled.emit(self, false)
+	
 	
 	
 func _on_mouse_entered() -> void:
@@ -265,6 +281,9 @@ func _on_mouse_exited() -> void:
 
 # play the frequency
 func play_freq() -> void:
+	print("play_freq 1")
+	print("arp_enabled = %s" % arp_enabled)
+	
 	# reset tweener
 	if volume_tweener:
 		volume_tweener.kill()

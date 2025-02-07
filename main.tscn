@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://dqmtfc3x32hn5" path="res://knobs.gd" id="2_7mycd"]
 [ext_resource type="Theme" uid="uid://3ddvs2gn88bk" path="res://ui_btn_theme.tres" id="2_h2yge"]
 [ext_resource type="Script" uid="uid://c7jt6jaa7axhi" path="res://wave_table_item_list.gd" id="3_1bvp3"]
-[ext_resource type="Script" uid="uid://c0a6bieoyyd85" path="res://osc_container.gd" id="3_272bh"]
+[ext_resource type="Script" uid="uid://c0a6bieoyyd85" path="res://labeled_hslider.gd" id="3_272bh"]
 [ext_resource type="Script" uid="uid://dp2858wiasx1i" path="res://radius.gd" id="4_lquwl"]
 [ext_resource type="Script" uid="uid://dur4xbce8otpk" path="res://vol_slider.gd" id="6_5vw27"]
 
@@ -21,11 +21,12 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("sweep_btn", "octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "wave_table_item_list", "pitch_slider", "osc_speed_slider", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("arp_btn", "sweep_btn", "octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "wave_table_item_list", "pitch_slider", "osc_speed_slider", "arp_time_slider", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
 script = ExtResource("1_ig7tw")
+arp_btn = NodePath("Control/BottomRight/Arp/ArpButton")
 sweep_btn = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep")
-octave_up_btn = NodePath("Control/BottomRightBtns/Octave/OctaveUp")
-octave_down_btn = NodePath("Control/BottomRightBtns/Octave/OctaveDown")
+octave_up_btn = NodePath("Control/BottomRight/Octave/OctaveUp")
+octave_down_btn = NodePath("Control/BottomRight/Octave/OctaveDown")
 looping_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/looping")
 record_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/record")
 play_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/play")
@@ -35,6 +36,7 @@ save_status = NodePath("Control/ControlPanel/SaveStatus")
 wave_table_item_list = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList")
 pitch_slider = NodePath("Control/MidRight/PitchSlider")
 osc_speed_slider = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer/OscSpeedSlider")
+arp_time_slider = NodePath("Control/BottomRight/Arp/ArpContainer/ArpTimeSlider")
 peak_knob = NodePath("Knobs/peak_knob")
 attack_knob = NodePath("Knobs/attack_knob")
 decay_knob = NodePath("Knobs/decay_knob")
@@ -151,10 +153,12 @@ alignment = 2
 suffix = "wave(s)"
 script = ExtResource("4_lquwl")
 
-[node name="OscContainer" type="HBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+[node name="OscContainer" type="HBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer" node_paths=PackedStringArray("slider", "label")]
 layout_mode = 2
 size_flags_horizontal = 8
 script = ExtResource("3_272bh")
+slider = NodePath("OscSpeedSlider")
+label = NodePath("OscSpeedLabel")
 
 [node name="OscSpeedSlider" type="HSlider" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
 custom_minimum_size = Vector2(84, 23)
@@ -276,63 +280,6 @@ layout_mode = 2
 [node name="piano_black" type="HBoxContainer" parent="Control/CenterBtns/piano"]
 layout_mode = 2
 
-[node name="BottomRightBtns" type="HBoxContainer" parent="Control"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -111.0
-offset_top = -72.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/separation = 15
-
-[node name="Effects" type="VBoxContainer" parent="Control/BottomRightBtns"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Reverb" type="Button" parent="Control/BottomRightBtns/Effects"]
-custom_minimum_size = Vector2(125, 0)
-layout_mode = 2
-focus_mode = 0
-toggle_mode = true
-action_mode = 0
-text = "Reverb"
-
-[node name="Chorus" type="Button" parent="Control/BottomRightBtns/Effects"]
-layout_mode = 2
-focus_mode = 0
-toggle_mode = true
-action_mode = 0
-text = "Chorus"
-
-[node name="Delay" type="Button" parent="Control/BottomRightBtns/Effects"]
-layout_mode = 2
-focus_mode = 0
-toggle_mode = true
-action_mode = 0
-text = "Delay"
-
-[node name="Octave" type="VBoxContainer" parent="Control/BottomRightBtns"]
-layout_mode = 2
-size_flags_vertical = 8
-theme_override_constants/separation = 10
-
-[node name="OctaveUp" type="Button" parent="Control/BottomRightBtns/Octave"]
-custom_minimum_size = Vector2(125, 0)
-layout_mode = 2
-focus_mode = 0
-action_mode = 0
-text = "Octave Up"
-
-[node name="OctaveDown" type="Button" parent="Control/BottomRightBtns/Octave"]
-layout_mode = 2
-focus_mode = 0
-action_mode = 0
-text = "Octave Down"
-
 [node name="RestartLabel" type="Label" parent="Control"]
 layout_mode = 1
 anchors_preset = 7
@@ -402,6 +349,105 @@ max_value = 1.0
 step = 0.01
 scrollable = false
 script = ExtResource("6_5vw27")
+
+[node name="BottomRight" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -265.0
+offset_top = -113.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 15
+
+[node name="Arp" type="VBoxContainer" parent="Control/BottomRight"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="ArpContainer" type="HBoxContainer" parent="Control/BottomRight/Arp" node_paths=PackedStringArray("slider", "label")]
+layout_mode = 2
+size_flags_horizontal = 8
+script = ExtResource("3_272bh")
+slider = NodePath("ArpTimeSlider")
+label = NodePath("ArpTimeLabel")
+
+[node name="ArpTimeSlider" type="HSlider" parent="Control/BottomRight/Arp/ArpContainer"]
+custom_minimum_size = Vector2(84, 23)
+layout_mode = 2
+min_value = 0.1
+max_value = 1.0
+step = 0.1
+value = 0.2
+
+[node name="ArpTimeLabel" type="Label" parent="Control/BottomRight/Arp/ArpContainer"]
+layout_mode = 2
+text = "1.0 s"
+horizontal_alignment = 2
+
+[node name="ArpButton" type="Button" parent="Control/BottomRight/Arp"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Arpeggiate"
+
+[node name="Effects" type="VBoxContainer" parent="Control/BottomRight"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Reverb" type="Button" parent="Control/BottomRight/Effects"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Reverb"
+
+[node name="Chorus" type="Button" parent="Control/BottomRight/Effects"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Chorus"
+
+[node name="Delay" type="Button" parent="Control/BottomRight/Effects"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Delay"
+
+[node name="Octave" type="VBoxContainer" parent="Control/BottomRight"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 10
+
+[node name="OctaveUp" type="Button" parent="Control/BottomRight/Octave"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+text = "Octave Up"
+
+[node name="OctaveDown" type="Button" parent="Control/BottomRight/Octave"]
+layout_mode = 2
+focus_mode = 0
+action_mode = 0
+text = "Octave Down"
+
+[node name="BottomLeft" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 40.0
+grow_vertical = 0
 
 [node name="Knobs" type="Node2D" parent="."]
 position = Vector2(0, 56.025)
@@ -516,6 +562,7 @@ horizontal_alignment = 1
 [connection signal="value_changed" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Radius" to="." method="_on_radius_value_changed"]
 [connection signal="toggled" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep" to="." method="_on_sweep_toggled"]
 [connection signal="item_selected" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList" to="." method="_on_wave_table_item_selected"]
-[connection signal="toggled" from="Control/BottomRightBtns/Effects/Reverb" to="." method="_on_reverb_toggled"]
-[connection signal="toggled" from="Control/BottomRightBtns/Effects/Chorus" to="." method="_on_chorus_toggled"]
-[connection signal="toggled" from="Control/BottomRightBtns/Effects/Delay" to="." method="_on_delay_toggled"]
+[connection signal="toggled" from="Control/BottomRight/Arp/ArpButton" to="." method="_on_arp_button_toggled"]
+[connection signal="toggled" from="Control/BottomRight/Effects/Reverb" to="." method="_on_reverb_toggled"]
+[connection signal="toggled" from="Control/BottomRight/Effects/Chorus" to="." method="_on_chorus_toggled"]
+[connection signal="toggled" from="Control/BottomRight/Effects/Delay" to="." method="_on_delay_toggled"]
