@@ -895,13 +895,16 @@ func _on_piano_button_toggled(btn:PianoButton, toggled_on:bool) -> void:
 	
 	
 func _on_knob_turned(deg:float, type:String="") -> void:
+	var dB_format:String = "%.1f dB"
+	var s_format:String = "%.2f s"
+	
 	match type:
 		"P":
 			var clamped_deg = clamp(deg, 18.1690, 81.8309)
 			var value = remap(clamped_deg, 18.1690, 81.8309, min_peak_db, max_peak_db)
 			print("P knob: %s" % value)
 			self.peak_db = value
-			peak_knob.value_label.text = "%.1f dB" % value
+			peak_knob.value_label.text = dB_format % value
 			for btn:PianoButton in piano_buttons:
 				btn.peak_db = self.peak_db
 			
@@ -910,7 +913,7 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 			var value = remap(clamped_deg, 18.1690, 81.8309, min_attack_samples, max_attack_samples)
 			print("A knob: %s" % value)
 			self.attack_samples = value
-			attack_knob.value_label.text = "%.1f s" % (value/mix_rate)
+			attack_knob.value_label.text = s_format % (value/mix_rate)
 			for btn:PianoButton in piano_buttons:
 				btn.attack_samples = self.attack_samples
 				
@@ -920,7 +923,7 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 			var value = remap(clamped_deg, 18.1690, 81.8309, min_decay_samples, max_decay_samples)
 			print("D knob: %s" % value)
 			self.decay_samples = value
-			decay_knob.value_label.text = "%.1f s" % (value/mix_rate)
+			decay_knob.value_label.text = s_format % (value/mix_rate)
 			for btn:PianoButton in piano_buttons:
 				btn.decay_samples = self.decay_samples
 		
@@ -929,7 +932,7 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 			var value = remap(clamped_deg, 18.1690, 81.8309, min_sus_db, max_sus_db)
 			print("S knob: %s" % value)
 			self.sus_db = value
-			sus_knob.value_label.text = "%.1f dB" % value
+			sus_knob.value_label.text = dB_format % value
 			for btn:PianoButton in piano_buttons:
 				btn.sus_db = self.sus_db
 				
@@ -939,7 +942,7 @@ func _on_knob_turned(deg:float, type:String="") -> void:
 			var value = remap(clamped_deg, 18.1690, 81.8309, min_release_samples, max_release_samples)
 			print("R knob: %s" % value)
 			self.release_samples = value
-			release_knob.value_label.text = "%.1f s" % (value/mix_rate)
+			release_knob.value_label.text = s_format % (value/mix_rate)
 			for btn:PianoButton in piano_buttons:
 				btn.release_samples = self.release_samples
 			
