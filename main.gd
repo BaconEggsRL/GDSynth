@@ -191,6 +191,7 @@ func _ready() -> void:
 		# set vars
 		piano_btn.note = note
 		piano_btn.mix_rate = self.mix_rate
+		piano_btn.sweep_time = self.osc_speed_slider.value
 		
 		piano_btn.attack_samples = self.attack_samples
 		piano_btn.release_samples = self.release_samples

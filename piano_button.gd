@@ -68,9 +68,10 @@ var wave_table: Dictionary = {
 	"sawtooth": func(_phase): return 2.0 * _phase - 1.0,
 	"pulse": func(_phase): return 1.0 if _phase < 0.5 else -1.0
 }
-var waveform_index: float = 0.0
+var waveform_index:float = 0.0  # current waveform
+var base_waveform_index:float = 0.0  # base waveform to return to
 
-var waveform_target_index: float = 0.0
+# waveform tween
 var tween:Tween
 
 
@@ -106,7 +107,7 @@ func create_audio_player() -> AudioStreamPlayer:
 
 # func start_waveform_tween(target_index:float = wave_table.keys().size()-0.01):
 # 1+radius-0.01
-func start_waveform_tween(target_index:float = 0.5+radius):
+func start_waveform_tween(target_index:float = base_waveform_index + 0.5 + radius):
 	if tween:
 		tween.kill()
 	tween = create_tween()
@@ -118,7 +119,7 @@ func start_waveform_tween(target_index:float = 0.5+radius):
 	tween.play()
 
 
-func restart_waveform_tween(target_index:float = 0.0):
+func restart_waveform_tween(target_index:float = base_waveform_index):
 	if tween:
 		tween.kill()
 	tween = create_tween()
@@ -157,6 +158,7 @@ func queue_pitch_change(target_scale:float) -> void:
 func queue_waveform_change(idx:float) -> void:
 	# print("waveform change")
 	self.waveform_index = idx
+	self.base_waveform_index = idx
 	# pending_waveform_change = idx
 	# apply_waveform_change = true  # Set flag to apply change on zero crossing
 	
