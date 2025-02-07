@@ -137,7 +137,8 @@ var piano_buttons:Array
 	
 func _ready() -> void:
 	# List of effect types that should be disabled initially
-	var disable_effects = ["AudioEffectReverb", "AudioEffectDelay", "AudioEffectChorus"]
+	# var disable_effects_str = ["AudioEffectReverb", "AudioEffectDelay", "AudioEffectChorus"]
+	var disable_effects = [AudioEffectReverb, AudioEffectDelay, AudioEffectChorus]
 	
 	# add effects
 	for i in effects.size():
@@ -145,8 +146,16 @@ func _ready() -> void:
 		AudioServer.add_bus_effect(keyboard_fx_bus, effect, i)
 		
 		# Check if the effect is an instance of any type in the list
-		if effect.get_class() in disable_effects:
-			AudioServer.set_bus_effect_enabled(keyboard_fx_bus, i, false)
+		#var effect_class = effect.get_class()
+		#print("effect_class = %s" % effect_class)
+		#if effect.get_class() in disable_effects_str:
+			#AudioServer.set_bus_effect_enabled(keyboard_fx_bus, i, false)
+			
+		# Check if the effect is an instance of any type in the list
+		for effect_type in disable_effects:
+			if is_instance_of(effect, effect_type):
+				AudioServer.set_bus_effect_enabled(keyboard_fx_bus, i, false)
+				break  # No need to check further if we already disabled it
 
 
 	# add capture effect to master
@@ -409,47 +418,6 @@ func _on_looping_toggled(_toggled_on: bool) -> void:
 	_apply_loop_mode()
 
 
-## Function to apply active effects to the captured audio data
-#func apply_active_effects(raw_capture_data:PackedFloat32Array) -> PackedFloat32Array:
-	#var processed_data:PackedFloat32Array = []
-	#
-	## Iterate over the captured audio data and apply effects to each frame
-	#for i in range(0, capture_data.size(), 2):  # Process in stereo pairs (left, right)
-		#var left_channel = raw_capture_data[i]
-		#var right_channel = raw_capture_data[i + 1]
-#
-		## Apply reverb if it's enabled on bus 2 (Example for reverb)
-		#if AudioServer.is_bus_effect_enabled(0, 2):  # Bus 0, Effect 2
-			#left_channel = apply_reverb(left_channel)
-			#right_channel = apply_reverb(right_channel)
-		#
-		## Apply delay if it's enabled on bus 3 (Example for delay)
-		#if AudioServer.is_bus_effect_enabled(0, 3):  # Bus 0, Effect 3
-			#left_channel = apply_delay(left_channel)
-			#right_channel = apply_delay(right_channel)
-#
-		## Add the processed audio back to the processed_data array
-		#processed_data.append(left_channel)
-		#processed_data.append(right_channel)
-#
-	## Return processed data
-	#return processed_data
-#
-#
-#
-## Example function to simulate reverb effect (you would replace this with a real effect)
-#func apply_reverb(audio_sample: float) -> float:
-	## For the sake of simplicity, we're applying a simple reverb effect as an example
-	## A real reverb effect would be more complex and based on audio buffer manipulation
-	#return audio_sample * 0.9  # Apply a simple decay to simulate reverb
-#
-## Example function to simulate delay effect (you would replace this with a real effect)
-#func apply_delay(audio_sample: float) -> float:
-	## For the sake of simplicity, we're applying a simple delay effect as an example
-	## A real delay effect would involve storing past samples and mixing them
-	#return audio_sample * 0.8  # Apply a simple delay effect by reducing the sample volume
-	
-	
 
 func _on_save_pressed() -> void:
 	# Return if no data to save
