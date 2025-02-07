@@ -10,10 +10,8 @@ const MAX_DIST := 7000
 @export var knobPoint:Marker2D
 @export var middlePoint:Marker2D
 
+@export var value_label:Label
 
-func _ready() -> void:
-	pass
-	
 
 func _process(_delta: float) -> void:
 	var mouseDist := get_global_mouse_position().distance_squared_to(knob.global_position)
@@ -33,36 +31,3 @@ func _process(_delta: float) -> void:
 		print(fang)
 		knob.rotation = clamp(fang, -2, 2)
 		turned.emit(final_ang)
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-#		var d :Vector2= ($knob/knobPoint.position.rotated( $knob.rotation)) # cuz we cant just do it with position, position is constant, 
-#		var d :Vector2= ($knob/knobPoint.position) # cuz we cant just do it with position, position is constant, 
-##		print($knob.rotation)
-#		var d :Vector2= $knob/knobPoint.global_position
-
-#		var a :float= $middlePoint.position.angle_to( d )
-#		print(d, " ", a)
-#		var a :float= $knob/knobPoint.global_position.angle_to(  $middlePoint.global_position )
-#		var fang :float= lerp_angle( $knob.rotation, ang, 0.3  )
-#		$knob.rotation = clamp(fang, -2,2)
-##		emit_signal("turnedKnob", finalAng)
-##		if b < 20:
-##			knob.rotation = range_lerp(20, -3.14,3.14,0,100)
-##		if b > 80:
-##			knob.rotation = range_lerp(80, -3.14,3.14,0,100)
-#
-#range_lerp(75, 0, 100, -1, 1) # Returns 0.5

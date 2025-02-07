@@ -3,7 +3,7 @@ extends HBoxContainer
 @onready var osc_speed_slider: HSlider = $OscSpeedSlider
 @onready var osc_speed_label: Label = $OscSpeedLabel
 
-var str_format = "%.1fs"
+var str_format = "%.1f s"
 
 func _ready():
 	# Set initial label text

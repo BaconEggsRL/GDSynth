@@ -21,8 +21,9 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "wave_table_item_list", "pitch_slider", "osc_speed_slider", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("sweep_btn", "octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "wave_table_item_list", "pitch_slider", "osc_speed_slider", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
 script = ExtResource("1_ig7tw")
+sweep_btn = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep")
 octave_up_btn = NodePath("Control/BottomRightBtns/Octave/OctaveUp")
 octave_down_btn = NodePath("Control/BottomRightBtns/Octave/OctaveDown")
 looping_btn = NodePath("Control/CenterBtns/MarginContainer/VBoxContainer/record/looping")
@@ -83,7 +84,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StatsPanel" type="Panel" parent="Control/ControlPanel"]
-custom_minimum_size = Vector2(1152, 151)
+custom_minimum_size = Vector2(1152, 168)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0xm2m")
@@ -132,22 +133,14 @@ layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer"]
 layout_mode = 2
-
-[node name="Sweep" type="Button" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
-custom_minimum_size = Vector2(125, 0)
-layout_mode = 2
-focus_mode = 0
-toggle_mode = true
-action_mode = 0
-text = "LFO Sweep"
+alignment = 1
 
 [node name="Blend" type="Button" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
-custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 focus_mode = 0
 toggle_mode = true
 action_mode = 0
-text = "LFO Blend"
+text = "Blend?"
 
 [node name="Radius" type="SpinBox" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
 layout_mode = 2
@@ -155,14 +148,16 @@ min_value = 1.0
 max_value = 3.0
 value = 1.0
 alignment = 2
+suffix = "wave(s)"
 script = ExtResource("4_lquwl")
 
 [node name="OscContainer" type="HBoxContainer" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 8
 script = ExtResource("3_272bh")
 
 [node name="OscSpeedSlider" type="HSlider" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
-custom_minimum_size = Vector2(96, 23)
+custom_minimum_size = Vector2(84, 23)
 layout_mode = 2
 min_value = 0.1
 max_value = 4.0
@@ -171,11 +166,18 @@ value = 0.2
 
 [node name="OscSpeedLabel" type="Label" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
 layout_mode = 2
-text = "1.0"
+text = "1.0 s"
 horizontal_alignment = 2
 
+[node name="Sweep" type="Button" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Enable"
+
 [node name="WaveTableItemList" type="ItemList" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer"]
-custom_minimum_size = Vector2(89.7, 0)
+custom_minimum_size = Vector2(89.7, 19.885)
 layout_mode = 2
 focus_mode = 0
 item_count = 4
@@ -184,6 +186,15 @@ item_1/text = "triangle"
 item_2/text = "sawtooth"
 item_3/text = "pulse"
 script = ExtResource("3_1bvp3")
+
+[node name="Label2" type="Label" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer"]
+visible = false
+layout_mode = 2
+text = "W
+A
+V
+E"
+horizontal_alignment = 1
 
 [node name="CenterBtns" type="VBoxContainer" parent="Control"]
 layout_mode = 1
@@ -396,66 +407,114 @@ script = ExtResource("6_5vw27")
 position = Vector2(0, 56.025)
 script = ExtResource("2_7mycd")
 
-[node name="peak_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
+[node name="peak_knob" parent="Knobs" node_paths=PackedStringArray("value_label") instance=ExtResource("2_0xm2m")]
 position = Vector2(214, 130)
+value_label = NodePath("VBoxContainer/peak_value_label")
 
-[node name="peak_label" type="Label" parent="Knobs/peak_knob"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Knobs/peak_knob"]
 offset_left = -41.0
 offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
-text = "Attack dB"
+offset_right = 42.0
+offset_bottom = 74.0
+theme_override_constants/separation = -5
+
+[node name="name_label" type="Label" parent="Knobs/peak_knob/VBoxContainer"]
+layout_mode = 2
+text = "Attack Vol"
 horizontal_alignment = 1
 
-[node name="attack_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(377, 130)
+[node name="peak_value_label" type="Label" parent="Knobs/peak_knob/VBoxContainer"]
+layout_mode = 2
+text = "0.0"
+horizontal_alignment = 1
 
-[node name="AttackLabel" type="Label" parent="Knobs/attack_knob"]
+[node name="attack_knob" parent="Knobs" node_paths=PackedStringArray("value_label") instance=ExtResource("2_0xm2m")]
+position = Vector2(377, 130)
+value_label = NodePath("VBoxContainer2/attack_value_label")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Knobs/attack_knob"]
 offset_left = -41.0
 offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
+offset_right = 42.0
+offset_bottom = 75.0
+theme_override_constants/separation = -5
+
+[node name="name_label" type="Label" parent="Knobs/attack_knob/VBoxContainer2"]
+layout_mode = 2
 text = "Attack"
 horizontal_alignment = 1
 
-[node name="decay_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(540, 130)
+[node name="attack_value_label" type="Label" parent="Knobs/attack_knob/VBoxContainer2"]
+layout_mode = 2
+text = "0.0"
+horizontal_alignment = 1
 
-[node name="DecayLabel" type="Label" parent="Knobs/decay_knob"]
+[node name="decay_knob" parent="Knobs" node_paths=PackedStringArray("value_label") instance=ExtResource("2_0xm2m")]
+position = Vector2(540, 130)
+value_label = NodePath("VBoxContainer3/decay_value_label")
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="Knobs/decay_knob"]
 offset_left = -41.0
 offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
+offset_right = 42.0
+offset_bottom = 75.0
+theme_override_constants/separation = -5
+
+[node name="name_label" type="Label" parent="Knobs/decay_knob/VBoxContainer3"]
+layout_mode = 2
 text = "Decay"
 horizontal_alignment = 1
-metadata/_edit_use_anchors_ = true
 
-[node name="sustain_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(703, 130)
-
-[node name="SustainLabel" type="Label" parent="Knobs/sustain_knob"]
-offset_left = -41.0
-offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
-text = "Sustain dB"
+[node name="decay_value_label" type="Label" parent="Knobs/decay_knob/VBoxContainer3"]
+layout_mode = 2
+text = "0.0"
 horizontal_alignment = 1
-metadata/_edit_use_anchors_ = true
 
-[node name="release_knob" parent="Knobs" instance=ExtResource("2_0xm2m")]
-position = Vector2(866, 130)
+[node name="sustain_knob" parent="Knobs" node_paths=PackedStringArray("value_label") instance=ExtResource("2_0xm2m")]
+position = Vector2(703, 130)
+value_label = NodePath("VBoxContainer4/sustain_value_label")
 
-[node name="ReleaseLabel" type="Label" parent="Knobs/release_knob"]
+[node name="VBoxContainer4" type="VBoxContainer" parent="Knobs/sustain_knob"]
 offset_left = -41.0
 offset_top = 34.0
-offset_right = 43.0
-offset_bottom = 57.0
+offset_right = 42.0
+offset_bottom = 75.0
+theme_override_constants/separation = -5
+
+[node name="name_label" type="Label" parent="Knobs/sustain_knob/VBoxContainer4"]
+layout_mode = 2
+text = "Sustain Vol"
+horizontal_alignment = 1
+
+[node name="sustain_value_label" type="Label" parent="Knobs/sustain_knob/VBoxContainer4"]
+layout_mode = 2
+text = "0.0"
+horizontal_alignment = 1
+
+[node name="release_knob" parent="Knobs" node_paths=PackedStringArray("value_label") instance=ExtResource("2_0xm2m")]
+position = Vector2(866, 130)
+value_label = NodePath("VBoxContainer5/release_value_label")
+
+[node name="VBoxContainer5" type="VBoxContainer" parent="Knobs/release_knob"]
+offset_left = -41.0
+offset_top = 34.0
+offset_right = 42.0
+offset_bottom = 75.0
+theme_override_constants/separation = -5
+
+[node name="name_label" type="Label" parent="Knobs/release_knob/VBoxContainer5"]
+layout_mode = 2
 text = "Release"
 horizontal_alignment = 1
 
-[connection signal="toggled" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep" to="." method="_on_sweep_toggled"]
+[node name="release_value_label" type="Label" parent="Knobs/release_knob/VBoxContainer5"]
+layout_mode = 2
+text = "0.0"
+horizontal_alignment = 1
+
 [connection signal="toggled" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Blend" to="." method="_on_blend_toggled"]
 [connection signal="value_changed" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Radius" to="." method="_on_radius_value_changed"]
+[connection signal="toggled" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep" to="." method="_on_sweep_toggled"]
 [connection signal="item_selected" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList" to="." method="_on_wave_table_item_selected"]
 [connection signal="toggled" from="Control/BottomRightBtns/Effects/Reverb" to="." method="_on_reverb_toggled"]
 [connection signal="toggled" from="Control/BottomRightBtns/Effects/Chorus" to="." method="_on_chorus_toggled"]
