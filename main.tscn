@@ -165,7 +165,7 @@ custom_minimum_size = Vector2(84, 23)
 layout_mode = 2
 min_value = 0.1
 max_value = 4.0
-step = 0.1
+step = 0.01
 value = 0.2
 
 [node name="OscSpeedLabel" type="Label" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer"]
@@ -178,7 +178,7 @@ layout_mode = 2
 focus_mode = 0
 toggle_mode = true
 action_mode = 0
-text = "Enable"
+text = "Enable Wav"
 
 [node name="WaveTableItemList" type="ItemList" parent="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer"]
 custom_minimum_size = Vector2(89.7, 19.885)
@@ -374,13 +374,14 @@ size_flags_horizontal = 8
 script = ExtResource("3_272bh")
 slider = NodePath("ArpTimeSlider")
 label = NodePath("ArpTimeLabel")
+use_BPM = true
 
 [node name="ArpTimeSlider" type="HSlider" parent="Control/BottomRight/Arp/ArpContainer"]
 custom_minimum_size = Vector2(84, 23)
 layout_mode = 2
 min_value = 0.1
 max_value = 1.0
-step = 0.1
+step = 0.01
 value = 0.2
 
 [node name="ArpTimeLabel" type="Label" parent="Control/BottomRight/Arp/ArpContainer"]
@@ -388,13 +389,21 @@ layout_mode = 2
 text = "1.0 s"
 horizontal_alignment = 2
 
+[node name="LatchButton" type="Button" parent="Control/BottomRight/Arp"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+action_mode = 0
+text = "Latch?"
+
 [node name="ArpButton" type="Button" parent="Control/BottomRight/Arp"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 focus_mode = 0
 toggle_mode = true
 action_mode = 0
-text = "Arpeggiate"
+text = "Enable Arp"
 
 [node name="Effects" type="VBoxContainer" parent="Control/BottomRight"]
 layout_mode = 2
@@ -562,6 +571,7 @@ horizontal_alignment = 1
 [connection signal="value_changed" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Radius" to="." method="_on_radius_value_changed"]
 [connection signal="toggled" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep" to="." method="_on_sweep_toggled"]
 [connection signal="item_selected" from="Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/WaveTableItemList" to="." method="_on_wave_table_item_selected"]
+[connection signal="toggled" from="Control/BottomRight/Arp/LatchButton" to="." method="_on_latch_button_toggled"]
 [connection signal="toggled" from="Control/BottomRight/Arp/ArpButton" to="." method="_on_arp_button_toggled"]
 [connection signal="toggled" from="Control/BottomRight/Effects/Reverb" to="." method="_on_reverb_toggled"]
 [connection signal="toggled" from="Control/BottomRight/Effects/Chorus" to="." method="_on_chorus_toggled"]

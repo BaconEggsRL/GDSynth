@@ -139,15 +139,18 @@ var piano_buttons:Array
 
 # arp stuff
 # whether arp is enabled
-@onready var arp_enabled:bool = false
+var arp_enabled:bool = false
+# Latch mode flag
+var latch_enabled:bool = false
 # list of currently pressed keys
-@onready var pressed_keys:Array[PianoButton] = []
+var pressed_keys:Array[PianoButton] = []
+var latched_keys:Array = []  # Stores the last chord if latched
 # Time in seconds between note changes
-@onready var arp_time: float = 0.2
+var arp_time: float = 0.2
 # current index playing in arp
-@onready var arp_index: int = 0
+var arp_index: int = 0
 # timer to switch index
-@onready var arp_timer: float = 0.0
+var arp_timer: float = 0.0
 # Track the last played note
 var last_note: Node = null
 
@@ -727,34 +730,42 @@ func _on_loop() -> void:
 	
 
 
-
+func get_active_keys() -> Array:
+	if latch_enabled:
+		return latched_keys
+	else:
+		return pressed_keys
+	
+	
 func play_next_arpeggio_note() -> void:
-	# Return if no keys
-	if pressed_keys.is_empty():
+	# Return if no keys to play
+	var active_keys = get_active_keys()
+	if active_keys.is_empty():
 		return
 	
 	# Ensure arp_index is within bounds
-	arp_index = arp_index % pressed_keys.size()
+	arp_index = arp_index % active_keys.size()
 	
 	# Stop the last played note
 	if last_note:
 		last_note.stop_freq()
 
 	# Play the next note
-	var note_button = pressed_keys[arp_index]
+	var note_button = active_keys[arp_index]
 	note_button.play_freq()
 
 	# Update last played note
 	last_note = note_button
 
 	# Move to next note
-	arp_index = (arp_index + 1) % pressed_keys.size()
+	arp_index = (arp_index + 1) % active_keys.size()
 
 
 
 func _process(delta):
 	# arp
-	if arp_enabled and pressed_keys.size() > 0:
+	var active_keys = get_active_keys()
+	if arp_enabled and active_keys.size() > 0:
 		arp_timer += delta
 		if arp_timer >= arp_time:
 			arp_timer = 0.0
@@ -853,10 +864,19 @@ func _on_piano_button_toggled(btn:PianoButton, toggled_on:bool) -> void:
 	
 	if toggled_on:
 		print("key_down")
-		# add to list of pressed keys
+		
+		# add to list of pressed keys for arp
 		if btn not in pressed_keys:
+			# If new chord is played, reset latched_keys
+			if latch_enabled:
+				latched_keys.clear()
+			# append the btn
 			pressed_keys.append(btn)
-			print(pressed_keys)
+			# If latched, store new keys
+			if latch_enabled:
+				latched_keys = pressed_keys.duplicate()
+			# Restart arp with new chord
+			arp_index = 0  
 		
 		# update current note text
 		note_label.text = btn.text
@@ -872,7 +892,6 @@ func _on_piano_button_toggled(btn:PianoButton, toggled_on:bool) -> void:
 			if last_note == btn:
 				last_note = null
 			pressed_keys.erase(btn)
-			print(pressed_keys)
 	
 	
 func _on_knob_turned(deg:float, type:String="") -> void:
@@ -1010,11 +1029,11 @@ func _on_wave_table_item_selected(idx: int) -> void:
 
 func _on_sweep_toggled(toggled_on: bool) -> void:
 	if toggled_on:
-		sweep_btn.text = "Disable"
+		sweep_btn.text = "Disable Wav"
 		for btn:PianoButton in piano_buttons:
 			btn.start_waveform_tween()
 	else:
-		sweep_btn.text = "Enable"
+		sweep_btn.text = "Enable Wav"
 		for btn:PianoButton in piano_buttons:
 			btn.stop_waveform_tween()
 		
@@ -1078,6 +1097,22 @@ func _on_arp_button_toggled(toggled_on: bool) -> void:
 			btn.arp_enabled = toggled_on
 	else:
 		print("arp disabled")
+		stop_all_notes()
 		self.arp_enabled = false
 		for btn:PianoButton in piano_buttons:
 			btn.arp_enabled = toggled_on
+
+
+func _on_latch_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		latched_keys = pressed_keys.duplicate()
+	else:
+		stop_all_notes()
+	self.latch_enabled = toggled_on
+
+
+func stop_all_notes() -> void:
+	for button in get_active_keys():
+		button.stop_freq()
+	last_note = null  # Reset last note
+	latched_keys.clear()
