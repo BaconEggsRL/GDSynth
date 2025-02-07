@@ -374,7 +374,6 @@ size_flags_horizontal = 8
 script = ExtResource("3_272bh")
 slider = NodePath("ArpTimeSlider")
 label = NodePath("ArpTimeLabel")
-use_BPM = true
 
 [node name="ArpTimeSlider" type="HSlider" parent="Control/BottomRight/Arp/ArpContainer"]
 custom_minimum_size = Vector2(84, 23)

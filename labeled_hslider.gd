@@ -10,7 +10,7 @@ var str_format: String
 func _ready():
 	# Set string format
 	if use_BPM:
-		str_format = "%.2f s / %s BPM"
+		str_format = "%.2f s / %d BPM"
 		label.text = str_format % [slider.value, 60.0/slider.value]
 	else:
 		str_format = "%.2f s"
