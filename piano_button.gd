@@ -326,7 +326,7 @@ func stop_freq(smooth:bool = true) -> void:
 
 func fill_buffer():
 	# print("fill buffer")
-	print(waveform_index)
+	# print(waveform_index)
 	
 	var frames_available = playback.get_frames_available()
 	var wave_keys = wave_table.keys()

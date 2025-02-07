@@ -60,6 +60,9 @@ var max_pitch_slide_time = 0.5
 var pitch_tween:Tween
 var scale_tween:Tween
 
+# osc speed
+@export var osc_speed_slider:HSlider
+
 # KNOBS!
 @export var peak_knob:Knob
 @export var attack_knob:Knob
@@ -144,6 +147,10 @@ func _ready() -> void:
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
 	var output_latency = AudioServer.get_output_latency()
 	print("output_latency = %s" % output_latency)
+	
+	# osc speed settings
+	# Connect the slider's value_changed signal to update the label
+	osc_speed_slider.value_changed.connect(_on_osc_speed_slider_value_changed)
 	
 	# pitch shift settings
 	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
@@ -983,3 +990,9 @@ func _on_delay_toggled(toggled_on: bool) -> void:
 		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, delay_index, true)
 	else:
 		AudioServer.set_bus_effect_enabled(keyboard_fx_bus, delay_index, false)
+
+
+func _on_osc_speed_slider_value_changed(value) -> void:
+	for btn:PianoButton in piano_buttons:
+		btn.sweep_time = value
+	
