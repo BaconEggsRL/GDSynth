@@ -30,19 +30,14 @@ LATCH -- continue playing after keys are released
 
 
 EFFECTS:
-Fade effects in and out instead of cutting off instantly (help with popping sounds.)
-
-Chorus, Phaser
+Fade effects in and out,
+instead of cutting off instantly (help with popping sounds.)
+Phaser
 realistic piano sounds?
 
 
 METRONOME:
 Built-in metronome with adjustable BPM and time signature
-
-
-KNOBS:
-Master volume btn / knob
-Make knobs look better (no john godots)
 
 
 KNOB PRESETS:
@@ -87,21 +82,20 @@ Keys held by keyboard repeat when releasing a key held by mouse.
 
 Output latency web: default is 50, max is 100? try tinkering
 
-AudioEffectRecord does not work in Web build
---effects in general seem to work once Stream is enabled (such as Reverb.)
-
-
 Looping still kind of weird
 Fix weird buzzing on multiple frequencies (phase issue?)
 --might just be audio clipping due to being too loud when layering multiple notes
+
+
+
+
+=====================================================
 
 17 white notes
 12 black notes
 = 17 + 12 = 29 polyphony (32 will work)
 send note to polyphonic player for phase matching?
 
-
-=====================================================
 
 Changelog:
 # Add A/S/D/R functions.
@@ -129,3 +123,10 @@ Changelog:
 
 # play:
 # uses capture_save_data and converts to wav (capture_wav)
+
+# Master volume btn / knob
+# Make knobs look better (no john godots)
+
+# AudioEffectRecord does not work in Web build
+# --effects in general seem to work once Stream is enabled (such as Reverb.)
+# --Capture does work.
