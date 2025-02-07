@@ -7,36 +7,30 @@ Real-time audio synthesis using Godot 4.4
 =====================================================
 
 
-play:
-uses capture_save_data and converts to wav (capture_wav)
-
-
-
-
 
 Todo:
-# Save effects in recorded WAV?
-
-# Add a "playback" bus to optionally apply effects to when
-# playing back recorded audio.
-
-
 
 
 EFFECTS:
+Fade effects in and out instead of cutting off instantly (help with popping sounds.)
+
 Chorus, Phaser
 realistic piano sounds?
 
+
 METRONOME:
 Built-in metronome with adjustable BPM and time signature
+
 
 KNOBS:
 Master volume btn / knob
 Make knobs look better (no john godots)
 
+
 KNOB PRESETS:
 Save multiple (named) A/S/D/R knob presets
 0 decay sounds really cool with sus -10
+
 
 MUTLI-TRACK:
 Add multiple record/loop track slots.
@@ -49,9 +43,6 @@ More complex oscillators (besides sine wave)
 --wave table -- sine, triangle, saw, square
 smooth morph between waveforms using LFO
 --(low frequency oscillator -- changes the waveform over time.)
-
-
-
 
 
 
@@ -112,3 +103,11 @@ Changelog:
 # 12 keys in one Octave
 # *7 = 84 + 3 + 1 = 88
 # starts on A, ends on C
+
+# Save effects in recorded WAV?
+
+# Add a "playback" bus to optionally apply effects to when
+# playing back recorded audio.
+
+# play:
+# uses capture_save_data and converts to wav (capture_wav)
