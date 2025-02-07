@@ -40,6 +40,8 @@ var capture_mix_rate:float = 44100.0  # Default, but will be set dynamically
 var capture_raw_data: PackedFloat32Array  # Stores interleaved stereo data
 var capture_save_data: PackedFloat32Array  # Stores interleaved stereo data
 var is_capturing: bool = false
+var prev_save_data: PackedFloat32Array  # Stores previous save data
+var start_pos: float = -1.0
 
 # wave table
 @export var wave_table_item_list:ItemList
@@ -113,7 +115,7 @@ var piano_buttons:Array
 	capture_raw_effect,
 	reverb_effect,
 	delay_effect,
-	capture_save_effect,
+	# capture_save_effect,
 ]
 
 # master / effect bus
@@ -135,6 +137,9 @@ func _ready() -> void:
 		if effect is AudioEffectReverb or effect is AudioEffectDelay:
 			AudioServer.set_bus_effect_enabled(keyboard_fx_bus, i, false)
 
+	# add capture effect to master
+	AudioServer.add_bus_effect(master_bus, capture_save_effect, 0)
+	
 	# capture settings
 	capture_mix_rate = AudioServer.get_mix_rate()  # Dynamically set sample rate for captures
 	var output_latency = AudioServer.get_output_latency()
@@ -640,13 +645,28 @@ func convert_to_wav(audio_data: PackedFloat32Array) -> AudioStreamWAV:
 	
 	
 func _on_play_toggled(_toggled_on: bool) -> void:
-	if capture_raw_data.is_empty():
-		print("No audio captured!")
-		return
+	var use_raw = false
+	var capture_data:PackedFloat32Array
+	var capture_wav:AudioStreamWAV
 	
+	# whether to playback raw capture or capture with recorded effects
+	if use_raw:
+		if capture_raw_data.is_empty():
+			print("No audio captured!")
+			return
+		else:
+			capture_data = capture_raw_data
+	else:
+		if capture_save_data.is_empty():
+			print("No audio captured!")
+			return
+		else:
+			capture_data = capture_save_data
+	
+	# convert capture data to wav
 	print("Playing captured audio")
-	var capture_wav = convert_to_wav(capture_raw_data)
-	
+	capture_wav = convert_to_wav(capture_data)
+
 	# print("capture_data: %s" % capture_data)
 	print("capture_wav.format: %s" % capture_wav.format)
 	print("capture_wav.mix_rate: %s" % capture_wav.mix_rate)
@@ -655,6 +675,7 @@ func _on_play_toggled(_toggled_on: bool) -> void:
 	print("data.size(): %s" % _data.size())
 		
 	audio_player.stream = capture_wav
+	audio_player.bus = &"capture_playback"
 
 	# enable/disable btn
 	play_btn.disabled = true
@@ -718,6 +739,15 @@ func _process(_delta):
 
 
 func start_capturing():
+	#if audio_player.playing:
+		## add new layer to track
+		#start_pos = audio_player.get_playback_position()
+		## var prev_raw_data = capture_raw_data.duplicate()
+		#prev_save_data = capture_save_data.duplicate()
+	#else:
+		#start_pos = -1.0
+		#prev_save_data.clear()
+	
 	# clear buffer
 	capture_raw_effect.clear_buffer()
 	capture_raw_data.clear()
@@ -735,6 +765,24 @@ func start_capturing():
 func stop_capturing():
 	print("Stop Capturing")
 	is_capturing = false
+	
+	## If there is previous save data and a valid start position, merge layers
+	#if prev_save_data.size() > 0 and start_pos != -1.0:
+		#print("Merging new capture with previous data at position:", start_pos)
+		#
+		## Convert start_pos from seconds to sample index
+		#var start_sample_index = int(start_pos * capture_mix_rate * 2)  # *2 for stereo
+#
+		## Resize prev_save_data if needed
+		#if start_sample_index + capture_save_data.size() > prev_save_data.size():
+			#prev_save_data.resize(start_sample_index + capture_save_data.size())
+#
+		## Mix new capture data into previous save data
+		#for i in range(capture_save_data.size()):
+			#prev_save_data[start_sample_index + i] += capture_save_data[i]
+#
+		## Save the merged data back to capture_save_data
+		#capture_save_data = prev_save_data.duplicate()
 
 	record_btn.text = start_recording_text
 	play_btn.disabled = false  # Enable play button after capturing stops
@@ -744,9 +792,13 @@ func stop_capturing():
 	
 func _on_record_toggled(_toggled_on: bool) -> void:
 	if _toggled_on:
-		queue_capture = true
-		record_btn.text = queue_recording_text
-		# start_capturing()
+		if not audio_player.playing:
+			# wait for keypress
+			queue_capture = true
+			record_btn.text = queue_recording_text
+		else:
+			# start recording right away
+			start_capturing()
 	else:
 		if queue_capture:
 			queue_capture = false

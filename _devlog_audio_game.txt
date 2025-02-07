@@ -7,6 +7,9 @@ Real-time audio synthesis using Godot 4.4
 =====================================================
 
 
+play:
+uses capture_save_data and converts to wav (capture_wav)
+
 Todo:
 Save effects in recorded WAV?
 
