@@ -143,7 +143,7 @@ var piano_buttons:Array
 # list of currently pressed keys
 @onready var pressed_keys:Array[PianoButton] = []
 # Time in seconds between note changes
-@onready var arp_time: float = 0.5
+@onready var arp_time: float = 0.2
 # current index playing in arp
 @onready var arp_index: int = 0
 # timer to switch index
