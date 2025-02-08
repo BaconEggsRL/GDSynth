@@ -92,8 +92,6 @@ var apply_waveform_change: bool = false   # Flag to apply pitch change
 # arpeggiator
 # arp mode
 var arp_enabled:bool = false
-# time to switch notes
-var arp_time:float = 1.0
 
 
 

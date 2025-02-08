@@ -21,7 +21,7 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[node name="main" type="Node" node_paths=PackedStringArray("arp_btn", "sweep_btn", "octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "wave_table_item_list", "pitch_slider", "osc_speed_slider", "arp_time_slider", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
+[node name="main" type="Node" node_paths=PackedStringArray("arp_btn", "sweep_btn", "octave_up_btn", "octave_down_btn", "looping_btn", "record_btn", "play_btn", "stop_btn", "save_btn", "save_status", "wave_table_item_list", "pitch_slider", "osc_speed_slider", "arp_time_slider", "gate_time_slider", "peak_knob", "attack_knob", "decay_knob", "sus_knob", "release_knob", "piano_black", "piano_white", "note_label", "audio_player")]
 script = ExtResource("1_ig7tw")
 arp_btn = NodePath("Control/BottomRight/Arp/ArpButton")
 sweep_btn = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/Sweep")
@@ -37,6 +37,7 @@ wave_table_item_list = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/Con
 pitch_slider = NodePath("Control/MidRight/PitchSlider")
 osc_speed_slider = NodePath("Control/ControlPanel/StatsPanel/PanelMargin/ControlContainer/VBoxContainer/OscContainer/OscSpeedSlider")
 arp_time_slider = NodePath("Control/BottomRight/Arp/ArpContainer/ArpTimeSlider")
+gate_time_slider = NodePath("Control/BottomRight/Arp/GateContainer/GateTimeSlider")
 peak_knob = NodePath("Knobs/peak_knob")
 attack_knob = NodePath("Knobs/attack_knob")
 decay_knob = NodePath("Knobs/decay_knob")
@@ -383,7 +384,35 @@ max_value = 1.0
 step = 0.01
 value = 0.2
 
+[node name="Label" type="Label" parent="Control/BottomRight/Arp/ArpContainer"]
+layout_mode = 2
+text = "tempo ="
+
 [node name="ArpTimeLabel" type="Label" parent="Control/BottomRight/Arp/ArpContainer"]
+layout_mode = 2
+text = "1.0 s"
+horizontal_alignment = 2
+
+[node name="GateContainer" type="HBoxContainer" parent="Control/BottomRight/Arp" node_paths=PackedStringArray("slider", "label")]
+layout_mode = 2
+size_flags_horizontal = 8
+script = ExtResource("3_272bh")
+slider = NodePath("GateTimeSlider")
+label = NodePath("GateTimeLabel")
+
+[node name="GateTimeSlider" type="HSlider" parent="Control/BottomRight/Arp/GateContainer"]
+custom_minimum_size = Vector2(84, 23)
+layout_mode = 2
+min_value = 0.1
+max_value = 1.0
+step = 0.01
+value = 0.2
+
+[node name="Label" type="Label" parent="Control/BottomRight/Arp/GateContainer"]
+layout_mode = 2
+text = "gate     ="
+
+[node name="GateTimeLabel" type="Label" parent="Control/BottomRight/Arp/GateContainer"]
 layout_mode = 2
 text = "1.0 s"
 horizontal_alignment = 2
@@ -407,6 +436,7 @@ text = "Enable Arp"
 [node name="Effects" type="VBoxContainer" parent="Control/BottomRight"]
 layout_mode = 2
 theme_override_constants/separation = 10
+alignment = 2
 
 [node name="Reverb" type="Button" parent="Control/BottomRight/Effects"]
 custom_minimum_size = Vector2(125, 0)

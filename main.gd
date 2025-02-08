@@ -64,9 +64,11 @@ var scale_tween:Tween
 
 # osc speed
 @export var osc_speed_slider:HSlider
-
 # arp time
 @export var arp_time_slider:HSlider
+# gate time
+@export var gate_time_slider:HSlider
+
 
 # KNOBS!
 @export var peak_knob:Knob
@@ -145,12 +147,18 @@ var latch_enabled:bool = false
 # list of currently pressed keys
 var pressed_keys:Array[PianoButton] = []
 var latched_keys:Array = []  # Stores the last chord if latched
-# Time in seconds between note changes
+
+# Time in seconds between arp note changes
 var arp_time: float = 0.2
+# Time in seconds to hold the arp note before releasing
+var gate_time: float = arp_time
+
 # current index playing in arp
 var arp_index: int = 0
 # timer to switch index
 var arp_timer: float = 0.0
+# timer for arp gate
+var gate_timer: float = 0.0
 # Track the last played note
 var last_note: Node = null
 
@@ -195,6 +203,10 @@ func _ready() -> void:
 	# arp settings
 	arp_time_slider.value_changed.connect(_on_arp_time_slider_value_changed)
 	arp_time_slider.value = self.arp_time
+	# gate settings
+	gate_time_slider.value_changed.connect(_on_gate_time_slider_value_changed)
+	gate_time_slider.value = self.gate_time
+	
 	
 	# pitch shift settings
 	pitch_slider.value_changed.connect(_on_pitch_slider_value_changed)
@@ -236,7 +248,6 @@ func _ready() -> void:
 		piano_btn.note = note
 		piano_btn.mix_rate = self.mix_rate
 		piano_btn.sweep_time = self.osc_speed_slider.value
-		piano_btn.arp_time = self.arp_time
 		
 		piano_btn.attack_samples = self.attack_samples
 		piano_btn.release_samples = self.release_samples
@@ -754,8 +765,9 @@ func play_next_arpeggio_note() -> void:
 	var note_button = active_keys[arp_index]
 	note_button.play_freq()
 
-	# Update last played note
+	# Update last played note and reset gate timer
 	last_note = note_button
+	gate_timer = 0.0
 
 	# Move to next note
 	arp_index = (arp_index + 1) % active_keys.size()
@@ -767,9 +779,19 @@ func _process(delta):
 	var active_keys = get_active_keys()
 	if arp_enabled and active_keys.size() > 0:
 		arp_timer += delta
+		gate_timer += delta
+		
+		# Play next arp note
 		if arp_timer >= arp_time:
 			arp_timer = 0.0
 			play_next_arpeggio_note()
+			
+		# Stop the last note if the gate time is reached
+		if last_note and gate_timer >= min(gate_time, arp_time):
+			last_note.stop_freq()
+			last_note = null  # Reset last note after stopping
+			
+			
 			
 	# capture
 	if is_capturing:
@@ -1088,18 +1110,27 @@ func _on_osc_speed_slider_value_changed(value) -> void:
 
 func _on_arp_time_slider_value_changed(value) -> void:
 	self.arp_time = value
-	for btn:PianoButton in piano_buttons:
-		btn.arp_time = value
+	# update gate
+	# gate_time_slider.max_value = value
+	#if gate_time_slider.value > value:
+		#gate_time_slider.value = clamp(gate_time_slider.value, 0.1, value)
+		
 		
 
+func _on_gate_time_slider_value_changed(value) -> void:
+	self.gate_time = value
+		
+		
 func _on_arp_button_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		print("arp enabled")
+		arp_btn.text = "Disable Arp"
 		self.arp_enabled = true
 		for btn:PianoButton in piano_buttons:
 			btn.arp_enabled = toggled_on
 	else:
 		print("arp disabled")
+		arp_btn.text = "Enable Arp"
 		stop_all_notes()
 		self.arp_enabled = false
 		for btn:PianoButton in piano_buttons:

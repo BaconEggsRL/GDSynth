@@ -10,6 +10,36 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
+
+METRONOME:
+Built-in metronome with adjustable BPM and time signature
+
+
+KNOB / BUTTON PRESETS:
+Save multiple (named) A/S/D/R knob presets
+0 decay sounds really cool with sus -10
+(include wave/arp button settings as well?)
+
+
+MUTLI-TRACK:
+Add multiple record/loop track slots.
+
+
+
+
+
+
+
+
+
+
+
+
+=====================================================
+
+
+Stretch:
+
 Arpeggiator:
 UP: 1234
 DOWN: 4321
@@ -20,34 +50,16 @@ RANDOM: random order (with repeats / without repeats)
 CHORD: just pulses the held chord
 
 Knobs:
-TEMPO -- control speed
+# TEMPO -- control speed
 OCTAVE -- control number of octaves to play on (will repeat held notes up/down octave.)
-GATE -- how long the note is held
-LATCH -- continue playing after keys are released
-(intelligent latch -- old chord latches, but goes away when a new chord is played.)
-
-
-
+# GATE -- how long the note is held
+# LATCH -- continue playing after keys are released
+# (intelligent latch -- old chord latches, but goes away when a new chord is played.)
 
 EFFECTS:
-Fade effects in and out,
-instead of cutting off instantly (help with popping sounds.)
-Phaser
-realistic piano sounds?
-
-
-METRONOME:
-Built-in metronome with adjustable BPM and time signature
-
-
-KNOB PRESETS:
-Save multiple (named) A/S/D/R knob presets
-0 decay sounds really cool with sus -10
-
-
-MUTLI-TRACK:
-Add multiple record/loop track slots.
-
+Fade effects in and out -- might be useful but not that important
+Phaser -- not super important to add right now
+realistic piano sounds? -- probably complicated
 
 WAVE TABLE:
 More complex oscillators (besides sine wave)
@@ -59,13 +71,6 @@ smooth morph between waveforms using LFO
 
 
 
-
-
-=====================================================
-
-
-Stretch:
-Add text to show current value of knobs (in ms?)
 And text edit fields to enter your own values
 Add an option to allow press white keys in black key area (disable mouse filter)
 
@@ -130,3 +135,5 @@ Changelog:
 # AudioEffectRecord does not work in Web build
 # --effects in general seem to work once Stream is enabled (such as Reverb.)
 # --Capture does work.
+
+# Add text to show current value of knobs (in sec)
