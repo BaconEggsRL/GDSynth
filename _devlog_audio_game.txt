@@ -10,6 +10,8 @@ Real-time audio synthesis using Godot 4.4
 
 Todo:
 
+Practical / QOL improvements to make it easier to record/layer tracks:
+
 
 METRONOME:
 Built-in metronome with adjustable BPM and time signature
