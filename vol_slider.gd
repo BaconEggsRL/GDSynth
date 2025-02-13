@@ -1,6 +1,7 @@
 extends VSlider
 
 var bus_index = AudioServer.get_bus_index("Master")  # Change to your target audio bus
+var master_gain = 0.0
 
 func _ready():
 	# Set slider range (ensure this matches your Inspector settings)
@@ -20,7 +21,7 @@ func _on_value_changed(_value):
 	store_volume(_value)  # Save setting
 
 func update_volume(_value):
-	var db = linear_to_db(_value)  # Convert linear scale (0-1) to decibels
+	var db = master_gain + linear_to_db(_value)  # Convert linear scale (0-1) to decibels
 	AudioServer.set_bus_volume_db(bus_index, db)
 
 func store_volume(_value):

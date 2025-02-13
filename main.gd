@@ -16,12 +16,12 @@ const max_decay_samples:float = mix_rate * 4
 @export_range (min_decay_samples, max_decay_samples, 1) var decay_samples = min_decay_samples
 
 const min_peak_db:float = -80.0
-const max_peak_db:float = 0.0
-@export_range (min_peak_db, max_peak_db, 1) var peak_db = 0.0
+const max_peak_db:float = -20.0
+@export_range (min_peak_db, max_peak_db, 1) var peak_db = max_peak_db
 
-const min_sus_db:float = -80.0
-const max_sus_db:float = 0.0
-@export_range (min_sus_db, max_sus_db, 1) var sus_db = peak_db
+const min_sus_db:float = min_peak_db
+const max_sus_db:float = max_peak_db
+@export_range (min_sus_db, max_sus_db, 1) var sus_db = max_sus_db
 
 @export var arp_btn:Button
 @export var sweep_btn:Button
