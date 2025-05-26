@@ -1,18 +1,7 @@
 GDSynth:
 Real-time audio synthesis using Godot 4.4
 
-
-
-
 =====================================================
-
-Anybody have good resources for learning about game art or art in general?
-Most of my current experience is in programming / music,
-So I tend to be lost on how to make stuff look nice.
-I want to learn some basic, fundamental stuff.
-And maybe look for artists to team up with for game jams and such.
-Thx
-
 
 Todo:
 

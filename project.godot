@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="audio_game"
+config/name="GDSynth"
 run/main_scene="uid://qpwnrp6mvont"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 boot_splash/bg_color=Color(0.184314, 0.184314, 0.184314, 1)
